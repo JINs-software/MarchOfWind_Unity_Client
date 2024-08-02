@@ -1873,14 +1873,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 62959126930527551, guid: 793ab7dae9c3c4d46b024689aed54e90, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 62959126930527551, guid: 793ab7dae9c3c4d46b024689aed54e90, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 226126254228587424, guid: 793ab7dae9c3c4d46b024689aed54e90, type: 3}
       propertyPath: m_LocalPosition.x
       value: 133.67
@@ -1924,22 +1916,6 @@ PrefabInstance:
     - target: {fileID: 2172310787668054655, guid: 793ab7dae9c3c4d46b024689aed54e90, type: 3}
       propertyPath: m_Name
       value: Marine
-      objectReference: {fileID: 0}
-    - target: {fileID: 2172310787668054655, guid: 793ab7dae9c3c4d46b024689aed54e90, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4125903436681290682, guid: 793ab7dae9c3c4d46b024689aed54e90, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4125903436681290682, guid: 793ab7dae9c3c4d46b024689aed54e90, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4125903436681290682, guid: 793ab7dae9c3c4d46b024689aed54e90, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2272,7 +2248,15 @@ PrefabInstance:
       value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 930459197699516244, guid: 6be1cf6fce793a04797bcd6878a216ba, type: 3}
+      propertyPath: fastSpeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 930459197699516244, guid: 6be1cf6fce793a04797bcd6878a216ba, type: 3}
       propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 930459197699516244, guid: 6be1cf6fce793a04797bcd6878a216ba, type: 3}
+      propertyPath: normalSpeed
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 930459197699516244, guid: 6be1cf6fce793a04797bcd6878a216ba, type: 3}

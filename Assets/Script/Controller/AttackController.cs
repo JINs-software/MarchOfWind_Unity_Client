@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AI;
 using static UnityEngine.GraphicsBuffer;
 
 public class AttackController : MonoBehaviour
@@ -14,12 +15,17 @@ public class AttackController : MonoBehaviour
     public float m_AttackDistance;
     public float m_StopAttackDistance;
     public float m_AttackRate;
+    public float m_AttackDelay;
 
     private Coroutine CheckTargetCoroutine;
     private Coroutine AttackJudgmentCoroutine;
 
+    UnitController m_UnitController;
+    UnitMovement m_UnitMovement;
+
     public void StartCheckTargetCoroutine()
     {
+        UnityEngine.Debug.Log("StartCheckTargetCoroutine");
         if (CheckTargetCoroutine == null)
         {
             CheckTargetCoroutine = StartCoroutine(CheckTarget());
@@ -27,6 +33,7 @@ public class AttackController : MonoBehaviour
     }
     public void StopCheckTargetCoroutine()
     {
+        UnityEngine.Debug.Log("StopCheckTargetCoroutine");
         if (CheckTargetCoroutine != null)
         {
             StopCoroutine(CheckTargetCoroutine);
@@ -35,8 +42,9 @@ public class AttackController : MonoBehaviour
     }
     private IEnumerator CheckTarget()
     {
-        while (true)
+        while (m_UnitController.State == enUnitState.IDLE)
         {
+            UnityEngine.Debug.Log("CheckTarget");
             if (m_TargetObject != null)
             {
                 // 타겟 존재 확인
@@ -45,13 +53,13 @@ public class AttackController : MonoBehaviour
                 {
                     // 공격 
                     gameObject.GetComponent<UnitController>().SendAttackMsg(m_TargetObject);
-                    yield return new WaitForSeconds(0.1f);
+                    yield return new WaitForSeconds(1f);
                 }
                 else
                 {
                     // 추적
                     gameObject.GetComponent<UnitController>().Send_MoveStartMessage(m_TargetObject.transform.position); 
-                    yield return new WaitForSeconds(0.1f);
+                    yield return new WaitForSeconds(1f);
                 }
             }
 
@@ -61,6 +69,7 @@ public class AttackController : MonoBehaviour
 
     public void StartAttackJudgmentCoroutine()
     {
+        UnityEngine.Debug.Log("StartAttackJudgmentCoroutine");
         if(AttackJudgmentCoroutine == null)
         {
             AttackJudgmentCoroutine = StartCoroutine(AttackJudgment());
@@ -68,7 +77,8 @@ public class AttackController : MonoBehaviour
     }
     public void StopAttackJudgmentCoroutine()
     {
-        if(AttackJudgmentCoroutine != null )
+        UnityEngine.Debug.Log("StopAttackJudgmentCoroutine");
+        if (AttackJudgmentCoroutine != null )
         {
             StopCoroutine(AttackJudgmentCoroutine); 
             AttackJudgmentCoroutine = null; 
@@ -77,23 +87,32 @@ public class AttackController : MonoBehaviour
 
     private IEnumerator AttackJudgment()
     {
-        while (true)
+        while (m_UnitController.State == enUnitState.ATTACK)
         {
+            UnityEngine.Debug.Log("AttackJudgment");
             if (m_TargetObject != null)
             {
                 float distanceToTarget = Vector3.Distance(transform.position, m_TargetObject.transform.position);
-                if(distanceToTarget <= m_AttackDistance)
+                distanceToTarget -= m_TargetObject.GetComponent<NavMeshAgent>().radius * m_TargetObject.transform.localScale.x;
+                if (distanceToTarget <= m_AttackDistance)
                 {
-                    gameObject.GetComponent<UnitController>().SendAttackMsg(m_TargetObject);
+                    yield return new WaitForSeconds(m_AttackDelay);
+                    if (!m_UnitMovement.isCommandedToMove)
+                    {
+                        gameObject.GetComponent<UnitController>().SendAttackMsg(m_TargetObject);
+                    }
                 }
             }
-            yield return new WaitForSeconds(1f / m_AttackRate);
+            yield return new WaitForSeconds((1f / m_AttackRate) - m_AttackDelay);   // attack delay는 (1f / m_AttackRate) 보다 작아야 함.
         }
     }
 
     private void Start()
     {
-        gameObject.GetComponent<SphereCollider>().radius = gameObject.GetComponent<UnitController>().Unit.m_AttackDistance * 1.5f / gameObject.transform.localScale.x;
+        //gameObject.GetComponent<SphereCollider>().radius = gameObject.GetComponent<UnitController>().Unit.m_AttackDistance * 1.5f / gameObject.transform.localScale.x;
+        gameObject.GetComponent<SphereCollider>().radius = 50f / gameObject.transform.localScale.x; // 모든 유닛 추적 범위 동일
+        m_UnitController = gameObject.GetComponent<UnitController>();
+        m_UnitMovement = gameObject.GetComponent<UnitMovement>();       
     }
 
     private void OnTriggerEnter(Collider other)
@@ -117,6 +136,8 @@ public class AttackController : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
+        UnityEngine.Debug.Log("OnTriggerExit!");
+
         if (other.CompareTag("Enemy") && m_TargetObject != null)
         {
             m_TargetObject = null;

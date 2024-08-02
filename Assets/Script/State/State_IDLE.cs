@@ -10,6 +10,8 @@ public class State_IDLE : StateMachineBehaviour
         // UnitController 컴포넌트 존재 여부에 따라 플레이어의 유닛을 구분
         if (animator.gameObject.GetComponent<UnitController>() != null)
         {
+            Debug.Log("State_IDLE.OnStateEnter@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+            animator.gameObject.GetComponent<UnitController>().State = enUnitState.IDLE;
             animator.gameObject.GetComponent<AttackController>().StartCheckTargetCoroutine();
         }
     }
@@ -18,6 +20,7 @@ public class State_IDLE : StateMachineBehaviour
     {
         if (animator.gameObject.GetComponent<UnitController>() != null)
         {
+            Debug.Log("State_IDLE.OnStateExit*********************************************");
             animator.gameObject.GetComponent<AttackController>().StopCheckTargetCoroutine();
         }
     }

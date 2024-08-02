@@ -182,6 +182,28 @@ public class BattleField : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            foreach(var obj in m_Units)
+            {
+                Unit unit = obj.Value;
+                if (unit.m_team == Manager.GamePlayer.m_Team)
+                {
+                    UnitController unitController = unit.m_GameObject.GetComponent<UnitController>();
+
+                    MSG_MGR_UNIT_DIE_REQUEST msg = new MSG_MGR_UNIT_DIE_REQUEST();
+                    msg.type = (ushort)enPacketType.MGR_UNIT_DIE_REQUEST;
+                    msg.unitID = unit.m_id;
+
+                    Manager.UnitSelection.SelectableUnitDestroyed(unit.m_GameObject);
+
+                    unitController.UnitSession.SendPacket<MSG_MGR_UNIT_DIE_REQUEST>(msg);
+                }
+            }
+            Manager.GamePlayer.MyTeamUnitCnt = 0;
+            Manager.SceneTransfer.TransferToSelectField();
+        }
+
         if (Manager.Network.ReceiveDataAvailable())
         {
             byte[] payload = Manager.Network.ReceivePacket();
@@ -271,6 +293,7 @@ public class BattleField : MonoBehaviour
             newUnit.m_GameObject.GetComponent<AttackController>().m_AttackDistance = newUnit.m_AttackDistance;
             newUnit.m_GameObject.GetComponent<AttackController>().m_StopAttackDistance = newUnit.m_AttackDistance + 1f;
             newUnit.m_GameObject.GetComponent<AttackController>().m_AttackRate = newUnit.m_AttackRate;
+            newUnit.m_GameObject.GetComponent<AttackController>().m_AttackDelay = msg.attackDelay;
 
             newUnit.m_GameObject.tag = Manager.GamePlayer.TeamTagStr;
         }
@@ -280,6 +303,11 @@ public class BattleField : MonoBehaviour
             newUnit.m_GameObject.GetComponent<Enemy>().m_Unit = newUnit;
             newUnit.m_GameObject.tag = Manager.GamePlayer.EnemyTagStr;
             newUnit.m_GameObject.AddComponent<Rigidbody>();
+        }
+
+        if(newUnit.m_team == (int)enPlayerTeamInBattleField.Team_Test)
+        {
+            newUnit.m_GameObject.GetComponent<SphereCollider>().enabled = false;
         }
 
         newUnit.m_GameObject.GetComponent<MuzzleEffect>().MuzzleRate = newUnit.m_AttackRate;

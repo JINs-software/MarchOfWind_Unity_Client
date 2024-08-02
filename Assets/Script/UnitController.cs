@@ -253,7 +253,7 @@ public class UnitController : MonoBehaviour
         Manager.UnitSelection.UnitList.Add(gameObject);
 
         // �þ� ������ ���� Sphere collider radius ����
-        GetComponent<SphereCollider>().radius = m_FOW;
+        //GetComponent<SphereCollider>().radius = m_FOW;
 
         m_AttackController = gameObject.GetComponent<AttackController>();   
         m_UnitMovement = gameObject.GetComponent<UnitMovement>();
@@ -293,6 +293,7 @@ public class UnitController : MonoBehaviour
 
     public void StartMoveStateCoroutine()
     {
+        Debug.Log("StartMoveStateCoroutine");
         if(MoveStateCoroutine == null)
         {
             MoveStateCoroutine = StartCoroutine(MoveStateCoroutineFunc_new());
@@ -300,7 +301,8 @@ public class UnitController : MonoBehaviour
     }
     public void StopMoveStateCoroutine()
     {
-        if(MoveStateCoroutine != null)
+        Debug.Log("StopMoveStateCoroutine");
+        if (MoveStateCoroutine != null)
         {
             StopCoroutine(MoveStateCoroutine);    
             MoveStateCoroutine = null;  
@@ -311,8 +313,10 @@ public class UnitController : MonoBehaviour
     {
         float distanceFromDestination = m_NavMeshAgent.remainingDistance;
 
-        while(true)
+        while(State == enUnitState.MOVE)
         {
+            Debug.Log("MoveStateCoroutineFunc_new");
+
             if (!m_NavMeshAgent.pathPending)
             {
                 // 커맨드를 통한 이동 정지 판단
@@ -389,27 +393,43 @@ public class UnitController : MonoBehaviour
                 // 추적을 통한 이동 정지 판단
                 else
                 {
+                    Debug.Log("In Tracing...");
                     if (m_AttackController.m_TargetObject != null)
                     {
+                        Debug.Log("m_AttackController.m_TargetObject != null");
                         float distanceToTarget = Vector3.Distance(transform.position, m_AttackController.m_TargetObject.transform.position);
+                        distanceToTarget -= m_AttackController.m_TargetObject.GetComponent<NavMeshAgent>().radius * m_AttackController.m_TargetObject.transform.localScale.x;
                         if (distanceToTarget <= m_AttackController.m_AttackDistance)
                         {
+                            Debug.Log("distanceToTarget <= m_AttackController.m_AttackDistance => SendAttackMsg");
                             SendAttackMsg(m_AttackController.m_TargetObject);
                             yield return new WaitForSeconds(1f);
+                        }
+                        else
+                        {
+                            Debug.Log("distanceToTarget > m_AttackController.m_AttackDistance");
+                            Debug.Log("distanceToTarget: " + distanceToTarget);
+                            Debug.Log("AttackDistance: " + m_AttackController.m_AttackDistance);
                         }
                     }
                     else
                     {
+                        Debug.Log("m_AttackController.m_TargetObject != null");
                         if (m_NavMeshAgent.remainingDistance <= m_NavMeshAgent.stoppingDistance)
                         {
                             if (!m_NavMeshAgent.hasPath || m_NavMeshAgent.velocity.sqrMagnitude == 0f)
                             {
+                                Debug.Log("Send_MoveStopMessage~");
                                 Send_MoveStopMessage();
                                 yield return new WaitForSeconds(1f);
                             }
                         }
                     }
                 }
+            }
+            else
+            {
+                Debug.Log("m_NavMeshAgent.pathPending...");
             }
 
             yield return null;
@@ -510,7 +530,7 @@ public class UnitController : MonoBehaviour
         moveMsg.destX = destionation.x;
         moveMsg.destZ = destionation.z;
 
-
+        Debug.Log("Send_MoveStartMessage");
         return m_UnitSession.SendPacket<MSG_UNIT_S_MOVE>(moveMsg);
     }
 
@@ -524,6 +544,7 @@ public class UnitController : MonoBehaviour
         stopMsg.normX = gameObject.transform.forward.normalized.x;
         stopMsg.normZ = gameObject.transform.forward.normalized.z;
 
+        Debug.Log("Send_MoveStopMessage");
         return m_UnitSession.SendPacket<MSG_UNIT_S_MOVE>(stopMsg);
     }
 
@@ -539,6 +560,7 @@ public class UnitController : MonoBehaviour
         atkMsg.targetID = targetObject.GetComponent<Enemy>().m_Unit.m_id;
         atkMsg.attackType = (int)enUnitAttackType.ATTACK_NORMAL;
 
+        Debug.Log("SendAttackMsg");
         return m_UnitSession.SendPacket<MSG_UNIT_S_ATTACK>(atkMsg);
     }
 }

@@ -37,6 +37,7 @@ enum enPacketType
 	S_MGR_ATTACK_STOP,
 	S_MGR_UINT_DAMAGED,
 	S_MGR_UNIT_DIED,
+	MGR_UNIT_DIE_REQUEST,
 };
 
 public 
@@ -278,6 +279,7 @@ public class MSG_S_MGR_CREATE_UNIT
 	public int maxHP;
 	public float attackDistance;
 	public float attackRate;
+	public float attackDelay;
 };
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -366,6 +368,13 @@ public class MSG_S_MGR_UINT_DAMAGED
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public class MSG_S_MGR_UNIT_DIED
+{
+	public ushort type;
+	public int unitID;
+};
+
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public class MSG_MGR_UNIT_DIE_REQUEST
 {
 	public ushort type;
 	public int unitID;

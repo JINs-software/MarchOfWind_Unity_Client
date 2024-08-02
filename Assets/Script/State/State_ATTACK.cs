@@ -9,20 +9,24 @@ public class State_ATTACK : StateMachineBehaviour
     {
         if (animator.gameObject.GetComponent<UnitController>() != null)
         {
+            Debug.Log("State_ATTACK.OnStateEnter@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+            animator.gameObject.GetComponent<UnitController>().State = enUnitState.ATTACK;
             animator.gameObject.GetComponent<AttackController>().StartAttackJudgmentCoroutine();
         }
 
-        animator.gameObject.GetComponent<MuzzleEffect>().StartMuzzleEffectCoroutine();  
+        //animator.gameObject.GetComponent<MuzzleEffect>().StartMuzzleEffectCoroutine();  
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         if (animator.gameObject.GetComponent<UnitController>() != null)
         {
+            Debug.Log("State_ATTACK.OnStateExit*********************************************");
+
             animator.gameObject.GetComponent<MuzzleEffect>().MuzzleObject.SetActive(false);
             animator.gameObject.GetComponent<AttackController>().StopAttackJudgmentCoroutine();
 
-            animator.gameObject.GetComponent<MuzzleEffect>().StoptMuzzleEffectCoroutine();
+            //animator.gameObject.GetComponent<MuzzleEffect>().StoptMuzzleEffectCoroutine();
         }
     }
 

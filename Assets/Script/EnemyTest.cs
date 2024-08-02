@@ -11,7 +11,8 @@ public class EnemyTest : MonoBehaviour
     public int m_MaxHP;
     public int m_HP;
 
-    private void Start()
+    int randomCrtCode = 7777;
+    private void OnEnable()
     {
         NetworkManager network = new NetworkManager();
         network.Connect();
@@ -29,7 +30,7 @@ public class EnemyTest : MonoBehaviour
 
         MSG_UNIT_S_CREATE_UNIT crtMsg = new MSG_UNIT_S_CREATE_UNIT();
         crtMsg.type = (ushort)enPacketType.UNIT_S_CREATE_UNIT;
-        crtMsg.crtCode = 7777;
+        crtMsg.crtCode = randomCrtCode++;
         crtMsg.unitType = (int)enUnitType.Terran_Marine;
         crtMsg.team = (int)enPlayerTeamInBattleField.Team_Test;
         crtMsg.posX = 200;

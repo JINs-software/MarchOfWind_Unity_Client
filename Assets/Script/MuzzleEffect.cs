@@ -9,6 +9,15 @@ public class MuzzleEffect : MonoBehaviour
 
     private Coroutine MuzzleEffectCoroutine = null;
 
+    public void MuzzleOn()
+    {
+        MuzzleObject.SetActive(true);
+    }
+    public void MuzzleOff()
+    {
+        MuzzleObject.SetActive(false);
+    }
+
     public void StartMuzzleEffectCoroutine()
     {
         if(MuzzleEffectCoroutine == null)

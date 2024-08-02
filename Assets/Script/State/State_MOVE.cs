@@ -15,6 +15,8 @@ public class State_MOVE : StateMachineBehaviour
         // 플레이어 유닛임을 UnitController 컴포넌트 소유로 식별
         if (unitController != null)
         {
+            Debug.Log("State_MOVE.OnStateEnter@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+            animator.gameObject.GetComponent<UnitController>().State = enUnitState.MOVE;
             unitController.StartMoveStateCoroutine();
         }
     }
@@ -23,6 +25,7 @@ public class State_MOVE : StateMachineBehaviour
     {
         if (unitController != null)
         {
+            Debug.Log("State_MOVE.OnStateExit*********************************************");
             unitController.StopMoveStateCoroutine();
         }
     }
