@@ -12,9 +12,11 @@ public class HealthTracker : MonoBehaviour
     public Material greenEmission;
     public Material yellowEmission;
     public Material redEmission;
+    public Material shockEmission;
 
 
     private Coroutine smoothHealthChangeCoroutine;
+    private Coroutine healthBarShock;
 
     // Call this method to update the health bar and color
     public void UpdateSliderValue(float currentHealth, float maxHealth)
@@ -32,10 +34,14 @@ public class HealthTracker : MonoBehaviour
         {
             StopCoroutine(smoothHealthChangeCoroutine);
         }
+        if (healthBarShock != null) 
+        {
+            StopCoroutine(healthBarShock);
+        }
 
         // Start a new coroutine for smooth health change
-        smoothHealthChangeCoroutine = StartCoroutine(SmoothHealthChange(HealthBarSlider.value, healthPercentage, 0.5f));
-
+        smoothHealthChangeCoroutine = StartCoroutine(SmoothHealthChange(HealthBarSlider.value, healthPercentage, 0.1f));
+        healthBarShock = StartCoroutine(HearthBarShock(0.1f));
 
 
         // Update the color based on health percentage
@@ -62,6 +68,36 @@ public class HealthTracker : MonoBehaviour
         smoothHealthChangeCoroutine = null;
     }
 
+
+    private IEnumerator HearthBarShock(float duration)
+    {
+        Material orgnMat = sliderFill.material;
+
+        sliderFill.material = shockEmission;
+        yield return new WaitForSeconds(duration / 3);
+
+        if(sliderFill.material != shockEmission)
+        {
+            sliderFill.material = sliderFill.material;
+        }
+        else
+        {
+            sliderFill.material = orgnMat;
+        }
+        yield return new WaitForSeconds(duration / 3);
+
+        sliderFill.material = shockEmission;
+        yield return new WaitForSeconds(duration / 3);
+
+        if (sliderFill.material != shockEmission)
+        {
+            sliderFill.material = sliderFill.material;
+        }
+        else
+        {
+            sliderFill.material = orgnMat;
+        }
+    }
 
     // Set the color based on the health percentage
     private void UpdateColor(float healthPercentage)

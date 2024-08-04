@@ -296,7 +296,7 @@ public class UnitController : MonoBehaviour
         Debug.Log("StartMoveStateCoroutine");
         if(MoveStateCoroutine == null)
         {
-            MoveStateCoroutine = StartCoroutine(MoveStateCoroutineFunc_new());
+            MoveStateCoroutine = StartCoroutine(MoveStateCoroutineFunc());
         }
     }
     public void StopMoveStateCoroutine()
@@ -309,7 +309,7 @@ public class UnitController : MonoBehaviour
         }
     }
 
-    private IEnumerator MoveStateCoroutineFunc_new()
+    private IEnumerator MoveStateCoroutineFunc()
     {
         float distanceFromDestination = m_NavMeshAgent.remainingDistance;
 
@@ -329,14 +329,14 @@ public class UnitController : MonoBehaviour
                             // 정지
                             Send_MoveStopMessage();
                             m_UnitMovement.isCommandedToMove = false;
-                            yield return new WaitForSeconds(1f);
+                            yield return new WaitForSeconds(0.01f);
                         }
                         else if(IsNearByUnit())
                         {
                             // 정지
                             Send_MoveStopMessage();
                             m_UnitMovement.isCommandedToMove = false;
-                            yield return new WaitForSeconds(1f);
+                            yield return new WaitForSeconds(0.01f);
                         }
                         // 점점 더 멀어짐, 이 시점부터 어느정도 이동을 시도하다 멈추어야 함.
                         else 
@@ -344,46 +344,46 @@ public class UnitController : MonoBehaviour
                             if (m_NavMeshAgent.remainingDistance > distanceFromDestination)
                             {
                                 // 1초 이동 기회 부여
-                                yield return new WaitForSeconds(1f);
+                                yield return new WaitForSeconds(0.01f);
 
                                 if (m_NavMeshAgent.remainingDistance <= m_NavMeshAgent.stoppingDistance)
                                 {
                                     // 정지
                                     Send_MoveStopMessage();
                                     m_UnitMovement.isCommandedToMove = false;
-                                    yield return new WaitForSeconds(1f);
+                                    yield return new WaitForSeconds(0.01f);
                                 }
                                 else if (IsNearByUnit())
                                 {
                                     // 정지
                                     Send_MoveStopMessage();
                                     m_UnitMovement.isCommandedToMove = false;
-                                    yield return new WaitForSeconds(1f);
+                                    yield return new WaitForSeconds(0.01f);
                                 }
 
                                 // 다시 1초 이동 기회 부여
 
-                                yield return new WaitForSeconds(1f);
+                                yield return new WaitForSeconds(0.01f);
                                 if (m_NavMeshAgent.remainingDistance <= m_NavMeshAgent.stoppingDistance)
                                 {
                                     // 정지
                                     Send_MoveStopMessage();
                                     m_UnitMovement.isCommandedToMove = false;
-                                    yield return new WaitForSeconds(1f);
+                                    yield return new WaitForSeconds(0.01f);
                                 }
                                 else if (IsNearByUnit())
                                 {
                                     // 정지
                                     Send_MoveStopMessage();
                                     m_UnitMovement.isCommandedToMove = false;
-                                    yield return new WaitForSeconds(1f);
+                                    yield return new WaitForSeconds(0.01f);
                                 }
 
                                 // 다시 1초 이동 기회 부여
                                 // 정지
                                 Send_MoveStopMessage();
                                 m_UnitMovement.isCommandedToMove = false;
-                                yield return new WaitForSeconds(1f);
+                                yield return new WaitForSeconds(0.01f);
                             }
                         }
                     }
@@ -393,37 +393,47 @@ public class UnitController : MonoBehaviour
                 // 추적을 통한 이동 정지 판단
                 else
                 {
-                    Debug.Log("In Tracing...");
+                    //Debug.Log("In Tracing...");
                     if (m_AttackController.m_TargetObject != null)
                     {
-                        Debug.Log("m_AttackController.m_TargetObject != null");
+                        //Debug.Log("m_AttackController.m_TargetObject != null");
                         float distanceToTarget = Vector3.Distance(transform.position, m_AttackController.m_TargetObject.transform.position);
                         distanceToTarget -= m_AttackController.m_TargetObject.GetComponent<NavMeshAgent>().radius * m_AttackController.m_TargetObject.transform.localScale.x;
                         if (distanceToTarget <= m_AttackController.m_AttackDistance)
                         {
-                            Debug.Log("distanceToTarget <= m_AttackController.m_AttackDistance => SendAttackMsg");
-                            SendAttackMsg(m_AttackController.m_TargetObject);
-                            yield return new WaitForSeconds(1f);
+                            //Debug.Log("distanceToTarget <= m_AttackController.m_AttackDistance => SendAttackMsg");
+                            Send_AttackMessage(m_AttackController.m_TargetObject);
+                            //yield return new WaitForSeconds(0.01f);
                         }
                         else
                         {
-                            Debug.Log("distanceToTarget > m_AttackController.m_AttackDistance");
-                            Debug.Log("distanceToTarget: " + distanceToTarget);
-                            Debug.Log("AttackDistance: " + m_AttackController.m_AttackDistance);
+                            //Debug.Log("distanceToTarget > m_AttackController.m_AttackDistance");
+                            //Debug.Log("distanceToTarget: " + distanceToTarget);
+                            //Debug.Log("AttackDistance: " + m_AttackController.m_AttackDistance);
+
+                            //Send_MoveStartMessage(m_AttackController.m_TargetObject.transform.position);
+                            Vector3 direction = (m_AttackController.m_TargetObject.transform.position - gameObject.transform.position);
+                            float diff = (m_AttackController.m_TargetObject.transform.position - gameObject.transform.position).magnitude - m_AttackController.m_AttackDistance;
+                            Vector3 destination = gameObject.transform.position + direction.normalized * diff;
+                            Send_MoveStartMessage(destination);
+                            //yield return new WaitForSeconds(0.01f);
                         }
                     }
                     else
                     {
-                        Debug.Log("m_AttackController.m_TargetObject != null");
-                        if (m_NavMeshAgent.remainingDistance <= m_NavMeshAgent.stoppingDistance)
-                        {
-                            if (!m_NavMeshAgent.hasPath || m_NavMeshAgent.velocity.sqrMagnitude == 0f)
-                            {
-                                Debug.Log("Send_MoveStopMessage~");
-                                Send_MoveStopMessage();
-                                yield return new WaitForSeconds(1f);
-                            }
-                        }
+                        //Debug.Log("m_AttackController.m_TargetObject != null");
+                        //if (m_NavMeshAgent.remainingDistance <= m_NavMeshAgent.stoppingDistance)
+                        //{
+                        //    if (!m_NavMeshAgent.hasPath || m_NavMeshAgent.velocity.sqrMagnitude == 0f)
+                        //    {
+                        //        Debug.Log("Send_MoveStopMessage~");
+                        //        Send_MoveStopMessage();
+                        //        yield return new WaitForSeconds(0.01f);
+                        //    }
+                        //}
+                        // => 커맨드가 아닌 이동은 결국 추적, 추적 대상이 더 이상 존재하지 않는 다면 그냥 멈추는 것이 맞아 보임(?)
+                        Send_MoveStopMessage();
+                        yield return new WaitForSeconds(0.01f);
                     }
                 }
             }
@@ -436,11 +446,7 @@ public class UnitController : MonoBehaviour
         }
     }
 
-    //private bool IsNearByUnitStoppedUnit()
-    //{
-    //    throw new NotImplementedException();
-    //}
-
+    /*
     private IEnumerator MoveStateCoroutineFunc()
     {
         while(true)
@@ -451,7 +457,7 @@ public class UnitController : MonoBehaviour
                 //{
                 //    Send_MoveStopMessage();
                 //    m_UnitMovement.isCommandedToMove = false;
-                //    yield return new WaitForSeconds(0.1f);
+                //    yield return new WaitForSeconds(0.01f);
                 //}
                 // => 도착 조건 변경
                 if (m_NavMeshAgent.remainingDistance <= m_NavMeshAgent.stoppingDistance)
@@ -460,14 +466,14 @@ public class UnitController : MonoBehaviour
                     {
                         Send_MoveStopMessage();
                         m_UnitMovement.isCommandedToMove = false;
-                        yield return new WaitForSeconds(0.1f);
+                        yield return new WaitForSeconds(0.01f);
                     }
                 }
                 else if (m_UnitMovement.isCommandedToMove && ShouldStop())
                 {
                     Send_MoveStopMessage();
                     m_UnitMovement.isCommandedToMove = false;
-                    yield return new WaitForSeconds(0.1f);
+                    yield return new WaitForSeconds(0.01f);
                 }
             }
 
@@ -476,14 +482,15 @@ public class UnitController : MonoBehaviour
                 // 커맨드를 통한 이동이 아닌 경우 공격 대상 확인
                 if (m_AttackController.m_TargetObject != null)
                 {
-                    SendAttackMsg(m_AttackController.m_TargetObject);
-                    yield return new WaitForSeconds(0.1f);
+                    Send_AttackMessage(m_AttackController.m_TargetObject);
+                    yield return new WaitForSeconds(0.01f);
                 }
             }
 
             yield return null;
         }
     }
+    */
 
     private bool ShouldStop()
     {
@@ -548,7 +555,7 @@ public class UnitController : MonoBehaviour
         return m_UnitSession.SendPacket<MSG_UNIT_S_MOVE>(stopMsg);
     }
 
-    public bool SendAttackMsg(GameObject targetObject)
+    public bool Send_AttackMessage(GameObject targetObject)
     {
         MSG_UNIT_S_ATTACK atkMsg = new MSG_UNIT_S_ATTACK();
         atkMsg.type = (ushort)enPacketType.UNIT_S_ATTACK;
@@ -560,7 +567,20 @@ public class UnitController : MonoBehaviour
         atkMsg.targetID = targetObject.GetComponent<Enemy>().m_Unit.m_id;
         atkMsg.attackType = (int)enUnitAttackType.ATTACK_NORMAL;
 
-        Debug.Log("SendAttackMsg");
+        Debug.Log("Send_AttackMessage");
         return m_UnitSession.SendPacket<MSG_UNIT_S_ATTACK>(atkMsg);
+    }
+
+    public bool Send_AttackStopMessage()
+    {
+        MSG_UNIT_S_ATTACK_STOP atkStopMsg = new MSG_UNIT_S_ATTACK_STOP();
+        atkStopMsg.type = (ushort)enPacketType.UNIT_S_ATTACK_STOP;
+        atkStopMsg.posX = gameObject.transform.position.x;  
+        atkStopMsg.posZ= gameObject.transform.position.z;   
+        atkStopMsg.normX = gameObject.transform.forward.x;  
+        atkStopMsg.normZ = gameObject.transform.forward.z;
+
+        Debug.Log("Send_AttackStopMessage");
+        return m_UnitSession.SendPacket<MSG_UNIT_S_ATTACK_STOP>(atkStopMsg);
     }
 }

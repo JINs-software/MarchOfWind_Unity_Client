@@ -44,7 +44,7 @@ public class AttackController : MonoBehaviour
     {
         while (m_UnitController.State == enUnitState.IDLE)
         {
-            UnityEngine.Debug.Log("CheckTarget");
+            //UnityEngine.Debug.Log("CheckTarget");
             if (m_TargetObject != null)
             {
                 // 타겟 존재 확인
@@ -52,14 +52,18 @@ public class AttackController : MonoBehaviour
                 if (distanceToTarget <= m_AttackDistance)
                 {
                     // 공격 
-                    gameObject.GetComponent<UnitController>().SendAttackMsg(m_TargetObject);
-                    yield return new WaitForSeconds(1f);
+                    gameObject.GetComponent<UnitController>().Send_AttackMessage(m_TargetObject);
+                    yield return new WaitForSeconds(0.01f);
                 }
                 else
                 {
                     // 추적
-                    gameObject.GetComponent<UnitController>().Send_MoveStartMessage(m_TargetObject.transform.position); 
-                    yield return new WaitForSeconds(1f);
+                    UnityEngine.Debug.Log("@@@@@@@@@@@@@@@ in Idle state -> trace @@@@@@@@@@@@@@@@@@ ");
+                    Vector3 direction = (m_TargetObject.transform.position - gameObject.transform.position);
+                    float diff = (m_TargetObject.transform.position - gameObject.transform.position).magnitude - m_AttackDistance;
+                    Vector3 destination = gameObject.transform.position + direction.normalized * diff;
+                    m_UnitController.Send_MoveStartMessage(destination);
+                    yield return new WaitForSeconds(0.01f);
                 }
             }
 
@@ -89,19 +93,36 @@ public class AttackController : MonoBehaviour
     {
         while (m_UnitController.State == enUnitState.ATTACK)
         {
-            UnityEngine.Debug.Log("AttackJudgment");
+            //UnityEngine.Debug.Log("AttackJudgment");
             if (m_TargetObject != null)
             {
                 float distanceToTarget = Vector3.Distance(transform.position, m_TargetObject.transform.position);
                 distanceToTarget -= m_TargetObject.GetComponent<NavMeshAgent>().radius * m_TargetObject.transform.localScale.x;
                 if (distanceToTarget <= m_AttackDistance)
                 {
+                    // 공격
                     yield return new WaitForSeconds(m_AttackDelay);
                     if (!m_UnitMovement.isCommandedToMove)
                     {
-                        gameObject.GetComponent<UnitController>().SendAttackMsg(m_TargetObject);
+                        m_UnitController.Send_AttackMessage(m_TargetObject);
                     }
                 }
+                else
+                {
+                    // 추격
+                    //m_UnitController.Send_MoveStartMessage(m_TargetObject.transform.position);
+                    // => 타겟 방향으로 공격이 가능한 위치까지만 이동
+                    Vector3 direction = (m_TargetObject.transform.position - gameObject.transform.position);
+                    float diff = (m_TargetObject.transform.position - gameObject.transform.position).magnitude - m_AttackDistance;
+                    Vector3 destination = gameObject.transform.position + direction.normalized * diff;
+                    m_UnitController.Send_MoveStartMessage(destination);
+                    yield return new WaitForSeconds(0.01f);
+                }
+            }
+            else
+            {
+                gameObject.GetComponent<UnitController>().Send_AttackStopMessage();
+                yield return new WaitForSeconds(0.01f);
             }
             yield return new WaitForSeconds((1f / m_AttackRate) - m_AttackDelay);   // attack delay는 (1f / m_AttackRate) 보다 작아야 함.
         }
