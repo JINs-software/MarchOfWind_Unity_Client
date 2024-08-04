@@ -44,11 +44,17 @@ public class AttackController : MonoBehaviour
     {
         while (m_UnitController.State == enUnitState.IDLE)
         {
+            if (m_UnitMovement.isCommandedToMove)
+            {
+                yield return null;
+            }
+
             //UnityEngine.Debug.Log("CheckTarget");
             if (m_TargetObject != null)
             {
                 // 타겟 존재 확인
                 float distanceToTarget = Vector3.Distance(transform.position, m_TargetObject.transform.position);
+                distanceToTarget -= m_TargetObject.GetComponent<NavMeshAgent>().radius * m_TargetObject.transform.localScale.x;
                 if (distanceToTarget <= m_AttackDistance)
                 {
                     // 공격 
@@ -93,7 +99,11 @@ public class AttackController : MonoBehaviour
     {
         while (m_UnitController.State == enUnitState.ATTACK)
         {
-            //UnityEngine.Debug.Log("AttackJudgment");
+            if (m_UnitMovement.isCommandedToMove)
+            {
+                yield return null;
+            }
+
             if (m_TargetObject != null)
             {
                 float distanceToTarget = Vector3.Distance(transform.position, m_TargetObject.transform.position);

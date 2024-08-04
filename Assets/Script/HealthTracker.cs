@@ -16,7 +16,6 @@ public class HealthTracker : MonoBehaviour
 
 
     private Coroutine smoothHealthChangeCoroutine;
-    private Coroutine healthBarShock;
 
     // Call this method to update the health bar and color
     public void UpdateSliderValue(float currentHealth, float maxHealth)
@@ -34,69 +33,36 @@ public class HealthTracker : MonoBehaviour
         {
             StopCoroutine(smoothHealthChangeCoroutine);
         }
-        if (healthBarShock != null) 
-        {
-            StopCoroutine(healthBarShock);
-        }
 
         // Start a new coroutine for smooth health change
         smoothHealthChangeCoroutine = StartCoroutine(SmoothHealthChange(HealthBarSlider.value, healthPercentage, 0.1f));
-        healthBarShock = StartCoroutine(HearthBarShock(0.1f));
-
 
         // Update the color based on health percentage
-        UpdateColor(healthPercentage);
+        //UpdateColor(healthPercentage);
     }
 
     // Coroutine for smooth health change
-    private IEnumerator SmoothHealthChange(float startValue, float targetValue, float duration)
+    private IEnumerator SmoothHealthChange(float startValue, float healthPercentage, float duration)
     {
         float elapsedTime = 0f;
 
+        sliderFill.material = shockEmission;
+
         while (elapsedTime < duration)
         {
-            HealthBarSlider.value = Mathf.Lerp(startValue, targetValue, elapsedTime / duration);
+            HealthBarSlider.value = Mathf.Lerp(startValue, healthPercentage, elapsedTime / duration);
 
             elapsedTime += Time.deltaTime;
 
             yield return null;
         }
 
-        HealthBarSlider.value = targetValue;
+        UpdateColor(healthPercentage);
+
+        HealthBarSlider.value = healthPercentage;
 
         // Clear the coroutine reference after it's finished
         smoothHealthChangeCoroutine = null;
-    }
-
-
-    private IEnumerator HearthBarShock(float duration)
-    {
-        Material orgnMat = sliderFill.material;
-
-        sliderFill.material = shockEmission;
-        yield return new WaitForSeconds(duration / 3);
-
-        if(sliderFill.material != shockEmission)
-        {
-            sliderFill.material = sliderFill.material;
-        }
-        else
-        {
-            sliderFill.material = orgnMat;
-        }
-        yield return new WaitForSeconds(duration / 3);
-
-        sliderFill.material = shockEmission;
-        yield return new WaitForSeconds(duration / 3);
-
-        if (sliderFill.material != shockEmission)
-        {
-            sliderFill.material = sliderFill.material;
-        }
-        else
-        {
-            sliderFill.material = orgnMat;
-        }
     }
 
     // Set the color based on the health percentage

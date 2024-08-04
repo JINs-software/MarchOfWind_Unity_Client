@@ -4,6 +4,8 @@ using UnityEngine;
 public class Teleporter : MonoBehaviour {
     static int s_CrtCode = 0;
 
+    public int CreateUnitCount;
+
     void OnTriggerEnter(Collider collider) {
         Teleportable teleportable = collider.transform.GetComponent<Teleportable>();
         if (teleportable != null) {
@@ -20,19 +22,40 @@ public class Teleporter : MonoBehaviour {
         teleportable.canTeleport = false;
 
     
-        NetworkManager session = new NetworkManager();
-        session.Connect();
-        // BattleField ID 지정
-        MSG_UNIT_S_CONN_BATTLE_FIELD connMsg = new MSG_UNIT_S_CONN_BATTLE_FIELD();  
-        connMsg.type = (ushort)enPacketType.UNIT_S_CONN_BATTLE_FIELD;
-        connMsg.fieldID = Manager.GamePlayer.BattleFieldID;
-        if (!session.SendPacket<MSG_UNIT_S_CONN_BATTLE_FIELD>(connMsg))
+        for(int i = 0; i<CreateUnitCount; i++)
         {
-            Debug.Log("MSG_UNIT_S_CONN_BATTLE_FIELD 메시지 송신 실패");
-            return;
+            NetworkManager session = new NetworkManager();
+            session.Connect();
+            // BattleField ID 지정
+            MSG_UNIT_S_CONN_BATTLE_FIELD connMsg = new MSG_UNIT_S_CONN_BATTLE_FIELD();
+            connMsg.type = (ushort)enPacketType.UNIT_S_CONN_BATTLE_FIELD;
+            connMsg.fieldID = Manager.GamePlayer.BattleFieldID;
+            if (!session.SendPacket<MSG_UNIT_S_CONN_BATTLE_FIELD>(connMsg))
+            {
+                Debug.Log("MSG_UNIT_S_CONN_BATTLE_FIELD 메시지 송신 실패");
+                return;
+            }
+
+            MSG_UNIT_S_CREATE_UNIT crtMsg = new MSG_UNIT_S_CREATE_UNIT();
+            int crtCode = MakeCrtMessage(crtMsg);
+
+            Tuple<NetworkManager, MSG_UNIT_S_CREATE_UNIT> crtTuple = new Tuple<NetworkManager, MSG_UNIT_S_CREATE_UNIT>(session, crtMsg);
+            Manager.GamePlayer.CrtMessageList.Add(crtTuple);
+            Manager.GamePlayer.NewUnitSessions.Add(crtCode, session);
+            Manager.GamePlayer.MyTeamUnitCnt++;
         }
-        MSG_UNIT_S_CREATE_UNIT crtMsg = new MSG_UNIT_S_CREATE_UNIT();
+    
+        Manager.GamePlayer.m_SelectorCnt--;
+        if (Manager.GamePlayer.m_SelectorCnt == 0)
+        {
+            Manager.SceneTransfer.TransferToBattleField();
+        }
+    }
+
+    int MakeCrtMessage(MSG_UNIT_S_CREATE_UNIT crtMsg)
+    {
         int crtCode = s_CrtCode++;
+
         crtMsg.type = (ushort)enPacketType.UNIT_S_CREATE_UNIT;
         crtMsg.crtCode = crtCode;
         crtMsg.team = Manager.GamePlayer.m_Team;
@@ -94,20 +117,12 @@ public class Teleporter : MonoBehaviour {
         {
             Debug.Log("strange port name....!");
         }
+
         Vector3 crtPos = Vector3.zero;
         crtPos = BattleField.GetRandomCreatePosition((enUnitType)crtMsg.unitType);
         crtMsg.posX = crtPos.x;
         crtMsg.posZ = crtPos.z;
 
-        Tuple<NetworkManager, MSG_UNIT_S_CREATE_UNIT> crtTuple = new Tuple<NetworkManager, MSG_UNIT_S_CREATE_UNIT>(session, crtMsg);
-        Manager.GamePlayer.CrtMessageList.Add(crtTuple);  
-        Manager.GamePlayer.NewUnitSessions.Add(crtCode, session);
-        Manager.GamePlayer.MyTeamUnitCnt++;
-    
-        Manager.GamePlayer.m_SelectorCnt--;
-        if (Manager.GamePlayer.m_SelectorCnt == 0)
-        {
-            Manager.SceneTransfer.TransferToBattleField();
-        }
+        return crtCode;  
     }
 }

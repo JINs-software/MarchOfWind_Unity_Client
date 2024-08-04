@@ -236,6 +236,12 @@ public class BattleField : MonoBehaviour
                             Proc_ATTACK(msg);
                         }
                         break;
+                    case enPacketType.S_MGR_ATTACK_INVALID:
+                        {
+                            MSG_S_MGR_ATTACK_INVALID msg = Manager.Network.BytesToMessage<MSG_S_MGR_ATTACK_INVALID>(payload);
+                            Proc_ATTACK_INVALID(msg);
+                        }
+                        break;
                     case enPacketType.S_MGR_ATTACK_STOP:
                         {
                             MSG_S_MGR_ATTACK_STOP msg = Manager.Network.BytesToMessage<MSG_S_MGR_ATTACK_STOP>(payload); 
@@ -360,6 +366,20 @@ public class BattleField : MonoBehaviour
         Unit unit = m_Units[msg.unitID];
 
         unit.Attack(new Vector3(msg.posX, 0, msg.posZ), new Vector3(msg.normX, 0, msg.normZ), msg.attackType);
+
+        unit.Move_Stop_UI(new Vector3(msg.posX, 0, msg.posZ));
+    }
+
+    private void Proc_ATTACK_INVALID(MSG_S_MGR_ATTACK_INVALID msg)
+    {
+        if (!m_Units.ContainsKey(msg.unitID))
+        {
+            return;
+        }
+
+        Unit unit = m_Units[msg.unitID];
+
+        unit.Attack_Invalid(new Vector3(msg.posX, 0, msg.posZ), new Vector3(msg.normX, 0, msg.normZ));
 
         unit.Move_Stop_UI(new Vector3(msg.posX, 0, msg.posZ));
     }

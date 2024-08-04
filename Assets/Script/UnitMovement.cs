@@ -8,6 +8,7 @@ public class UnitMovement : MonoBehaviour
 {
     Camera m_Camera;
     NavMeshAgent m_NavMeshAgent;
+    UnitController m_UnitController;    
 
     [SerializeField]
     LayerMask m_LayerMask;
@@ -23,6 +24,8 @@ public class UnitMovement : MonoBehaviour
         m_NavMeshAgent = GetComponent<NavMeshAgent>();
         m_NavMeshAgent.isStopped = true;
         m_LayerMask = LayerMask.GetMask("GroundLayer");
+
+        m_UnitController = gameObject.GetComponent<UnitController>();
     }
 
     // Update is called once per frame
@@ -35,6 +38,8 @@ public class UnitMovement : MonoBehaviour
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, m_LayerMask))
             {
                 isCommandedToMove = true;   
+                // => WAIT 상태 활용
+
                 if(gameObject.tag == "Selector") 
                 {
                     m_NavMeshAgent.isStopped = false;
@@ -42,6 +47,8 @@ public class UnitMovement : MonoBehaviour
                 }
                 else
                 {
+                    //m_UnitController.State = enUnitState.CTR_WAIT;
+
                     //DistanceFromCenter = (Manager.UnitSelection.CenterOfUnitSelected - transform.position).magnitude;
                     DistanceFromCenter = Manager.UnitSelection.UnitSelectedCircumscriber * 2;
                     if (!gameObject.GetComponent<UnitController>().Send_MoveStartMessage(hit.point))

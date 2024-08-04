@@ -33,6 +33,7 @@ enum enPacketType
 	S_MGR_MOVE,
 	UNIT_S_ATTACK,
 	S_MGR_ATTACK,
+	S_MGR_ATTACK_INVALID,
 	UNIT_S_ATTACK_STOP,
 	S_MGR_ATTACK_STOP,
 	S_MGR_UINT_DAMAGED,
@@ -335,6 +336,18 @@ public class MSG_S_MGR_ATTACK
 	public float normZ;
 	public int targetID;
 	public int attackType;
+};
+
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public class MSG_S_MGR_ATTACK_INVALID
+{
+	public ushort type;
+	public int unitID;
+	public int team;
+	public float posX;
+	public float posZ;
+	public float normX;
+	public float normZ;
 };
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]

@@ -6,7 +6,8 @@ public class State_WAIT : StateMachineBehaviour
 {
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        
+        animator.gameObject.GetComponent<UnitController>().State = enUnitState.CTR_WAIT;
+        animator.GetComponent<UnitMovement>().isCommandedToMove = true; 
     }
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

@@ -140,12 +140,48 @@ public class Unit
         m_Animator.ResetTrigger("trIdle");
         m_Animator.ResetTrigger("trMove");
         m_Animator.SetTrigger("trAttack");
+        m_NavMeshAgent.avoidancePriority = 50;       // 우선순위 변경?
+        //m_NavMeshAgent.qual
 
         if (m_GameObject.GetComponent<UnitController>() != null) 
         {
             m_GameObject.GetComponent<UnitController>().OnMoving = false;
         }
     }
+    public void Attack_Invalid(Vector3 position, Vector3 dir)
+    {
+        Debug.Log("Recv Atack Invalid---------------------");
+
+        m_GameObject.transform.forward = dir;
+        // => 급격한 방향 전환이 어색함, Quaternion.Slerp 함수 사용
+
+        //Quaternion targetRotation = Quaternion.LookRotation(dir);
+        //m_GameObject.transform.rotation = Quaternion.Slerp(m_GameObject.transform.rotation, targetRotation, Time.deltaTime * m_RotationSpeed);
+        // => AttackState에서 차차 돌려줘야 할듯
+
+
+        if (!m_NavMeshAgent.Warp(position))
+        {
+            Debug.Log("Move_Stop, Warp returns Fail..");
+        }
+        m_NavMeshAgent.isStopped = true;
+
+
+        //m_Animator.SetBool("bAttack", true);
+        //m_Animator.SetBool("bMove", false);
+
+        m_Animator.ResetTrigger("trIdle");
+        m_Animator.ResetTrigger("trMove");
+        m_Animator.SetTrigger("trAttack");
+        m_NavMeshAgent.avoidancePriority = 0;       // 우선순위 변경?
+
+        if (m_GameObject.GetComponent<UnitController>() != null)
+        {
+            m_GameObject.GetComponent<UnitController>().OnMoving = false;
+        }
+    }
+
+
     public void AttackStop(Vector3 position)
     {
         Debug.Log("Recv Atack Stop---------------------");  
@@ -159,6 +195,7 @@ public class Unit
         m_Animator.ResetTrigger("trMove");
         m_Animator.ResetTrigger("trAttack");
         m_Animator.SetTrigger("trIdle");
+        m_NavMeshAgent.avoidancePriority = 0;       // 우선순위 변경?
     }
 
     //private void LookAtTarget(Vector3 dir)
@@ -220,7 +257,8 @@ public enum enUnitState
 {
     IDLE,
     MOVE,
-    ATTACK
+    ATTACK,
+    CTR_WAIT
 }
 
 public class UnitController : MonoBehaviour
