@@ -18,6 +18,8 @@ public class UnitMovState : StateMachineBehaviour
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        animator.gameObject.GetComponent<NavMeshAgent>().avoidancePriority = 99;
+
         if (animator.gameObject.GetComponent<AttackController>() != null)
         {
             Debug.Log("UnitMoveState, OnStateEnter@@@");

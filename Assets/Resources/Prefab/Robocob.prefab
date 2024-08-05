@@ -451,7 +451,7 @@ NavMeshAgent:
   m_Height: 2
   m_BaseOffset: 0.99
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_ObstacleAvoidanceType: 1
 --- !u!136 &8534999352716125305
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -509,6 +509,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MuzzleObject: {fileID: 1143175159061129991}
+  MuzzleRate: 0
 --- !u!114 &1449750143754319657
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -279,12 +279,10 @@ public class BattleField : MonoBehaviour
 
     private void Proc_CREATE_UNIT(MSG_S_MGR_CREATE_UNIT msg)
     {
-        //if(msg.team == (int)enPlayerTeamInBattleField.Team_Test)
-        //{   
-        //    return;
-        //}
-
         Unit newUnit = CreateUnitObjectInScene(msg);
+
+        newUnit.m_GameObject.GetComponent<NavMeshAgent>().avoidancePriority = 0;
+
         if(Manager.GamePlayer.m_Team == msg.team)
         {
             UnitMovement unitMovement = newUnit.m_GameObject.AddComponent<UnitMovement>();

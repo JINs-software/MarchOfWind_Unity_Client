@@ -4,6 +4,7 @@ using System.Runtime.InteropServices.ComTypes;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using Random = UnityEngine.Random;
 
 /*
  * UnitSectionManager�� ������ �ڵ����� ��ϵǵ��� �Ѵ�.
@@ -32,6 +33,8 @@ public class Unit
     
     Animator m_Animator;
     NavMeshAgent m_NavMeshAgent;
+    NavMeshObstacle m_NavMeshObstacle;
+    NavMeshController m_NavMeshController;  
     //HealthTracker m_HearthTracker;
     HealthController m_HearthController;
 
@@ -40,8 +43,14 @@ public class Unit
     public Unit(GameObject gameObject, int id, int type, int team, Vector3 position, Vector3 direction, float speed, int maxHP, float attackDist, float attackRate)
     {
         m_GameObject = gameObject;  
+
         m_NavMeshAgent = m_GameObject.GetComponent<NavMeshAgent>();
         m_NavMeshAgent.speed = speed;
+
+        m_NavMeshObstacle = m_GameObject.GetComponent<NavMeshObstacle>();  
+
+        m_NavMeshController = m_GameObject.GetComponent<NavMeshController>();   
+        
         //m_HearthTracker = m_GameObject.GetComponent<HealthTracker>();
         m_Animator = m_GameObject.GetComponent<Animator>();
         m_HearthController = m_GameObject.GetComponent<HealthController>();
@@ -75,41 +84,44 @@ public class Unit
     {
         Debug.Log("Recv Move_Start---------------------");
 
-        m_NavMeshAgent.isStopped = false; 
-        if (!m_NavMeshAgent.SetDestination(destPosition))
-        {
-            Debug.Log("Move_Start, SetDestination returns Fail..");
-        }
-
-        //m_Animator.SetBool("bMove", true);
-        //m_Animator.SetBool("bAttack", false);
+        //m_NavMeshObstacle.enabled = false;
+        //m_NavMeshAgent.enabled = true;
+        //m_NavMeshAgent.isStopped = false; 
+        //if (!m_NavMeshAgent.SetDestination(destPosition))
+        //{
+        //    Debug.Log("Move_Start, SetDestination returns Fail..");
+        //}
+        m_NavMeshController.SetDestination(destPosition);
 
         m_Animator.ResetTrigger("trIdle");
         m_Animator.ResetTrigger("trAttack");
         m_Animator.SetTrigger("trMove");
-        m_NavMeshAgent.avoidancePriority = 99;       // 우선순위 변경?
+        //m_NavMeshAgent.avoidancePriority = 99;       // 우선순위 변경?
+        //m_NavMeshAgent.avoidancePriority = Random.Range(20, 99);
 
-        if(m_GameObject.GetComponent<UnitController>() != null) 
+        if (m_GameObject.GetComponent<UnitController>() != null) 
         {
             m_GameObject.GetComponent<UnitController>().OnMoving = true;
         }
     }
     public void Move_Stop(Vector3 position)
     {
-        Debug.Log("Recv Move_Stop---------------------");  
+        Debug.Log("Recv Move_Stop---------------------");
 
-        if (!m_NavMeshAgent.Warp(position))
-        {
-            Debug.Log("Move_Stop, Warp returns Fail..");
-        }
-        m_NavMeshAgent.isStopped = true;
+        //if (!m_NavMeshAgent.Warp(position))
+        //{
+        //    Debug.Log("Move_Stop, Warp returns Fail..");
+        //}
+        //m_NavMeshAgent.isStopped = true;
+        //m_NavMeshAgent.enabled = false;
+        //m_NavMeshObstacle.enabled = true;
+        m_NavMeshController.MoveStop();
 
-        //m_Animator.SetBool("bMove", false);
 
         m_Animator.ResetTrigger("trMove");
         m_Animator.ResetTrigger("trAttack");
         m_Animator.SetTrigger("trIdle");
-        m_NavMeshAgent.avoidancePriority = 0;       // 우선순위 변경?
+        //m_NavMeshAgent.avoidancePriority = 0;       // 우선순위 변경?
 
         if (m_GameObject.GetComponent<UnitController>() != null) 
         {
@@ -122,17 +134,20 @@ public class Unit
 
         m_GameObject.transform.forward = dir;
         // => 급격한 방향 전환이 어색함, Quaternion.Slerp 함수 사용
-        
+
         //Quaternion targetRotation = Quaternion.LookRotation(dir);
         //m_GameObject.transform.rotation = Quaternion.Slerp(m_GameObject.transform.rotation, targetRotation, Time.deltaTime * m_RotationSpeed);
         // => AttackState에서 차차 돌려줘야 할듯
-        
 
-        if (!m_NavMeshAgent.Warp(position))
-        {
-            Debug.Log("Move_Stop, Warp returns Fail..");
-        }
-        m_NavMeshAgent.isStopped = true;
+
+        //if (!m_NavMeshAgent.Warp(position))
+        //{
+        //    Debug.Log("Move_Stop, Warp returns Fail..");
+        //}
+        //m_NavMeshAgent.isStopped = true;
+        //m_NavMeshAgent.enabled = false; 
+        //m_NavMeshObstacle.enabled = true;   
+        m_NavMeshController.MoveStop();
 
         //m_Animator.SetBool("bAttack", true);
         //m_Animator.SetBool("bMove", false);
@@ -140,7 +155,7 @@ public class Unit
         m_Animator.ResetTrigger("trIdle");
         m_Animator.ResetTrigger("trMove");
         m_Animator.SetTrigger("trAttack");
-        m_NavMeshAgent.avoidancePriority = 50;       // 우선순위 변경?
+        //m_NavMeshAgent.avoidancePriority = 10;       // 우선순위 변경?
         //m_NavMeshAgent.qual
 
         if (m_GameObject.GetComponent<UnitController>() != null) 
@@ -160,11 +175,14 @@ public class Unit
         // => AttackState에서 차차 돌려줘야 할듯
 
 
-        if (!m_NavMeshAgent.Warp(position))
-        {
-            Debug.Log("Move_Stop, Warp returns Fail..");
-        }
-        m_NavMeshAgent.isStopped = true;
+        //if (!m_NavMeshAgent.Warp(position))
+        //{
+        //    Debug.Log("Move_Stop, Warp returns Fail..");
+        //}
+        //m_NavMeshAgent.isStopped = true;
+        //m_NavMeshAgent.enabled = false;
+        //m_NavMeshObstacle.enabled = true;
+        m_NavMeshController.MoveStop();
 
 
         //m_Animator.SetBool("bAttack", true);
@@ -173,7 +191,7 @@ public class Unit
         m_Animator.ResetTrigger("trIdle");
         m_Animator.ResetTrigger("trMove");
         m_Animator.SetTrigger("trAttack");
-        m_NavMeshAgent.avoidancePriority = 0;       // 우선순위 변경?
+        //m_NavMeshAgent.avoidancePriority = 0;       // 우선순위 변경?
 
         if (m_GameObject.GetComponent<UnitController>() != null)
         {
@@ -195,7 +213,7 @@ public class Unit
         m_Animator.ResetTrigger("trMove");
         m_Animator.ResetTrigger("trAttack");
         m_Animator.SetTrigger("trIdle");
-        m_NavMeshAgent.avoidancePriority = 0;       // 우선순위 변경?
+        //m_NavMeshAgent.avoidancePriority = 10;       // 우선순위 변경?
     }
 
     //private void LookAtTarget(Vector3 dir)
@@ -431,6 +449,24 @@ public class UnitController : MonoBehaviour
                 // 추적을 통한 이동 정지 판단
                 else
                 {
+                    // 충돌 판단
+                    //Collider[] colliders;
+                    //colliders = Physics.OverlapSphere(gameObject.transform.position, m_NavMeshAgent.radius * gameObject.transform.localScale.x + 1);
+                    //foreach (Collider collider in colliders)
+                    //{
+                    //    GameObject nearObject = collider.gameObject;
+                    //    NavMeshAgent nearNavMeshAgent = nearObject.GetComponent<NavMeshAgent>();
+                    //    // 자신 오브젝트가 아니면서 && 선택된 유닛이면서 && NavMeshAgent 컴포넌트를 가지면서, 해당 컴포넌트가 isStopped 상태일 때 
+                    //    if (nearObject != gameObject && nearNavMeshAgent != null && nearNavMeshAgent.hasPath)
+                    //    {
+                    //        if(m_NavMeshAgent.remainingDistance > nearNavMeshAgent.remainingDistance)
+                    //        {
+                    //            m_NavMeshAgent.ResetPath();
+                    //            yield return new WaitForSeconds(0.1f);
+                    //        }
+                    //    }
+                    //}
+
                     //Debug.Log("In Tracing...");
                     if (m_AttackController.m_TargetObject != null)
                     {
@@ -449,11 +485,29 @@ public class UnitController : MonoBehaviour
                             //Debug.Log("distanceToTarget: " + distanceToTarget);
                             //Debug.Log("AttackDistance: " + m_AttackController.m_AttackDistance);
 
-                            //Send_MoveStartMessage(m_AttackController.m_TargetObject.transform.position);
-                            Vector3 direction = (m_AttackController.m_TargetObject.transform.position - gameObject.transform.position);
-                            float diff = (m_AttackController.m_TargetObject.transform.position - gameObject.transform.position).magnitude - m_AttackController.m_AttackDistance;
-                            Vector3 destination = gameObject.transform.position + direction.normalized * diff;
-                            Send_MoveStartMessage(destination);
+                            Collider[] colliders;
+                            colliders = Physics.OverlapSphere(gameObject.transform.position, m_NavMeshAgent.radius * gameObject.transform.localScale.x + 1);
+                            foreach (Collider collider in colliders)
+                            {
+                                GameObject nearObject = collider.gameObject;
+                                NavMeshAgent nearNavMeshAgent = nearObject.GetComponent<NavMeshAgent>();
+                                // 자신 오브젝트가 아니면서 && 선택된 유닛이면서 && NavMeshAgent 컴포넌트를 가지면서, 해당 컴포넌트가 isStopped 상태일 때 
+                                if (nearObject != gameObject && nearNavMeshAgent != null)
+                                {
+                                    if (m_NavMeshAgent.remainingDistance > nearNavMeshAgent.remainingDistance || m_NavMeshAgent.avoidancePriority > nearNavMeshAgent.avoidancePriority)
+                                    {
+                                        m_NavMeshAgent.ResetPath();
+                                    }
+                                }
+                            }
+
+                            Send_MoveStartMessage(m_AttackController.m_TargetObject.transform.position);
+                            yield return new WaitForSeconds(0.01f);
+
+                            //Vector3 direction = (m_AttackController.m_TargetObject.transform.position - gameObject.transform.position);
+                            //float diff = (m_AttackController.m_TargetObject.transform.position - gameObject.transform.position).magnitude - m_AttackController.m_AttackDistance;
+                            //Vector3 destination = gameObject.transform.position + direction.normalized * diff;
+                            //Send_MoveStartMessage(destination);
                             //yield return new WaitForSeconds(0.01f);
                         }
                     }

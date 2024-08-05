@@ -64,11 +64,12 @@ public class AttackController : MonoBehaviour
                 else
                 {
                     // 추적
-                    UnityEngine.Debug.Log("@@@@@@@@@@@@@@@ in Idle state -> trace @@@@@@@@@@@@@@@@@@ ");
-                    Vector3 direction = (m_TargetObject.transform.position - gameObject.transform.position);
-                    float diff = (m_TargetObject.transform.position - gameObject.transform.position).magnitude - m_AttackDistance;
-                    Vector3 destination = gameObject.transform.position + direction.normalized * diff;
-                    m_UnitController.Send_MoveStartMessage(destination);
+                    m_UnitController.Send_MoveStartMessage(m_TargetObject.transform.position);
+                    //UnityEngine.Debug.Log("@@@@@@@@@@@@@@@ in Idle state -> trace @@@@@@@@@@@@@@@@@@ ");
+                    //Vector3 direction = (m_TargetObject.transform.position - gameObject.transform.position);
+                    //float diff = (m_TargetObject.transform.position - gameObject.transform.position).magnitude - m_AttackDistance;
+                    //Vector3 destination = gameObject.transform.position + direction.normalized * diff;
+                    //m_UnitController.Send_MoveStartMessage(destination);
                     yield return new WaitForSeconds(0.01f);
                 }
             }
@@ -112,7 +113,7 @@ public class AttackController : MonoBehaviour
                 {
                     // 공격
                     yield return new WaitForSeconds(m_AttackDelay);
-                    if (!m_UnitMovement.isCommandedToMove)
+                    if (!m_UnitMovement.isCommandedToMove && m_TargetObject != null)
                     {
                         m_UnitController.Send_AttackMessage(m_TargetObject);
                     }
@@ -120,12 +121,13 @@ public class AttackController : MonoBehaviour
                 else
                 {
                     // 추격
-                    //m_UnitController.Send_MoveStartMessage(m_TargetObject.transform.position);
+                    m_UnitController.Send_MoveStartMessage(m_TargetObject.transform.position);
+                    
                     // => 타겟 방향으로 공격이 가능한 위치까지만 이동
-                    Vector3 direction = (m_TargetObject.transform.position - gameObject.transform.position);
-                    float diff = (m_TargetObject.transform.position - gameObject.transform.position).magnitude - m_AttackDistance;
-                    Vector3 destination = gameObject.transform.position + direction.normalized * diff;
-                    m_UnitController.Send_MoveStartMessage(destination);
+                    //Vector3 direction = (m_TargetObject.transform.position - gameObject.transform.position);
+                    //float diff = (m_TargetObject.transform.position - gameObject.transform.position).magnitude - m_AttackDistance;
+                    //Vector3 destination = gameObject.transform.position + direction.normalized * diff;
+                    //m_UnitController.Send_MoveStartMessage(destination);
                     yield return new WaitForSeconds(0.01f);
                 }
             }

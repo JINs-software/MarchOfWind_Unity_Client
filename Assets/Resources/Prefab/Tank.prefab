@@ -2584,7 +2584,7 @@ NavMeshAgent:
   m_Height: 2
   m_BaseOffset: 0.6
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_ObstacleAvoidanceType: 1
 --- !u!65 &3413565204094663137
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2640,6 +2640,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MuzzleObject: {fileID: 8416570948158464376}
+  MuzzleRate: 0
 --- !u!114 &3082479418500042409
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8379,6 +8380,7 @@ MonoBehaviour:
   greenEmission: {fileID: 2100000, guid: b6792c775e4a2db41be35dca149451ad, type: 2}
   yellowEmission: {fileID: 2100000, guid: 24d407e1623c7d04c83de985a691b964, type: 2}
   redEmission: {fileID: 2100000, guid: f50e0e76d22307d4a91cce8388bef323, type: 2}
+  shockEmission: {fileID: 0}
 --- !u!114 &4584505653013685597
 MonoBehaviour:
   m_ObjectHideFlags: 0

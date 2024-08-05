@@ -34,7 +34,9 @@ public class UnitAttackState : StateMachineBehaviour
             Debug.Log("animator.gameObject.GetComponent<MuzzleEffect>().MuzzleObject == NULL");
         }
 
-        
+        animator.gameObject.GetComponent<NavMeshAgent>().avoidancePriority = 10;
+
+
         if (animator.gameObject.GetComponent<AttackController>() != null)
         {
             bTranstion = false;

@@ -7,6 +7,10 @@ public class State_ATTACK : StateMachineBehaviour
 {
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        //animator.gameObject.GetComponent<NavMeshAgent>().avoidancePriority = 10 ;
+        //animator.gameObject.GetComponent<NavMeshAgent>().enabled = false;
+        //animator.gameObject.GetComponent<NavMeshObstacle>().enabled = true;
+
         if (animator.gameObject.GetComponent<UnitController>() != null)
         {
             Debug.Log("State_ATTACK.OnStateEnter@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
@@ -23,11 +27,12 @@ public class State_ATTACK : StateMachineBehaviour
         {
             Debug.Log("State_ATTACK.OnStateExit*********************************************");
 
-            animator.gameObject.GetComponent<MuzzleEffect>().MuzzleObject.SetActive(false);
             animator.gameObject.GetComponent<AttackController>().StopAttackJudgmentCoroutine();
 
             //animator.gameObject.GetComponent<MuzzleEffect>().StoptMuzzleEffectCoroutine();
         }
+
+        animator.gameObject.GetComponent<MuzzleEffect>().MuzzleObject.SetActive(false);
     }
 
 

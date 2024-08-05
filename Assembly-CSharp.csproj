@@ -10,7 +10,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{F0FEC131-9DE2-2AFB-FAB0-2F7AABD512C9}</ProjectGuid>
+    <ProjectGuid>{A33D8DF6-3332-AB9D-B7B6-64D48A6CF336}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -93,6 +93,7 @@
     <Compile Include="Assets\Teleport\Scripts\player\PlayerMovement.cs" />
     <Compile Include="Assets\Script\State\State_INIT.cs" />
     <Compile Include="Assets\Tarantula\CrabMonster\Scripts\Rikayon.cs" />
+    <Compile Include="Assets\Script\Controller\NavMeshController.cs" />
     <Compile Include="Assets\Script\Enemy.cs" />
     <Compile Include="Assets\Script\State\UnitMovState.cs" />
     <Compile Include="Assets\Teleport\Scripts\player\PlayerController.cs" />
@@ -126,6 +127,7 @@
     <Compile Include="Assets\Script\State\SelectorMovingState.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\TerrainSample\ThirdPartyNotices.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
     <None Include="Assets\WarFX\WarFX\Shaders\WFX_S Multiply Soft.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
@@ -163,6 +165,7 @@
     <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader" />
     <None Include="Assets\WarFX\WarFX\Shaders\WFX_S AlphaBlend NoSoftParticles.shader" />
+    <None Include="Assets\TerrainSample\ShaderGraphs\CustomFunctions\CustomLighting.hlsl" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Sprite.shader" />
   </ItemGroup>
   <ItemGroup>
