@@ -171,6 +171,10 @@ public class UnitController : MonoBehaviour
                 }
 
                 // some time passe.. check moving
+                if(gameObject == null || m_AttackController == null || m_NavMeshAgent == null || m_UnitMovement == null)  
+                {
+                    yield break;    
+                }
 
                 // 도착 및 정지 확인
                 if (m_NavMeshAgent.remainingDistance <= m_NavMeshAgent.stoppingDistance)
@@ -226,6 +230,8 @@ public class UnitController : MonoBehaviour
 
     private IEnumerator MoveStateByTracingCoroutine()
     {
+        int unchangedCount = 0;
+
         while (true)
         {
             if(State != enUnitState.MOVE_TRACING || m_UnitMovement.isCommandedToMove)
@@ -236,33 +242,60 @@ public class UnitController : MonoBehaviour
 
             if (!m_NavMeshAgent.pathPending)
             {
-                Vector3 beforePosition = gameObject.transform.position;
-                float expectedTime = m_NavMeshAgent.remainingDistance / m_NavMeshAgent.speed;
-                if (expectedTime > 0.1f)
-                {
-                    yield return new WaitForSeconds(0.1f);
-                }
-                else
-                {
-                    yield return new WaitForSeconds(expectedTime);
-                }
-
                 if (m_AttackController.m_TargetObject != null)
                 {
+                    Vector3 beforeTargetPosition = m_AttackController.m_TargetObject.transform.position;  
+                    Vector3 beforePosition = gameObject.transform.position;
+                    float expectedTime = m_NavMeshAgent.remainingDistance / m_NavMeshAgent.speed;
+                    if (expectedTime > 0.1f)
+                    {
+                        yield return new WaitForSeconds(0.1f);
+                    }
+                    else
+                    {
+                        yield return new WaitForSeconds(expectedTime);
+                    }
+
+                    // some time passe.. check moving
+                    if (gameObject == null || m_AttackController == null || m_NavMeshAgent == null || m_UnitMovement == null)
+                    {
+                        yield break;
+                    }
+                    else if(m_AttackController.m_TargetObject == null)
+                    {
+                        Send_MoveStopMessage();
+                        yield return new WaitForSeconds(0.1f);
+                        continue;
+                    }
+                    else
+                    {
+                        if(Vector3.Distance(beforeTargetPosition, m_AttackController.m_TargetObject.transform.position) > 1)
+                        {
+                            Send_MoveStartMessage(m_AttackController.m_TargetObject.transform.position);
+                        }
+                    }
+
                     float distanceToTarget = Vector3.Distance(transform.position, m_AttackController.m_TargetObject.transform.position);
-                    distanceToTarget -= m_AttackController.m_TargetObject.GetComponent<Unit>().m_radius;
+                    distanceToTarget -= m_AttackController.m_TargetObject.GetComponent<Unit>().m_radius + m_Unit.m_radius;
                     if (distanceToTarget <= m_AttackController.m_AttackDistance)
                     {
                         yield return new WaitForSeconds(m_AttackController.m_AttackDelay);
                         if (!m_UnitMovement.isCommandedToMove && m_AttackController.m_TargetObject != null)
                         {
                             Send_AttackMessage(m_AttackController.m_TargetObject);
+                            yield return new WaitForSeconds(1f);
                         }
                     }
                     else
                     {
-                        if (Vector3.Distance(beforePosition, gameObject.transform.position) < 1f)
+                        if(unchangedCount > 10)
                         {
+                            Send_MoveStopMessage();
+                        }
+                        else if (Vector3.Distance(beforePosition, gameObject.transform.position) < 1f)
+                        {
+                            unchangedCount++;
+
                             // 경로 재계산
                             Collider[] colliders = Physics.OverlapSphere(gameObject.transform.position, m_AttackController.m_AttackDistance);
                             float maxDistance = 0f;
