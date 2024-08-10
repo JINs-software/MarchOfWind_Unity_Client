@@ -15,7 +15,7 @@ public class EnemyTest : MonoBehaviour
     private void OnEnable()
     {
         NetworkManager network = new NetworkManager();
-        network.Connect();
+        network.Connect(Manager.GamePlayer.GameServerIP);
 
 
         // BattleField ID ÁöÁ¤

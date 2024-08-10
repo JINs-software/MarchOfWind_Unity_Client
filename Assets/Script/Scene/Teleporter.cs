@@ -25,7 +25,7 @@ public class Teleporter : MonoBehaviour {
         for(int i = 0; i<CreateUnitCount; i++)
         {
             NetworkManager session = new NetworkManager();
-            session.Connect();
+            session.Connect(Manager.GamePlayer.GameServerIP);
             // BattleField ID 지정
             MSG_UNIT_S_CONN_BATTLE_FIELD connMsg = new MSG_UNIT_S_CONN_BATTLE_FIELD();
             connMsg.type = (ushort)enPacketType.UNIT_S_CONN_BATTLE_FIELD;

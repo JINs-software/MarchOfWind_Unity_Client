@@ -10,7 +10,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{A33D8DF6-3332-AB9D-B7B6-64D48A6CF336}</ProjectGuid>
+    <ProjectGuid>{F0FEC131-9DE2-2AFB-FAB0-2F7AABD512C9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Script\State\State_WAIT.cs" />
+    <Compile Include="Assets\Script\Unit\Unit.cs" />
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\WFX_Demo_Wall.cs" />
     <Compile Include="Assets\Teleport\Scripts\teleport\SpawnPoint.cs" />
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\CFX_Demo_RotateCamera.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\WFX_Demo_RandomDir.cs" />
     <Compile Include="Assets\Script\Controller\AttackController.cs" />
     <Compile Include="Assets\Teleport\Scripts\player\PlayerMovement.cs" />
+    <Compile Include="Assets\Script\Controller\UnitController.cs" />
     <Compile Include="Assets\Script\State\State_INIT.cs" />
     <Compile Include="Assets\Tarantula\CrabMonster\Scripts\Rikayon.cs" />
     <Compile Include="Assets\Script\Controller\NavMeshController.cs" />
@@ -107,17 +109,17 @@
     <Compile Include="Assets\Script\HealthTracker.cs" />
     <Compile Include="Assets\Script\Define.cs" />
     <Compile Include="Assets\Script\Scene\SelectField.cs" />
+    <Compile Include="Assets\Script\Data\Data.cs" />
     <Compile Include="Assets\Script\Manager\NetworkManager.cs" />
     <Compile Include="Assets\MonsterGolem\02_Golem\Scripts\AnimationButton.cs" />
     <Compile Include="Assets\Tarantula\CrabMonster\LB3DGameManager.cs" />
     <Compile Include="Assets\Script\MuzzleEffect.cs" />
-    <Compile Include="Assets\Script\PriorityQueue.cs" />
     <Compile Include="Assets\Script\UnitMovement.cs" />
     <Compile Include="Assets\Script\State\SelectorIdleState.cs" />
     <Compile Include="Assets\Script\Scene\TestScene.cs" />
     <Compile Include="Assets\Script\Scene\BattleField.cs" />
-    <Compile Include="Assets\Script\UnitController.cs" />
     <Compile Include="Assets\Script\Scene\Teleporter.cs" />
+    <Compile Include="Assets\Script\State\State_DIE.cs" />
     <Compile Include="Assets\Script\Data\Protocol.cs" />
     <Compile Include="Assets\WarFX\WarFX\Scripts\WFX_LightFlicker.cs" />
     <Compile Include="Assets\Script\State\UnitAttackState.cs" />
@@ -127,7 +129,6 @@
     <Compile Include="Assets\Script\State\SelectorMovingState.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\TerrainSample\ThirdPartyNotices.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
     <None Include="Assets\WarFX\WarFX\Shaders\WFX_S Multiply Soft.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
@@ -165,7 +166,6 @@
     <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader" />
     <None Include="Assets\WarFX\WarFX\Shaders\WFX_S AlphaBlend NoSoftParticles.shader" />
-    <None Include="Assets\TerrainSample\ShaderGraphs\CustomFunctions\CustomLighting.hlsl" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Sprite.shader" />
   </ItemGroup>
   <ItemGroup>

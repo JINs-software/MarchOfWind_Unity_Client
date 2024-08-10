@@ -8,6 +8,7 @@ static class PROTOCOL_CONSTANT
 	public const int END_OF_LIST = 255;
 	public const int MAX_OF_PLAYER_IN_ROOM = 4;
 	public const int MAX_OF_MATCH_ROOM = 100;
+	public const int MAX_OF_COLLIDER_ELEMENTS = 100;
 };
 
 public 
@@ -31,6 +32,8 @@ enum enPacketType
 	S_MGR_CREATE_UNIT,
 	UNIT_S_MOVE,
 	S_MGR_MOVE,
+	UNIT_S_SYNC_POSITION,
+	UNIT_S_DIR_CHANGE,
 	UNIT_S_ATTACK,
 	S_MGR_ATTACK,
 	S_MGR_ATTACK_INVALID,
@@ -39,6 +42,8 @@ enum enPacketType
 	S_MGR_UINT_DAMAGED,
 	S_MGR_UNIT_DIED,
 	MGR_UNIT_DIE_REQUEST,
+	S_MONT_COLLIDER_MAP_RENEW,
+	S_MONT_COLLIDER_MAP,
 };
 
 public 
@@ -278,6 +283,7 @@ public class MSG_S_MGR_CREATE_UNIT
 	public float normZ;
 	public float speed;
 	public int maxHP;
+	public float radius;
 	public float attackDistance;
 	public float attackRate;
 	public float attackDelay;
@@ -310,6 +316,26 @@ public class MSG_S_MGR_MOVE
 	public float speed;
 	public float destX;
 	public float destZ;
+};
+
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public class MSG_UNIT_S_SYNC_POSITION
+{
+	public ushort type;
+	public float posX;
+	public float posZ;
+	public float normX;
+	public float normZ;
+};
+
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public class MSG_UNIT_S_DIR_CHANGE
+{
+	public ushort type;
+	public float posX;
+	public float posZ;
+	public float normX;
+	public float normZ;
 };
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -391,5 +417,20 @@ public class MSG_MGR_UNIT_DIE_REQUEST
 {
 	public ushort type;
 	public int unitID;
+};
+
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public class MSG_S_MONT_COLLIDER_MAP_RENEW
+{
+	public ushort type;
+};
+
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public class MSG_S_MONT_COLLIDER_MAP
+{
+	public ushort type;
+	public int numOfElements;
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst = PROTOCOL_CONSTANT.MAX_OF_COLLIDER_ELEMENTS)]
+	public Position[] colliders;
 };
 

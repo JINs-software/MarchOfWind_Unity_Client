@@ -6244,8 +6244,7 @@ GameObject:
   - component: {fileID: 8547743823342321286}
   - component: {fileID: 6415324895889009408}
   - component: {fileID: 5406134947738694807}
-  - component: {fileID: 1205513922219142761}
-  - component: {fileID: 2734015132383085009}
+  - component: {fileID: 4394098733148729053}
   m_Layer: 7
   m_Name: Zergling
   m_TagString: Untagged
@@ -6300,13 +6299,13 @@ NavMeshAgent:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4461534668364197938}
-  m_Enabled: 0
+  m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 4
   m_Speed: 3.5
-  m_Acceleration: 300
+  m_Acceleration: 1000
   avoidancePriority: 50
-  m_AngularSpeed: 300
+  m_AngularSpeed: 1000
   m_StoppingDistance: 1
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 0
@@ -6411,23 +6410,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
---- !u!208 &1205513922219142761
-NavMeshObstacle:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4461534668364197938}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Shape: 0
-  m_Extents: {x: 4, y: 1, z: 4}
-  m_MoveThreshold: 0.1
-  m_Carve: 1
-  m_CarveOnlyStationary: 1
-  m_Center: {x: 0, y: 0, z: 0}
-  m_TimeToStationary: 0.5
---- !u!114 &2734015132383085009
+--- !u!114 &4394098733148729053
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6436,11 +6419,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 4461534668364197938}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2afd5b9c13042cc4ba3ae7cdcd9fd820, type: 3}
+  m_Script: {fileID: 11500000, guid: d095a0f39b872cc4abdec4936948326c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agent: {fileID: 4342821938455282712}
-  obstacle: {fileID: 1205513922219142761}
+  m_id: 0
+  m_type: 0
+  m_team: 0
+  m_speed: 0
+  m_maxHP: 0
+  m_radius: 0
+  m_AttackDistance: 0
+  m_AttackRate: 0
+  m_RotationSpeed: 0
+  m_UIObject: {fileID: 0}
+  isMoving: 0
 --- !u!1 &4463703069233030971
 GameObject:
   m_ObjectHideFlags: 0

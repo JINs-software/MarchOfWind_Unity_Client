@@ -6,6 +6,7 @@ public class TestScene : MonoBehaviour
 {
     bool InConnectedToServer = false;
     string PlayerName;
+    string ServerIP = "127.0.0.1";
     string RoomName;
     string JoinRoomNum = string.Empty;
 
@@ -16,17 +17,42 @@ public class TestScene : MonoBehaviour
 
     bool ReadToStart = false;
 
+    public bool ColliderMarkDebug = true;
+
+    private void Start()
+    {
+        if (ColliderMarkDebug)
+        {
+            GameObject prefab = Resources.Load<GameObject>("Prefab/ColliderElement");
+            //gameObj = Instantiate(prefab, position, Quaternion.LookRotation(dir));
+            Manager.GamePlayer.SetColliderMarkObject(prefab);
+        }
+    }
+
     public void OnInputPlayerName()
     {
         PlayerName = GameObject.Find("Input_PlayerName").GetComponent<TMP_InputField>().text;
+    }
+
+    public void OnInputServerIP()
+    {
+        ServerIP = GameObject.Find("Input_GameServerIP").GetComponent<TMP_InputField>().text;
     }
 
     public void OnClickConnectBtn()
     {
         if(!Manager.Network.Connected)
         {
-            Manager.Network.Connect();
-            InConnectedToServer = true;
+            if(Manager.Network.Connect(ServerIP))
+            {
+                InConnectedToServer = true;
+                Manager.GamePlayer.GameServerIP = ServerIP;
+            }
+            else
+            {
+                Debug.Log("Manager.Network.Connect(ServerIP) Fail.......");
+                return;
+            }
         }
 
         MSG_REQ_SET_PLAYER_NAME msg = new MSG_REQ_SET_PLAYER_NAME();
