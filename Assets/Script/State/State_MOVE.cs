@@ -7,14 +7,18 @@ using UnityEngine.AI;
 public class State_MOVE : StateMachineBehaviour
 {
     UnitController unitController;
+    UnitMovement unitMovement;
     NavMeshAgent navMeshAgent;
 
     Coroutine CheckColliderCoroutine;
+
+    enUnitState unitState;
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         navMeshAgent = animator.gameObject.GetComponent<NavMeshAgent>();    
         unitController = animator.gameObject.GetComponent<UnitController>();
+        unitMovement = animator.gameObject.GetComponent<UnitMovement>();    
 
         //navMeshAgent.avoidancePriority = 50;
 
@@ -25,8 +29,32 @@ public class State_MOVE : StateMachineBehaviour
         if (unitController != null)
         {
             Debug.Log("State_MOVE.OnStateEnter@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-            animator.gameObject.GetComponent<UnitController>().State = enUnitState.MOVE;
-            unitController.StartMoveStateCoroutine();
+            //animator.gameObject.GetComponent<UnitController>().State = enUnitState.MOVE;/
+            //unitController.StartMoveStateCoroutine();
+            if (unitMovement.isCommandedToMove)
+            {
+                animator.gameObject.GetComponent<UnitController>().State = enUnitState.MOVE_COMMAND;
+                unitState = enUnitState.MOVE_COMMAND;
+            }
+            else
+            {
+                animator.gameObject.GetComponent<UnitController>().State = enUnitState.MOVE_TRACING;
+                unitState = enUnitState.MOVE_TRACING;
+            }
+
+            unitController.StartMoveStateCoroutine(unitState);
+        }
+    }
+
+    public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        if(unitState == enUnitState.MOVE_TRACING && unitMovement.isCommandedToMove)
+        {
+            animator.gameObject.GetComponent<UnitController>().State = enUnitState.MOVE_COMMAND;
+            unitState = enUnitState.MOVE_COMMAND;
+            unitController.StopMoveStateCoroutine();
+
+            unitController.StartMoveStateCoroutine(unitState);
         }
     }
 
