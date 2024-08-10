@@ -17,7 +17,7 @@ public class BattleField : MonoBehaviour
     private static Vector3 SpawnPointD = new Vector3(150f, 0, 250f);
 
     Dictionary<int, Unit> m_Units = new Dictionary<int, Unit>();
-    //Dictionary<int, NetworkManager> m_Sessions = new Dictionary<int, NetworkManager>();
+    //Dictionary<int, GameObject> m_Units  = new Dictionary<int, GameObject>();
 
     static bool InitPosFlag = true;
     static Vector3 InitPos = Vector3.zero;
@@ -189,13 +189,13 @@ public class BattleField : MonoBehaviour
                 Unit unit = obj.Value;
                 if (unit.m_team == Manager.GamePlayer.m_Team)
                 {
-                    UnitController unitController = unit.m_GameObject.GetComponent<UnitController>();
+                    UnitController unitController = unit.gameObject.GetComponent<UnitController>();
 
                     MSG_MGR_UNIT_DIE_REQUEST msg = new MSG_MGR_UNIT_DIE_REQUEST();
                     msg.type = (ushort)enPacketType.MGR_UNIT_DIE_REQUEST;
                     msg.unitID = unit.m_id;
 
-                    Manager.UnitSelection.SelectableUnitDestroyed(unit.m_GameObject);
+                    Manager.UnitSelection.SelectableUnitDestroyed(unit.gameObject);
 
                     unitController.UnitSession.SendPacket<MSG_MGR_UNIT_DIE_REQUEST>(msg);
                 }
@@ -203,14 +203,17 @@ public class BattleField : MonoBehaviour
             Manager.GamePlayer.MyTeamUnitCnt = 0;
             Manager.SceneTransfer.TransferToSelectField();
         }
-
-        if (Manager.Network.ReceiveDataAvailable())
+       
+        //if (Manager.Network.ReceiveDataAvailable())
+        // => 연속적으로 수신
+        while(Manager.Network.ReceiveDataAvailable())
         {
             byte[] payload = Manager.Network.ReceivePacket();
             if (payload == null)
             {
-                Debug.Log("��ġ�� �޽��� ���� ����");
-                return;
+                Debug.Log("수신 메시지 완성 불가!!!");
+                //return;
+                break;
             }
             else
             {
@@ -260,13 +263,28 @@ public class BattleField : MonoBehaviour
                             Proc_UNIT_DIED(msg);
                         }
                         break;
+
+
+                    case enPacketType.S_MONT_COLLIDER_MAP_RENEW:
+                        {
+                            Manager.GamePlayer.ResetColliderMarks();
+                        }
+                        break;
+                    case enPacketType.S_MONT_COLLIDER_MAP:
+                        {
+                            MSG_S_MONT_COLLIDER_MAP msg = Manager.Network.BytesToMessage<MSG_S_MONT_COLLIDER_MAP>(payload);
+                            Manager.GamePlayer.SetColliderMarks(msg);
+                        }
+                        break;
                     default:
                         break;
                 }
             }
+
+            Update_UI_Unit(Time.deltaTime);
         }
 
-        Update_UI_Unit(Time.deltaTime);
+        //Update_UI_Unit(Time.deltaTime);
     }
 
     private void Update_UI_Unit(float deltaTime)
@@ -279,51 +297,60 @@ public class BattleField : MonoBehaviour
 
     private void Proc_CREATE_UNIT(MSG_S_MGR_CREATE_UNIT msg)
     {
-        Unit newUnit = CreateUnitObjectInScene(msg);
+        GameObject newUnit = CreateUnitObjectInScene(msg);
 
-        newUnit.m_GameObject.GetComponent<NavMeshAgent>().avoidancePriority = 0;
+        newUnit.GetComponent<NavMeshAgent>().avoidancePriority = 0;
 
         if(Manager.GamePlayer.m_Team == msg.team)
         {
-            UnitMovement unitMovement = newUnit.m_GameObject.AddComponent<UnitMovement>();
-            newUnit.m_GameObject.GetComponent<UnitMovement>().enabled = false;
-
-            newUnit.m_GameObject.AddComponent<UnitController>();
-            newUnit.m_GameObject.GetComponent<UnitController>().m_Unit = newUnit;
-            newUnit.m_GameObject.GetComponent<UnitController>().UnitSession = Manager.GamePlayer.NewUnitSessions[msg.crtCode];
+            UnitMovement unitMovement = newUnit.AddComponent<UnitMovement>();
+            newUnit.GetComponent<UnitMovement>().enabled = false;
+            newUnit.AddComponent<UnitController>();
+            newUnit.GetComponent<UnitController>().m_Unit = newUnit.GetComponent<Unit>();
+            if (!Manager.GamePlayer.NewUnitSessions.ContainsKey(msg.crtCode))
+            {
+                Debug.Log("[CRT CODE ERROR]");
+                Debug.Log("msg.crtCode: " + msg.crtCode);
+                foreach(var code in Manager.GamePlayer.NewUnitSessions)
+                {
+                    Debug.Log("contained code: " + code);
+                }
+            }
+            newUnit.GetComponent<UnitController>().UnitSession = Manager.GamePlayer.NewUnitSessions[msg.crtCode];
             Manager.GamePlayer.NewUnitSessions.Remove(msg.crtCode); 
            
-            newUnit.m_GameObject.AddComponent<AttackController>();
-            newUnit.m_GameObject.GetComponent<AttackController>().m_AttackDistance = newUnit.m_AttackDistance;
-            newUnit.m_GameObject.GetComponent<AttackController>().m_StopAttackDistance = newUnit.m_AttackDistance + 1f;
-            newUnit.m_GameObject.GetComponent<AttackController>().m_AttackRate = newUnit.m_AttackRate;
-            newUnit.m_GameObject.GetComponent<AttackController>().m_AttackDelay = msg.attackDelay;
+            newUnit.AddComponent<AttackController>();
+            newUnit.GetComponent<AttackController>().m_AttackDistance = newUnit.GetComponent<Unit>().m_AttackDistance;
+            newUnit.GetComponent<AttackController>().m_StopAttackDistance = newUnit.GetComponent<Unit>().m_AttackDistance + 1f;
+            newUnit.GetComponent<AttackController>().m_AttackRate = newUnit.GetComponent<Unit>().m_AttackRate;
+            newUnit.GetComponent<AttackController>().m_AttackDelay = msg.attackDelay;
+            newUnit.GetComponent<AttackController>().m_TracingRange = newUnit.transform.GetComponent<SphereCollider>().radius * newUnit.transform.localScale.x;
 
-            newUnit.m_GameObject.tag = Manager.GamePlayer.TeamTagStr;
+            newUnit.tag = Manager.GamePlayer.TeamTagStr;
         }
         else
         {
-            newUnit.m_GameObject.AddComponent<Enemy>();
-            newUnit.m_GameObject.GetComponent<Enemy>().m_Unit = newUnit;
-            newUnit.m_GameObject.tag = Manager.GamePlayer.EnemyTagStr;
-            newUnit.m_GameObject.AddComponent<Rigidbody>();
+            newUnit.AddComponent<Enemy>();
+            newUnit.GetComponent<Enemy>().m_Unit = newUnit.GetComponent<Unit>();
+            newUnit.tag = Manager.GamePlayer.EnemyTagStr;
+            newUnit.AddComponent<Rigidbody>();
         }
 
-        if(newUnit.m_team == (int)enPlayerTeamInBattleField.Team_Test)
+        if(newUnit.GetComponent<Unit>().m_team == (int)enPlayerTeamInBattleField.Team_Test)
         {
-            newUnit.m_GameObject.GetComponent<SphereCollider>().enabled = false;
+            newUnit.GetComponent<SphereCollider>().enabled = false;
         }
 
-        newUnit.m_GameObject.GetComponent<MuzzleEffect>().MuzzleRate = newUnit.m_AttackRate;
+        newUnit.GetComponent<MuzzleEffect>().MuzzleRate = newUnit.GetComponent<Unit>().m_AttackRate;
 
-        newUnit.m_GameObject.SetActive(true);
+        newUnit.SetActive(true);
 
-        newUnit.m_UIObject = CreateUIUnit(newUnit);
-        newUnit.m_UIObject.SetActive(true);
+        newUnit.GetComponent<Unit>().m_UIObject = CreateUIUnit(newUnit.GetComponent<Unit>());
+        newUnit.GetComponent<Unit>().m_UIObject.SetActive(true);
 
         //newUnit.m_GameObject.GetComponent
 
-        m_Units.Add(newUnit.m_id, newUnit);
+        m_Units.Add(newUnit.GetComponent<Unit>().m_id, newUnit.GetComponent<Unit>() );
     }
 
 
@@ -412,13 +439,11 @@ public class BattleField : MonoBehaviour
         unit.Die();
 
         // 선택된 유닛이라면 제거
-        Manager.UnitSelection.SelectableUnitDestroyed(unit.m_GameObject);
+        Manager.UnitSelection.SelectableUnitDestroyed(unit.gameObject);
+        m_Units.Remove(unit.m_id);
 
         int team = unit.m_team;
-        GameObject.Destroy(unit.m_GameObject);
-        m_Units.Remove(unit.m_id);
-        
-        if(team == Manager.GamePlayer.m_Team) 
+        if (team == Manager.GamePlayer.m_Team) 
         {
             Manager.GamePlayer.MyTeamUnitCnt -= 1;
             if(Manager.GamePlayer.MyTeamUnitCnt == 0) 
@@ -459,14 +484,14 @@ public class BattleField : MonoBehaviour
                 //Vector3 position = new Vector3(unit.m_GameObject.transform.position.x - 100f, unit.m_GameObject.transform.position.z - 100f, 0);
                 gameObj = Instantiate(prefab);
                 gameObj.GetComponent<RectTransform>().SetParent(GameObject.Find("MiniMap").transform, false);
-                gameObj.GetComponent<RectTransform>().anchoredPosition = new Vector3(unit.m_GameObject.transform.position.x - 100f, unit.m_GameObject.transform.position.z - 100f, 0);
+                gameObj.GetComponent<RectTransform>().anchoredPosition = new Vector3(unit.gameObject.transform.position.x - 100f, unit.gameObject.transform.position.z - 100f, 0);
             }
         }
 
         return gameObj; 
     }
 
-    private Unit CreateUnitObjectInScene(MSG_S_MGR_CREATE_UNIT crtMsg)
+    private GameObject CreateUnitObjectInScene(MSG_S_MGR_CREATE_UNIT crtMsg)
     {
         GameObject gameObj = null;
         string prefabName = string.Empty;
@@ -532,7 +557,10 @@ public class BattleField : MonoBehaviour
             return null;
         }
 
-        Unit newUnit = new Unit(gameObj, crtMsg.unitID, crtMsg.unitType, crtMsg.team, position, dir, crtMsg.speed, crtMsg.maxHP, crtMsg.attackDistance, crtMsg.attackRate);
-        return newUnit;
+
+        //Unit newUnit = new Unit(gameObj, crtMsg.unitID, crtMsg.unitType, crtMsg.team, position, dir, crtMsg.speed, crtMsg.maxHP, crtMsg.attackDistance, crtMsg.attackRate);
+
+        gameObj.GetComponent<Unit>().Init(crtMsg.unitID, crtMsg.type, crtMsg.team, position, dir, crtMsg.speed, crtMsg.maxHP, crtMsg.radius, crtMsg.attackDistance, crtMsg.attackRate);
+        return gameObj;
     }
 }
