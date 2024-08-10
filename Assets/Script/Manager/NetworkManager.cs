@@ -34,11 +34,10 @@ public class NetBuffer
     //private int m_Capacity;
     private int m_Index;
 
-    public int BufferedSize { get { return m_Buffer.Length; } }
+    public int BufferedSize { get { return m_Index; } }
 
     public NetBuffer(int buffSize)
     {
-        //m_Capacity = buffSize;  
         m_Buffer = new byte[buffSize];
     }
 
@@ -50,6 +49,30 @@ public class NetBuffer
         }
 
         Array.Copy(source, offset, m_Buffer, m_Index, length);
+        m_Index += length;      
+        return true;
+    }
+    public bool WriteFront(byte[] source, int length, int offset = 0)
+    {
+        if(m_Index + length > m_Buffer.Length) 
+        {
+            return false;
+        }
+
+        if(m_Index == 0)
+        {
+            Write(source, length, offset);  
+        }
+        else
+        {
+            byte[] newBuffer = new byte[m_Buffer.Length];
+
+            Array.Copy(source, 0, newBuffer, 0, length);
+            Array.Copy(m_Buffer, 0, newBuffer, length, BufferedSize);
+            m_Index = BufferedSize + length;
+            m_Buffer = newBuffer;
+        }
+
         return true;
     }
 
@@ -68,10 +91,15 @@ public class NetBuffer
         }
         else
         {
-            byte[] temp = new byte[m_Index - length];
-            Array.Copy(m_Buffer, length, temp, 0, m_Index - length);
-            Array.Copy(temp, m_Buffer, m_Index - length);
-            m_Index -= length;
+            //byte[] temp = new byte[m_Index - length];
+            //Array.Copy(m_Buffer, length, temp, 0, m_Index - length);
+            //Array.Copy(temp, m_Buffer, m_Index - length);
+            //m_Index -= length;
+
+            byte[] newBuffer = new byte[m_Buffer.Length];
+            Array.Copy(m_Buffer, length, newBuffer, 0, BufferedSize - length);
+            m_Index = BufferedSize - length;
+            m_Buffer = newBuffer;
         }
         return true;
     }
@@ -101,13 +129,13 @@ public class NetworkManager
 
     public bool Connected { get { return m_TcpClient.Connected; } }
 
-    public bool Connect()
+    public bool Connect(string serverIP = "127.0.0.1", int port = 7777)
     {
         if (!Connected)
         {
             try
             {
-                m_TcpClient.Connect(IPAddress.Parse("127.0.0.1"), 7777);
+                m_TcpClient.Connect(IPAddress.Parse(serverIP), port);
                 m_Stream = m_TcpClient.GetStream();
             }
             catch
@@ -200,10 +228,21 @@ public class NetworkManager
         COM_PROTOCOL.MSG_HDR hdr = null;
         do
         {
-            if (m_TcpClient.Available >= Marshal.SizeOf<COM_PROTOCOL.MSG_HDR>())
+            if (m_RecvBuffer.BufferedSize + m_TcpClient.Available >= Marshal.SizeOf<COM_PROTOCOL.MSG_HDR>())
             {
                 hdrbytes = new byte[Marshal.SizeOf<COM_PROTOCOL.MSG_HDR>()];
-                m_Stream.Read(hdrbytes, 0, hdrbytes.Length);
+                if(m_RecvBuffer.BufferedSize >= Marshal.SizeOf<COM_PROTOCOL.MSG_HDR>())
+                {
+                    m_RecvBuffer.Read(hdrbytes, Marshal.SizeOf<COM_PROTOCOL.MSG_HDR>());
+                }
+                else
+                {
+                    int buffedSize = m_RecvBuffer.BufferedSize;
+                    m_RecvBuffer.Read(hdrbytes, buffedSize);
+                    m_Stream.Read(hdrbytes, buffedSize, Marshal.SizeOf<COM_PROTOCOL.MSG_HDR>() - buffedSize);
+                }
+
+                //m_Stream.Read(hdrbytes, 0, hdrbytes.Length);
                 hdr = BytesToMessage<COM_PROTOCOL.MSG_HDR>(hdrbytes);
                 break;
             }
@@ -216,24 +255,36 @@ public class NetworkManager
         }
         else
         {
-            if (m_TcpClient.Available < hdr.len)
+            byte[] payload = new byte[hdr.len];
+
+            if (m_RecvBuffer.BufferedSize >= hdr.len)
             {
-                m_RecvBuffer.Write(hdrbytes, hdrbytes.Length);
+                m_RecvBuffer.Read(payload, hdr.len);
+            }
+            else if (m_RecvBuffer.BufferedSize > 0 && m_RecvBuffer.BufferedSize + m_TcpClient.Available >= hdr.len)
+            {
+                int bufferedSize = m_RecvBuffer.BufferedSize;
+                m_RecvBuffer.Read(payload, bufferedSize);
+                m_Stream.Read(payload, bufferedSize, hdr.len - bufferedSize);   
+            }
+            else if(m_TcpClient.Available >= hdr.len)
+            {
+                m_Stream.Read(payload, 0, hdr.len);
+            }
+            else 
+            {
+                // 읽기 실패
+                m_RecvBuffer.WriteFront(hdrbytes, hdrbytes.Length);
                 return null;
             }
-            else
+
+            if (!Decode(COM_PROTOCOL.COM_PROTO_SYMM_KEY, hdr.randKey, hdr.len, hdr.checkSum, payload))
             {
-                byte[] payload = new byte[hdr.len];
-                m_Stream.Read(payload, 0, payload.Length);
-
-                if (!Decode(COM_PROTOCOL.COM_PROTO_SYMM_KEY, hdr.randKey, hdr.len, hdr.checkSum, payload))
-                {
-                    Debugger.Break();
-                    return null;
-                }
-
-                return payload;
+                Debugger.Break();
+                return null;
             }
+
+            return payload;
         }
     }
 
