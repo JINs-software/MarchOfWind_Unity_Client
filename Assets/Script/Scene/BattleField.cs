@@ -120,6 +120,8 @@ public class BattleField : MonoBehaviour
 
     private void Start()
     {
+        Manager.UnitSelection.Init();   
+
         MSG_COM_REQUEST req = new MSG_COM_REQUEST();
         Manager.Network.SetRequstMessage(req, enProtocolComRequest.REQ_MOVE_SELECT_FIELD_TO_BATTLE_FIELD);
         if (!Manager.Network.SendPacket<MSG_COM_REQUEST>(req))
@@ -182,6 +184,8 @@ public class BattleField : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Manager.UnitSelection.Update(); 
+
         if(Input.GetKeyDown(KeyCode.Escape))
         {
             foreach(var obj in m_Units)
@@ -327,12 +331,16 @@ public class BattleField : MonoBehaviour
             newUnit.GetComponent<AttackController>().m_TracingRange = newUnit.transform.GetComponent<SphereCollider>().radius * newUnit.transform.localScale.x;
 
             newUnit.tag = Manager.GamePlayer.TeamTagStr;
+            newUnit.layer = LayerMask.NameToLayer("Clickable");
         }
         else
         {
             newUnit.AddComponent<Enemy>();
             newUnit.GetComponent<Enemy>().m_Unit = newUnit.GetComponent<Unit>();
+            
             newUnit.tag = Manager.GamePlayer.EnemyTagStr;
+            newUnit.layer = LayerMask.NameToLayer("Attackable");
+
             newUnit.AddComponent<Rigidbody>();
         }
 
@@ -369,6 +377,10 @@ public class BattleField : MonoBehaviour
         else if (msg.moveType == (byte)enUnitMoveType.Move_Stop)
         {
             unit.Move_Stop(new Vector3(msg.posX, 0, msg.posZ));
+        }
+        else
+        {
+            unit.DIR_CHANGE(new Vector3(msg.normX, 0, msg.normZ));
         }
         
 
@@ -560,7 +572,7 @@ public class BattleField : MonoBehaviour
 
         //Unit newUnit = new Unit(gameObj, crtMsg.unitID, crtMsg.unitType, crtMsg.team, position, dir, crtMsg.speed, crtMsg.maxHP, crtMsg.attackDistance, crtMsg.attackRate);
 
-        gameObj.GetComponent<Unit>().Init(crtMsg.unitID, crtMsg.type, crtMsg.team, position, dir, crtMsg.speed, crtMsg.maxHP, crtMsg.radius, crtMsg.attackDistance, crtMsg.attackRate);
+        gameObj.GetComponent<Unit>().Init(crtMsg.unitID, crtMsg.type, crtMsg.team, position, dir, crtMsg.speed, crtMsg.nowHP, crtMsg.maxHP, crtMsg.radius, crtMsg.attackDistance, crtMsg.attackRate);
         return gameObj;
     }
 }

@@ -18,6 +18,16 @@ public class HealthController : MonoBehaviour
             healthTracker.UpdateSliderValue(MaxHP, MaxHP);
         }
     }
+    public void InitHealth(int initHP, int maxHP)
+    {
+        MaxHP = maxHP;
+        NowHP = initHP; 
+
+        if (healthTracker != null)
+        {
+            healthTracker.UpdateSliderValue(NowHP, MaxHP);
+        }
+    }
 
     public void UpdateHealth(int health) 
     {

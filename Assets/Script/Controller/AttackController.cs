@@ -93,7 +93,8 @@ public class AttackController : MonoBehaviour
 
     private IEnumerator AttackJudgment()
     {
-        int raceCnt = 0;        
+        int raceCnt = 0;
+        float attackWaitTime = 0f;
 
         while (m_UnitController.State == enUnitState.ATTACK && m_UnitMovement.isCommandedToMove == false)
         {
@@ -103,11 +104,31 @@ public class AttackController : MonoBehaviour
                 distanceToTarget -= m_TargetObject.GetComponent<Unit>().m_radius + m_UnitController.Unit.m_radius;
                 if (distanceToTarget <= m_AttackDistance)
                 {
-                    // 공격
-                    yield return new WaitForSeconds(m_AttackDelay);
-                    if (!m_UnitMovement.isCommandedToMove && m_TargetObject != null)
+                    if(attackWaitTime <= 0f)
                     {
-                        m_UnitController.Send_AttackMessage(m_TargetObject);
+                        // 공격
+                        yield return new WaitForSeconds(m_AttackDelay);
+                        if (!m_UnitMovement.isCommandedToMove && m_TargetObject != null)
+                        {
+                            m_UnitController.Send_AttackMessage(m_TargetObject);
+                        }
+
+                        attackWaitTime = (1f / m_AttackRate) - m_AttackDelay;
+                        yield return null;
+                    }
+                    else
+                    {
+                        attackWaitTime -= Time.deltaTime;
+
+                        Vector3 normToTarget = (m_TargetObject.transform.position - gameObject.transform.position).normalized;
+                        float angle = Vector3.Angle(normToTarget, gameObject.transform.forward);
+                        if (angle > 1f)
+                        {
+                            UnityEngine.Debug.Log("Send_MoveDirChangeMessage");
+                            m_UnitController.Send_MoveDirChangeMessage(normToTarget);
+                        }
+
+                        yield return null;
                     }
                 }
                 else if (raceCnt > 1)
@@ -136,7 +157,8 @@ public class AttackController : MonoBehaviour
             {
                 gameObject.GetComponent<UnitController>().Send_AttackStopMessage();
             }
-            yield return new WaitForSeconds((1f / m_AttackRate) - m_AttackDelay);   // attack delay는 (1f / m_AttackRate) 보다 작아야 함.
+            //yield return new WaitForSeconds((1f / m_AttackRate) - m_AttackDelay);   // attack delay는 (1f / m_AttackRate) 보다 작아야 함.
+            yield return null;
         }
 
         yield break;
@@ -197,7 +219,7 @@ public class AttackController : MonoBehaviour
         }
     }
                    
-    private GameObject ResetTarget()
+    public GameObject ResetTarget()
     {
         Collider[] colliders = Physics.OverlapSphere(gameObject.transform.position, m_TracingRange);
         float minDistance = m_TracingRange;

@@ -31,26 +31,19 @@ public class UnitSelectionManager
 
     public float UnitSelectedCircumscriber = 0;
 
-    bool InitFlag = false;  
-
     public void Init()
     {
-        if (!InitFlag)
-        {
-            m_Clickable = LayerMask.GetMask("Clickable");
-            m_Ground = LayerMask.GetMask("GroundLayer");
-            m_Attackable = LayerMask.GetMask("Attackable");
+        m_Clickable = LayerMask.GetMask("Clickable");
+        m_Ground = LayerMask.GetMask("GroundLayer");
+        m_Attackable = LayerMask.GetMask("Attackable");
 
-            if(m_GroundMarker == null)
-            {
-                m_GroundMarker = GameObject.Find("GroundMarker");
-            }
-            m_GroundMarker.SetActive(false);
+        
+        m_GroundMarker = GameObject.Find("GroundMarker");
+        m_GroundMarker.SetActive(false);
 
-            m_Camera = Camera.main;
+        m_Camera = Camera.main;
 
-            InitFlag = true;    
-        }
+        DeSelectAll();
     }
 
     
@@ -96,8 +89,16 @@ public class UnitSelectionManager
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, m_Ground))
             {
                 m_GroundMarker.transform.position = hit.point;
-                m_GroundMarker.SetActive(false);
                 m_GroundMarker.SetActive(true);
+                m_GroundMarker.GetComponent<GroundMarker>().SetGreenMark();
+                m_GroundMarker.GetComponent<GroundMarker>().StayActive();
+
+                foreach (var unit in m_UnitsSelected)
+                {
+                    unit.GetComponent<AttackController>().m_TargetObject = null;
+
+                    unit.GetComponent<UnitMovement>().TargetOnEnemy = false;
+                }
             }
         }
 
@@ -118,6 +119,8 @@ public class UnitSelectionManager
                 // // 공격 가능 유닛이 선택된 상태에서 마우스 우클릭
                 if (Input.GetMouseButtonDown(1))
                 {
+                    m_GroundMarker.GetComponent<GroundMarker>().SetRedMark();
+
                     //Transform target = hit.transform;
                     //
                     //foreach (GameObject unit in m_UnitsSelected)
@@ -136,6 +139,8 @@ public class UnitSelectionManager
                         if(unit.GetComponent<AttackController>() != null)
                         {
                             unit.GetComponent<AttackController>().m_TargetObject = hit.collider.gameObject;
+
+                            unit.GetComponent<UnitMovement>().TargetOnEnemy = true;
                         }
                     }
                 }
@@ -144,6 +149,33 @@ public class UnitSelectionManager
             {
                 m_AttackCursorVisible = false;
             }
+        }
+
+        CursorSelector();
+    }
+
+    private void CursorSelector()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if(Physics.Raycast(ray, out hit, Mathf.Infinity, m_Clickable))
+        {
+            CursorManager.Instance.SetMarkerType(CursorManager.CursorType.Selectable);
+        } 
+        else if (Physics.Raycast(ray, out hit, Mathf.Infinity, m_Attackable)
+            && m_UnitsSelected.Count > 0 && AtLeastOneOffensiveUnit(m_UnitsSelected))
+        {
+            CursorManager.Instance.SetMarkerType(CursorManager.CursorType.Attackable);
+        }
+        else if (Physics.Raycast(ray, out hit, Mathf.Infinity, m_Ground) 
+            && m_UnitsSelected.Count > 0)
+        {
+            CursorManager.Instance.SetMarkerType(CursorManager.CursorType.Walkable);
+        }
+        else 
+        {
+            CursorManager.Instance.SetMarkerType(CursorManager.CursorType.None);
         }
     }
 
@@ -241,7 +273,7 @@ public class UnitSelectionManager
 
     private void UpdateUnitSelectedCircumscriber()
     {
-        List<float> radiusList = new List<float>(); 
+        List<float> radiusList = new List<float>();
         foreach (GameObject unit in m_UnitsSelected)
         {
             radiusList.Add(unit.GetComponent<NavMeshAgent>().radius * unit.transform.localScale.x);
@@ -257,25 +289,5 @@ public class UnitSelectionManager
             UnitSelectedCircumscriber += (radiusList[i] * 2);
             i += circumUnitCnt;
         }
-    }
-
-    private void UpdateCenterOfUnitSelected()
-    {
-        //if(m_UnitsSelected.Count == 0)
-        //{
-        //    m_CenterOfUnitSelected = Vector3.zero;
-        //    return;
-        //}
-        //else
-        //{
-        //    m_CenterOfUnitSelected = Vector3.zero;
-        //    foreach(GameObject unit in m_UnitsSelected)
-        //    {
-        //        m_CenterOfUnitSelected += unit.transform.position;
-        //    }
-        //    m_CenterOfUnitSelected /= m_UnitsSelected.Count;    
-        //}
-
-
     }
 }

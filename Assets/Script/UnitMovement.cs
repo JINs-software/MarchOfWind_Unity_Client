@@ -17,6 +17,8 @@ public class UnitMovement : MonoBehaviour
 
     public float DistanceFromCenter;
 
+    public bool TargetOnEnemy = false;
+
     // Start is called before the first frame update
     void Start()
     {

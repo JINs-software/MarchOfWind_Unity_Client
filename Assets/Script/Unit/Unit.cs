@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -10,6 +11,7 @@ public class Unit : MonoBehaviour
     public int m_type;
     public int m_team;
     public float m_speed;
+    public int m_initHP;
     public int m_maxHP;
     public float m_radius;
     public float m_AttackDistance;
@@ -39,16 +41,17 @@ public class Unit : MonoBehaviour
     {
         m_NavMeshAgent.speed = m_speed;
         m_NavMeshAgent.Warp(m_InitPostion);
-        m_HearthController.InitHealth(m_maxHP);
+        m_HearthController.InitHealth(m_initHP, m_maxHP);
         gameObject.transform.rotation = Quaternion.LookRotation(m_InitDirection.normalized);
     }
 
-    public void Init(int id, int type, int team, Vector3 position, Vector3 direction, float speed, int maxHP, float radius, float attackDist, float attackRate)
+    public void Init(int id, int type, int team, Vector3 position, Vector3 direction, float speed, int nowHP, int maxHP, float radius, float attackDist, float attackRate)
     {
         m_id = id;
         m_type = type;
         m_team = team;
         m_speed = speed;
+        m_initHP = nowHP;   
         m_maxHP = maxHP;    
         m_radius = radius;  
         m_AttackDistance = attackDist;
@@ -108,6 +111,12 @@ public class Unit : MonoBehaviour
             gameObject.GetComponent<UnitController>().OnMoving = false;
         }
     }
+
+    public void DIR_CHANGE(Vector3 norm)
+    {
+        gameObject.transform.rotation = Quaternion.LookRotation(norm);
+    }
+
     public void Attack(Vector3 position, Vector3 dir, int attkType)
     {
         Debug.Log("Recv Atack---------------------");

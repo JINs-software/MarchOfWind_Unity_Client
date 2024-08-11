@@ -66,7 +66,7 @@ public class UnitController : MonoBehaviour
             if (CheckChangeDirection())
             {
                 Debug.Log("CheckChangeDirection => Send_DirChangeMessage");
-                Send_DirChangeMessage();
+                Send_SyncDirectionMessage();
             }
             else if (CheckFowardByRadius())
             {
@@ -159,60 +159,121 @@ public class UnitController : MonoBehaviour
 
             if(!m_NavMeshAgent.pathPending)
             {
-                Vector3 beforePosition = gameObject.transform.position;
-                float expectedTime = m_NavMeshAgent.remainingDistance / m_NavMeshAgent.speed;
-                if(expectedTime > 0.1f)
+                if(m_UnitMovement.TargetOnEnemy)
                 {
-                    yield return new WaitForSeconds(0.1f);
-                }
-                else
-                {
-                    yield return new WaitForSeconds(expectedTime);
-                }
-
-                // some time passe.. check moving
-                if(gameObject == null || m_AttackController == null || m_NavMeshAgent == null || m_UnitMovement == null)  
-                {
-                    yield break;    
-                }
-
-                // 도착 및 정지 확인
-                if (m_NavMeshAgent.remainingDistance <= m_NavMeshAgent.stoppingDistance)
-                {
-                    Send_MoveStopMessage();
-                    m_UnitMovement.isCommandedToMove = false;
-                }
-                else
-                {
-                    if (Vector3.Distance(beforePosition, gameObject.transform.position) < 1f)
+                    if(m_AttackController.m_TargetObject != null)
                     {
-                        unchangedCount++;
-                        
-                        if (m_NavMeshAgent.remainingDistance < m_UnitMovement.DistanceFromCenter || unchangedCount > 10)    // 조건 추가(제자리 걸음 횟수)
+                        Vector3 beforeTargetPosition = m_AttackController.m_TargetObject.transform.position;
+                        Vector3 beforePosition = gameObject.transform.position;
+                        float expectedTime = m_NavMeshAgent.remainingDistance / m_NavMeshAgent.speed;
+                        if (expectedTime > 0.1f)
                         {
-                            // 허용되는 정지 범위 내 -> 정지
-                            Send_MoveStopMessage();
-                            m_UnitMovement.isCommandedToMove = false;
+                            yield return new WaitForSeconds(0.1f);
                         }
                         else
                         {
-                            // 경로 재계산
-                            Collider[] colliders = Physics.OverlapSphere(gameObject.transform.position, m_NavMeshAgent.remainingDistance);
-                            Vector3 stoppedUnitsCenter = Vector3.zero;
-                            int unitCnt = 0;
-                            foreach (Collider collider in colliders)
-                            {
-                                if(collider.gameObject != gameObject && collider.gameObject.GetComponent<NavMeshAgent>() != null && collider.gameObject.GetComponent<NavMeshAgent>().isStopped)
-                                {
-                                    stoppedUnitsCenter += collider.gameObject.transform.position;
-                                    unitCnt++;
-                                }
-                            }
+                            yield return new WaitForSeconds(expectedTime);
+                        }
 
-                            if(unitCnt > 0)
+                        // some time passe.. check moving
+                        if (gameObject == null || m_AttackController == null || m_NavMeshAgent == null || m_UnitMovement == null)
+                        {
+                            yield break;
+                        }
+                        else if (m_AttackController.m_TargetObject == null)
+                        {
+                            Send_MoveStopMessage();
+                            m_UnitMovement.isCommandedToMove = false;
+                            yield return new WaitForSeconds(0.1f);
+                            continue;
+                        }
+                        else
+                        {
+                            if (Vector3.Distance(beforeTargetPosition, m_AttackController.m_TargetObject.transform.position) > 1)
                             {
-                                stoppedUnitsCenter /= unitCnt;
-                                Send_MoveStartMessage(stoppedUnitsCenter);
+                                Send_MoveStartMessage(m_AttackController.m_TargetObject.transform.position);
+                            }
+                        }
+
+                        float distanceToTarget = Vector3.Distance(transform.position, m_AttackController.m_TargetObject.transform.position);
+                        float unitRadius = m_Unit.m_radius;
+                        float targetRadius = m_AttackController.m_TargetObject.GetComponent<Unit>().m_radius;
+                        distanceToTarget -= targetRadius + unitRadius;
+                        if (distanceToTarget <= m_AttackController.m_AttackDistance)
+                        {
+                            yield return new WaitForSeconds(m_AttackController.m_AttackDelay);
+                            if (m_AttackController.m_TargetObject != null)
+                            {
+                                Send_AttackMessage(m_AttackController.m_TargetObject);
+                                m_UnitMovement.isCommandedToMove = false;
+                                yield return new WaitForSeconds(1f);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Send_MoveStopMessage();
+                        m_UnitMovement.isCommandedToMove = false;
+                        yield return new WaitForSeconds(0.1f);
+                    }
+                }
+                else
+                {
+                    Vector3 beforePosition = gameObject.transform.position;
+                    float expectedTime = m_NavMeshAgent.remainingDistance / m_NavMeshAgent.speed;
+                    if (expectedTime > 0.1f)
+                    {
+                        yield return new WaitForSeconds(0.1f);
+                    }
+                    else
+                    {
+                        yield return new WaitForSeconds(expectedTime);
+                    }
+
+                    // some time passe.. check moving
+                    if (gameObject == null || m_AttackController == null || m_NavMeshAgent == null || m_UnitMovement == null)
+                    {
+                        yield break;
+                    }
+
+                    // 도착 및 정지 확인
+                    if (m_NavMeshAgent.remainingDistance <= m_NavMeshAgent.stoppingDistance)
+                    {
+                        Send_MoveStopMessage();
+                        m_UnitMovement.isCommandedToMove = false;
+                    }
+                    else
+                    {
+                        if (Vector3.Distance(beforePosition, gameObject.transform.position) < 1f)
+                        {
+                            if (m_NavMeshAgent.remainingDistance < m_UnitMovement.DistanceFromCenter || unchangedCount > 3)    // 조건 추가(제자리 걸음 횟수)
+                            {
+                                // 허용되는 정지 범위 내 -> 정지
+                                Send_MoveStopMessage();
+                                m_UnitMovement.isCommandedToMove = false;
+                            }
+                            else
+                            {
+                                unchangedCount++;
+
+                                // 경로 재계산
+                                Collider[] colliders = Physics.OverlapSphere(gameObject.transform.position, m_NavMeshAgent.remainingDistance);
+                                Vector3 stoppedUnitsCenter = Vector3.zero;
+                                int unitCnt = 0;
+                                foreach (Collider collider in colliders)
+                                {
+                                    if (collider.gameObject != gameObject && collider.gameObject.GetComponent<NavMeshAgent>() != null && collider.gameObject.GetComponent<NavMeshAgent>().isStopped)
+                                    {
+                                        stoppedUnitsCenter += collider.gameObject.transform.position;
+                                        unitCnt++;
+                                    }
+                                }
+
+                                if (unitCnt > 0)
+                                {
+                                    stoppedUnitsCenter /= unitCnt;
+                                    Send_MoveStartMessage(stoppedUnitsCenter);
+                                }
                             }
                         }
                     }
@@ -276,7 +337,9 @@ public class UnitController : MonoBehaviour
                     }
 
                     float distanceToTarget = Vector3.Distance(transform.position, m_AttackController.m_TargetObject.transform.position);
-                    distanceToTarget -= m_AttackController.m_TargetObject.GetComponent<Unit>().m_radius + m_Unit.m_radius;
+                    float unitRadius = m_Unit.m_radius;
+                    float targetRadius = m_AttackController.m_TargetObject.GetComponent<Unit>().m_radius;
+                    distanceToTarget -= targetRadius + unitRadius;
                     if (distanceToTarget <= m_AttackController.m_AttackDistance)
                     {
                         yield return new WaitForSeconds(m_AttackController.m_AttackDelay);
@@ -288,12 +351,22 @@ public class UnitController : MonoBehaviour
                     }
                     else
                     {
-                        if(unchangedCount > 10)
+                        if (Vector3.Distance(beforePosition, gameObject.transform.position) < 1f)
                         {
-                            Send_MoveStopMessage();
-                        }
-                        else if (Vector3.Distance(beforePosition, gameObject.transform.position) < 1f)
-                        {
+                            if (unchangedCount > 3)
+                            {
+                                GameObject newTarget = m_AttackController.ResetTarget();
+                                if(newTarget == null)
+                                {
+                                    Send_MoveStopMessage();
+                                }
+                                else
+                                {
+                                    Send_MoveStartMessage(newTarget.transform.position);    
+                                    yield return new WaitForSeconds(0.1f);
+                                    continue;
+                                }
+                            }
                             unchangedCount++;
 
                             // 경로 재계산
@@ -344,6 +417,7 @@ public class UnitController : MonoBehaviour
                 else
                 {
                     Send_MoveStopMessage();
+                    yield return new WaitForSeconds(0.1f);
                 }
             }
             else
@@ -615,6 +689,20 @@ public class UnitController : MonoBehaviour
         return m_UnitSession.SendPacket<MSG_UNIT_S_MOVE>(stopMsg);
     }
 
+    public bool Send_MoveDirChangeMessage(Vector3 normVec)
+    {
+        MSG_UNIT_S_MOVE dirCngMsg = new MSG_UNIT_S_MOVE();
+        dirCngMsg.type = (ushort)enPacketType.UNIT_S_MOVE;
+        dirCngMsg.moveType = (byte)enUnitMoveType.Move_Change_Dir;
+        dirCngMsg.posX = gameObject.transform.position.x;
+        dirCngMsg.posZ = gameObject.transform.position.z;
+        dirCngMsg.normX = normVec.x;
+        dirCngMsg.normZ = normVec.z;
+
+        Debug.Log("Send_MoveStopMessage");
+        return m_UnitSession.SendPacket<MSG_UNIT_S_MOVE>(dirCngMsg);
+    }
+
     public bool Send_SyncPosMessage()
     {
         MSG_UNIT_S_SYNC_POSITION syncMsg = new MSG_UNIT_S_SYNC_POSITION();
@@ -627,17 +715,15 @@ public class UnitController : MonoBehaviour
         Debug.Log("Send_SyncPosMessage");
         return m_UnitSession.SendPacket<MSG_UNIT_S_SYNC_POSITION>(syncMsg);
     }
-    public bool Send_DirChangeMessage()
+    public bool Send_SyncDirectionMessage()
     {
-        MSG_UNIT_S_DIR_CHANGE dirMsg = new MSG_UNIT_S_DIR_CHANGE();
-        dirMsg.type = (ushort)enPacketType.UNIT_S_DIR_CHANGE;
-        dirMsg.posX = gameObject.transform.position.x;
-        dirMsg.posZ = gameObject.transform.position.z;
+        MSG_UNIT_S_SYNC_DIRECTION dirMsg = new MSG_UNIT_S_SYNC_DIRECTION();
+        dirMsg.type = (ushort)enPacketType.UNIT_S_SYNC_DIRECTION;
         dirMsg.normX = gameObject.transform.forward.normalized.x;
         dirMsg.normZ = gameObject.transform.forward.normalized.z;
 
         Debug.Log("Send_DirChangeMessage");
-        return m_UnitSession.SendPacket<MSG_UNIT_S_DIR_CHANGE>(dirMsg);
+        return m_UnitSession.SendPacket<MSG_UNIT_S_SYNC_DIRECTION>(dirMsg);
     }
 
     public bool Send_AttackMessage(GameObject targetObject)

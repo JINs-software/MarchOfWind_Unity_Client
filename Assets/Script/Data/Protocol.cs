@@ -33,7 +33,7 @@ enum enPacketType
 	UNIT_S_MOVE,
 	S_MGR_MOVE,
 	UNIT_S_SYNC_POSITION,
-	UNIT_S_DIR_CHANGE,
+	UNIT_S_SYNC_DIRECTION,
 	UNIT_S_ATTACK,
 	S_MGR_ATTACK,
 	S_MGR_ATTACK_INVALID,
@@ -127,8 +127,8 @@ public
 enum enUnitMoveType
 {
 	Move_Start,
-	Move_Change_Dir,
 	Move_Stop,
+	Move_Change_Dir,
 };
 
 public 
@@ -282,6 +282,7 @@ public class MSG_S_MGR_CREATE_UNIT
 	public float normX;
 	public float normZ;
 	public float speed;
+	public int nowHP;
 	public int maxHP;
 	public float radius;
 	public float attackDistance;
@@ -329,11 +330,9 @@ public class MSG_UNIT_S_SYNC_POSITION
 };
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-public class MSG_UNIT_S_DIR_CHANGE
+public class MSG_UNIT_S_SYNC_DIRECTION
 {
 	public ushort type;
-	public float posX;
-	public float posZ;
 	public float normX;
 	public float normZ;
 };
