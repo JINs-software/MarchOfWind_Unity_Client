@@ -34,6 +34,9 @@ enum enPacketType
 	S_MGR_MOVE,
 	UNIT_S_SYNC_POSITION,
 	UNIT_S_SYNC_DIRECTION,
+	UNIT_S_REQ_TRACE_PATH_FINDING,
+	S_MGR_REPLY_TRACE_PATH_FINDING,
+	S_MGR_TRACE_SPATH,
 	UNIT_S_ATTACK,
 	S_MGR_ATTACK,
 	S_MGR_ATTACK_INVALID,
@@ -333,6 +336,35 @@ public class MSG_UNIT_S_SYNC_POSITION
 public class MSG_UNIT_S_SYNC_DIRECTION
 {
 	public ushort type;
+	public float normX;
+	public float normZ;
+};
+
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public class MSG_UNIT_S_REQ_TRACE_PATH_FINDING
+{
+	public ushort type;
+	public float posX;
+	public float posZ;
+	public float normX;
+	public float normZ;
+	public float destX;
+	public float destZ;
+};
+
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public class MSG_S_MGR_REPLY_TRACE_PATH_FINDING
+{
+	public ushort type;
+	public int unitID;
+};
+
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public class MSG_S_MGR_TRACE_SPATH
+{
+	public ushort type;
+	public float posX;
+	public float posZ;
 	public float normX;
 	public float normZ;
 };

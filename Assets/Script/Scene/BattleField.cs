@@ -237,6 +237,12 @@ public class BattleField : MonoBehaviour
                             Proc_MOVE(msg);
                         }
                         break;
+                    case enPacketType.S_MGR_REPLY_TRACE_PATH_FINDING:
+                        {
+                            MSG_S_MGR_REPLY_TRACE_PATH_FINDING msg = Manager.Network.BytesToMessage<MSG_S_MGR_REPLY_TRACE_PATH_FINDING>(payload);
+                            Proc_PATH_FINDING_REPLY(msg);
+                        }
+                        break;
                     case enPacketType.S_MGR_ATTACK:
                         {
                             MSG_S_MGR_ATTACK msg = Manager.Network.BytesToMessage<MSG_S_MGR_ATTACK>(payload);
@@ -392,6 +398,19 @@ public class BattleField : MonoBehaviour
         {
             m_Units[msg.unitID].Move_Stop_UI(new Vector3(msg.posX, 0, msg.posZ));
         }
+    }
+
+    private void Proc_PATH_FINDING_REPLY(MSG_S_MGR_REPLY_TRACE_PATH_FINDING msg)
+    {
+        // 서버에서 요청 플레이어에게만 메시지를 전달함
+        if (!m_Units.ContainsKey(msg.unitID))
+        {
+            return;
+        }
+
+        Unit unit = m_Units[msg.unitID];
+
+        unit.SPathPending();
     }
 
     private void Proc_ATTACK(MSG_S_MGR_ATTACK msg)

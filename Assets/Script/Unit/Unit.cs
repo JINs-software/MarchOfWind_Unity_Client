@@ -117,6 +117,11 @@ public class Unit : MonoBehaviour
         gameObject.transform.rotation = Quaternion.LookRotation(norm);
     }
 
+    public void SPathPending()
+    {
+
+    }
+
     public void Attack(Vector3 position, Vector3 dir, int attkType)
     {
         Debug.Log("Recv Atack---------------------");

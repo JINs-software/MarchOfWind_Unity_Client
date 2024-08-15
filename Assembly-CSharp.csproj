@@ -75,6 +75,7 @@
     <Compile Include="Assets\Script\EnemyTest.cs" />
     <Compile Include="Assets\Script\Debug\SimplePatrol.cs" />
     <Compile Include="Assets\Script\Manager\SceneTransfer.cs" />
+    <Compile Include="Assets\Script\State\State_MOVE_SPATH.cs" />
     <Compile Include="Assets\Script\HealthController.cs" />
     <Compile Include="Assets\Teleport\Scripts\teleport\PortTrigger.cs" />
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\WFX_Demo_New.cs" />

@@ -2759,7 +2759,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4240760327151037973, guid: 1c95f95998c31fb45b3a71f7a358783f, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5960130032485968890, guid: 1c95f95998c31fb45b3a71f7a358783f, type: 3}
       propertyPath: m_AnchorMax.x
@@ -3241,13 +3241,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2712988612695046624, guid: 8adc0c163842280458a93580a8253c2a, type: 3}
+      propertyPath: m_StoppingDistance
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3058190840462925315, guid: 8adc0c163842280458a93580a8253c2a, type: 3}
       propertyPath: m_Name
       value: Golem
       objectReference: {fileID: 0}
     - target: {fileID: 3058190840462925315, guid: 8adc0c163842280458a93580a8253c2a, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3982083946895529725, guid: 8adc0c163842280458a93580a8253c2a, type: 3}
       propertyPath: m_AnchorMax.x
