@@ -1,9 +1,8 @@
 ﻿using System;
 using UnityEngine;
+using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 public class Teleporter : MonoBehaviour {
-    static int s_CrtCode = 0;
-
     public int CreateUnitCount;
 
     void OnTriggerEnter(Collider collider) {
@@ -37,7 +36,42 @@ public class Teleporter : MonoBehaviour {
             }
 
             MSG_UNIT_S_CREATE_UNIT crtMsg = new MSG_UNIT_S_CREATE_UNIT();
-            int crtCode = MakeCrtMessage(crtMsg);
+
+            enUnitType unitType = enUnitType.None;
+            if (transform.parent.name == "port_marine")
+            {
+                unitType = enUnitType.Terran_Marine;
+            }
+            else if (transform.parent.name == "port_firebat")
+            {
+                unitType = enUnitType.Terran_Firebat;
+            }
+            else if (transform.parent.name == "port_tank")
+            {
+                unitType = enUnitType.Terran_Tank;
+            }
+            else if (transform.parent.name == "port_robocop")
+            {
+                unitType = enUnitType.Terran_Robocop;
+            }
+            else if (transform.parent.name == "port_zergling")
+            {
+                unitType = enUnitType.Zerg_Zergling;
+            }
+            else if (transform.parent.name == "port_hydra")
+            {
+                unitType = enUnitType.Zerg_Hydra;
+            }
+            else if (transform.parent.name == "port_golem")
+            {
+                unitType = enUnitType.Zerg_Golem;
+            }
+            else if (transform.parent.name == "port_tarantula")
+            {
+                unitType = enUnitType.Zerg_Tarantula;
+            }
+
+            int crtCode = Manager.GamePlayer.MakeCrtMessage(crtMsg, unitType);
 
             Tuple<NetworkManager, MSG_UNIT_S_CREATE_UNIT> crtTuple = new Tuple<NetworkManager, MSG_UNIT_S_CREATE_UNIT>(session, crtMsg);
             Manager.GamePlayer.CrtMessageList.Add(crtTuple);
@@ -50,79 +84,5 @@ public class Teleporter : MonoBehaviour {
         {
             Manager.SceneTransfer.TransferToBattleField();
         }
-    }
-
-    int MakeCrtMessage(MSG_UNIT_S_CREATE_UNIT crtMsg)
-    {
-        int crtCode = s_CrtCode++;
-
-        crtMsg.type = (ushort)enPacketType.UNIT_S_CREATE_UNIT;
-        crtMsg.crtCode = crtCode;
-        crtMsg.team = Manager.GamePlayer.m_Team;
-
-        if (crtMsg.team == (int)enPlayerTeamInBattleField.Team_A)
-        {
-            crtMsg.normX = 1f;
-            crtMsg.normZ = 1f;
-        }
-        else if (crtMsg.team == (int)enPlayerTeamInBattleField.Team_B)
-        {
-            crtMsg.normX = -1f;
-            crtMsg.normZ = 1f;
-        }
-        else if (crtMsg.team == (int)enPlayerTeamInBattleField.Team_C)
-        {
-            crtMsg.normX = -1f;
-            crtMsg.normZ = -1f;
-        }
-        else if (crtMsg.team == (int)enPlayerTeamInBattleField.Team_D)
-        {
-            crtMsg.normX = 1f;
-            crtMsg.normZ = -1f;
-        }
-
-        if (transform.parent.name == "port_marine")
-        {
-            crtMsg.unitType = (int)enUnitType.Terran_Marine;
-        }
-        else if (transform.parent.name == "port_firebat")
-        {
-            crtMsg.unitType = (int)enUnitType.Terran_Firebat;
-        }
-        else if (transform.parent.name == "port_tank")
-        {
-            crtMsg.unitType = (int)enUnitType.Terran_Tank;
-        }
-        else if (transform.parent.name == "port_robocop")
-        {
-            crtMsg.unitType = (int)enUnitType.Terran_Robocop;
-        }
-        else if (transform.parent.name == "port_zergling")
-        {
-            crtMsg.unitType = (int)enUnitType.Zerg_Zergling;
-        }
-        else if (transform.parent.name == "port_hydra")
-        {
-            crtMsg.unitType = (int)enUnitType.Zerg_Hydra;
-        }
-        else if (transform.parent.name == "port_golem")
-        {
-            crtMsg.unitType = (int)enUnitType.Zerg_Golem;
-        }
-        else if (transform.parent.name == "port_tarantula")
-        {
-            crtMsg.unitType = (int)enUnitType.Zerg_Tarantula;
-        }
-        else
-        {
-            Debug.Log("strange port name....!");
-        }
-
-        Vector3 crtPos = Vector3.zero;
-        crtPos = BattleField.GetRandomCreatePosition((enUnitType)crtMsg.unitType);
-        crtMsg.posX = crtPos.x;
-        crtMsg.posZ = crtPos.z;
-
-        return crtCode;  
     }
 }

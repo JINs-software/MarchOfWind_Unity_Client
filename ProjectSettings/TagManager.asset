@@ -7,6 +7,7 @@ TagManager:
   - Selector
   - Enemy
   - TeamUnit
+  - Dummy
   layers:
   - Default
   - TransparentFX

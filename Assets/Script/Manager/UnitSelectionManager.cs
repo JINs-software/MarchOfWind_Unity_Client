@@ -95,9 +95,11 @@ public class UnitSelectionManager
 
                 foreach (var unit in m_UnitsSelected)
                 {
-                    unit.GetComponent<AttackController>().m_TargetObject = null;
-
-                    unit.GetComponent<UnitMovement>().TargetOnEnemy = false;
+                    if(unit.GetComponent<AttackController>() != null)
+                    {
+                        unit.GetComponent<AttackController>().m_TargetObject = null;
+                        unit.GetComponent<UnitMovement>().TargetOnEnemy = false;
+                    }
                 }
             }
         }

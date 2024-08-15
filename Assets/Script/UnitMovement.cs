@@ -39,13 +39,18 @@ public class UnitMovement : MonoBehaviour
             Ray ray = m_Camera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, m_LayerMask))
             {
-                isCommandedToMove = true;   
+                isCommandedToMove = true;
                 // => WAIT 상태 활용
 
-                if(gameObject.tag == "Selector") 
+                if (gameObject.tag == "Selector")
                 {
                     m_NavMeshAgent.isStopped = false;
                     m_NavMeshAgent.SetDestination(hit.point);
+                }
+                else if (gameObject.tag == "Dummy")
+                {
+                    gameObject.GetComponent<Dummy>().OnMoveCmd = true;
+                    gameObject.GetComponent<Dummy>().Destination = hit.point;       
                 }
                 else
                 {
@@ -61,19 +66,4 @@ public class UnitMovement : MonoBehaviour
             }
         }
     }
-
-    //IEnumerator WaitForPath()
-    //{
-    //    isPathFinding = true;
-    //    Debug.Log("path finding..");
-    //    yield return new WaitUntil(() => m_NavMeshAgent.pathPending == false);
-    //    Debug.Log("path finidhed!");
-//
-    //    if (!m_NavMeshAgent.hasPath)
-    //    {
-    //        isCommandedToMove = false;
-    //        m_NavMeshAgent.isStopped = true;
-    //        Debug.LogWarning("No valid path found for the agent.");
-    //    }
-    //}
 }

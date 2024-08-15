@@ -28,7 +28,50 @@ public class GamePlayManager
     public Dictionary<int, NetworkManager> NewUnitSessions = new Dictionary<int, NetworkManager>(); 
     public int MyTeamUnitCnt = 0;
 
+    public Dictionary<int, NetworkManager> NewUnitSessionsDummy = new Dictionary<int, NetworkManager>();
+
     public string GameServerIP;
+
+    private int CrtCode = 0;
+
+    public int MakeCrtMessage(MSG_UNIT_S_CREATE_UNIT crtMsg, enUnitType unitType)
+    {
+        int crtCode = CrtCode++;
+
+        crtMsg.type = (ushort)enPacketType.UNIT_S_CREATE_UNIT;
+        crtMsg.crtCode = crtCode;
+        crtMsg.team = Manager.GamePlayer.m_Team;
+
+        if (crtMsg.team == (int)enPlayerTeamInBattleField.Team_A)
+        {
+            crtMsg.normX = 1f;
+            crtMsg.normZ = 1f;
+        }
+        else if (crtMsg.team == (int)enPlayerTeamInBattleField.Team_B)
+        {
+            crtMsg.normX = -1f;
+            crtMsg.normZ = 1f;
+        }
+        else if (crtMsg.team == (int)enPlayerTeamInBattleField.Team_C)
+        {
+            crtMsg.normX = -1f;
+            crtMsg.normZ = -1f;
+        }
+        else if (crtMsg.team == (int)enPlayerTeamInBattleField.Team_D)
+        {
+            crtMsg.normX = 1f;
+            crtMsg.normZ = -1f;
+        }
+
+        crtMsg.unitType = (int)unitType;
+
+        Vector3 crtPos = Vector3.zero;
+        crtPos = BattleField.GetRandomCreatePosition((enUnitType)crtMsg.unitType);
+        crtMsg.posX = crtPos.x;
+        crtMsg.posZ = crtPos.z;
+
+        return crtCode;
+    }
 
     ///////////////////////////////////////////////////////
     /// Collider Element Mark (Debug)

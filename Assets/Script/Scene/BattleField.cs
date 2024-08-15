@@ -345,6 +345,13 @@ public class BattleField : MonoBehaviour
             newUnit.tag = Manager.GamePlayer.TeamTagStr;
             newUnit.layer = LayerMask.NameToLayer("Clickable");
         }
+        else if(msg.team == (int)enPlayerTeamInBattleField.Team_Dummy)
+        {
+            UnitMovement unitMovement = newUnit.AddComponent<UnitMovement>();
+            newUnit.GetComponent<UnitMovement>().enabled = false;
+
+            newUnit.GetComponent<Dummy>().Session = Manager.GamePlayer.NewUnitSessionsDummy[msg.crtCode];
+        }
         else
         {
             newUnit.AddComponent<Enemy>();
@@ -366,9 +373,10 @@ public class BattleField : MonoBehaviour
         newUnit.SetActive(true);
 
         newUnit.GetComponent<Unit>().m_UIObject = CreateUIUnit(newUnit.GetComponent<Unit>());
-        newUnit.GetComponent<Unit>().m_UIObject.SetActive(true);
-
-        //newUnit.m_GameObject.GetComponent
+        if(newUnit.GetComponent<Unit>().m_UIObject)
+        {
+            newUnit.GetComponent<Unit>().m_UIObject.SetActive(true);
+        }
 
         m_Units.Add(newUnit.GetComponent<Unit>().m_id, newUnit.GetComponent<Unit>() );
     }
@@ -376,7 +384,20 @@ public class BattleField : MonoBehaviour
 
     private void Proc_MOVE(MSG_S_MGR_MOVE msg)
     {
-        if(!m_Units.ContainsKey(msg.unitID)) {
+        if (msg.team == (int)enPlayerTeamInBattleField.Team_Dummy)
+        {
+            if(msg.moveType == (byte)enUnitMoveType.Move_Stop)
+            {
+                Unit dummyUnit = m_Units[msg.unitID];
+                dummyUnit.gameObject.GetComponent<NavMeshAgent>().Warp(new Vector3(msg.posX, 0, msg.posZ));
+                dummyUnit.gameObject.GetComponent<NavMeshAgent>().isStopped = true;
+                dummyUnit.gameObject.GetComponent<Dummy>().OnMove = false;
+            }
+
+            return;
+        }
+
+        if (!m_Units.ContainsKey(msg.unitID)) {
             return;
         }
 
@@ -543,51 +564,103 @@ public class BattleField : MonoBehaviour
         GameObject gameObj = null;
         string prefabName = string.Empty;
 
-        enUnitType unitType = (enUnitType)crtMsg.unitType;
-        switch (unitType)
+        if(crtMsg.team == (int)enPlayerTeamInBattleField.Team_Dummy)
         {
-            case enUnitType.Terran_Marine:
-                {
-                    prefabName = "Marine";
-                }
-                break;
-            case enUnitType.Terran_Firebat:
-                {
-                    prefabName = "Firebat";
-                }
-                break;
-            case enUnitType.Terran_Tank:
-                {
-                    prefabName = "Tank";
-                }
-                break;
-            case enUnitType.Terran_Robocop:
-                {
-                    prefabName = "Robocop";
-                }
-                break;
-            case enUnitType.Zerg_Zergling:
-                {
-                    prefabName = "Zergling";
-                }
-                break;
-            case enUnitType.Zerg_Hydra:
-                {
-                    prefabName = "Hydra";
-                }
-                break;
-            case enUnitType.Zerg_Golem:
-                {
-                    prefabName = "Golem";
-                }
-                break;
-            case enUnitType.Zerg_Tarantula:
-                {
-                    prefabName = "Tarantula";
-                }
-                break;
-            default:
-                break;
+            enUnitType unitType = (enUnitType)crtMsg.unitType;
+            switch (unitType)
+            {
+                case enUnitType.Terran_Marine:
+                    {
+                        prefabName = "Marine_Dummy";
+                    }
+                    break;
+                case enUnitType.Terran_Firebat:
+                    {
+                        prefabName = "Firebat_Dummy";
+                    }
+                    break;
+                case enUnitType.Terran_Tank:
+                    {
+                        prefabName = "Tank_Dummy";
+                    }
+                    break;
+                case enUnitType.Terran_Robocop:
+                    {
+                        prefabName = "Robocop_Dummy";
+                    }
+                    break;
+                case enUnitType.Zerg_Zergling:
+                    {
+                        prefabName = "Zergling_Dummy";
+                    }
+                    break;
+                case enUnitType.Zerg_Hydra:
+                    {
+                        prefabName = "Hydra_Dummy";
+                    }
+                    break;
+                case enUnitType.Zerg_Golem:
+                    {
+                        prefabName = "Golem_Dummy";
+                    }
+                    break;
+                case enUnitType.Zerg_Tarantula:
+                    {
+                        prefabName = "Tarantula_Dummy";
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        else
+        {
+            enUnitType unitType = (enUnitType)crtMsg.unitType;
+            switch (unitType)
+            {
+                case enUnitType.Terran_Marine:
+                    {
+                        prefabName = "Marine";
+                    }
+                    break;
+                case enUnitType.Terran_Firebat:
+                    {
+                        prefabName = "Firebat";
+                    }
+                    break;
+                case enUnitType.Terran_Tank:
+                    {
+                        prefabName = "Tank";
+                    }
+                    break;
+                case enUnitType.Terran_Robocop:
+                    {
+                        prefabName = "Robocop";
+                    }
+                    break;
+                case enUnitType.Zerg_Zergling:
+                    {
+                        prefabName = "Zergling";
+                    }
+                    break;
+                case enUnitType.Zerg_Hydra:
+                    {
+                        prefabName = "Hydra";
+                    }
+                    break;
+                case enUnitType.Zerg_Golem:
+                    {
+                        prefabName = "Golem";
+                    }
+                    break;
+                case enUnitType.Zerg_Tarantula:
+                    {
+                        prefabName = "Tarantula";
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
 
         Vector3 position = new Vector3(crtMsg.posX, 0, crtMsg.posZ);

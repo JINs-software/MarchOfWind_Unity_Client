@@ -103,6 +103,7 @@ enum enPlayerTeamInBattleField
 	Team_B,
 	Team_C,
 	Team_D,
+	Team_Dummy,
 	Team_Test,
 };
 
@@ -124,6 +125,7 @@ enum enUnitType
 	Zerg_Hydra,
 	Zerg_Golem,
 	Zerg_Tarantula,
+	None,
 };
 
 public 
