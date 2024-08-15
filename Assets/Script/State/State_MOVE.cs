@@ -36,6 +36,11 @@ public class State_MOVE : StateMachineBehaviour
                 animator.gameObject.GetComponent<UnitController>().State = enUnitState.MOVE_COMMAND;
                 unitState = enUnitState.MOVE_COMMAND;
             }
+            else if(unitController.ServerPathFinding)
+            {
+                animator.gameObject.GetComponent<UnitController>().State = enUnitState.MOVE_SPATH;
+                unitState = enUnitState.MOVE_SPATH;
+            }
             else
             {
                 animator.gameObject.GetComponent<UnitController>().State = enUnitState.MOVE_TRACING;
