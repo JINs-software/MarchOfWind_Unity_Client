@@ -243,6 +243,12 @@ public class BattleField : MonoBehaviour
                             Proc_PATH_FINDING_REPLY(msg);
                         }
                         break;
+                    case enPacketType.S_MGR_TRACE_SPATH:
+                        {
+                            MSG_S_MGR_TRACE_SPATH msg = Manager.Network.BytesToMessage<MSG_S_MGR_TRACE_SPATH>(payload);
+                            Proc_TRACE_SPATH(msg);
+                        }
+                        break;
                     case enPacketType.S_MGR_ATTACK:
                         {
                             MSG_S_MGR_ATTACK msg = Manager.Network.BytesToMessage<MSG_S_MGR_ATTACK>(payload);
@@ -408,9 +414,19 @@ public class BattleField : MonoBehaviour
             return;
         }
 
-        Unit unit = m_Units[msg.unitID];
+        //Unit unit = m_Units[msg.unitID];
+        Debug.Log("Recv Proc_PATH_FINDING_REPLY!");
+    }
 
-        unit.SPathPending();
+    private void Proc_TRACE_SPATH(MSG_S_MGR_TRACE_SPATH msg)
+    {
+        if (!m_Units.ContainsKey(msg.unitID))
+        {
+            return;
+        }
+
+        Unit unit = m_Units[msg.unitID];
+        unit.RecvSPath(msg);
     }
 
     private void Proc_ATTACK(MSG_S_MGR_ATTACK msg)

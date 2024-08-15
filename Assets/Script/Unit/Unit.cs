@@ -117,11 +117,6 @@ public class Unit : MonoBehaviour
         gameObject.transform.rotation = Quaternion.LookRotation(norm);
     }
 
-    public void SPathPending()
-    {
-
-    }
-
     public void Attack(Vector3 position, Vector3 dir, int attkType)
     {
         Debug.Log("Recv Atack---------------------");
@@ -239,6 +234,27 @@ public class Unit : MonoBehaviour
         {
             Vector2 move = m_UiNorm * m_speed * deltaTime;
             m_UIObject.GetComponent<RectTransform>().anchoredPosition += move;
+        }
+    }
+
+    internal void RecvSPath(MSG_S_MGR_TRACE_SPATH msg)
+    {
+        UnitController unitController = gameObject.GetComponent<UnitController>();
+        if (unitController != null && unitController.ServerPathFinding)
+        {
+            if (msg.spathID == unitController.SpathID)
+            {
+                enSPathStateType spathType = (enSPathStateType)msg.spathState;
+                if (spathType != enSPathStateType.END_OF_PATH)
+                {
+                    Tuple<int, Vector3> spath = new Tuple<int, Vector3>(msg.spathID, new Vector3(msg.posX, 0, msg.posZ));
+                    unitController.ServerSPathQueue.Enqueue(spath);
+                }
+                else
+                {
+                    unitController.ServerPathPending = false;
+                }
+            }
         }
     }
 }

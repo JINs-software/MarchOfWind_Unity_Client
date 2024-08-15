@@ -38,8 +38,10 @@ public class UnitController : MonoBehaviour
 
     public enUnitState State = enUnitState.IDLE;
 
+    public bool ServerPathFinding = false;
     public bool ServerPathPending = false;
-    public Queue<Vector3> PathFindingRoutes = new Queue<Vector3>();     
+    public Queue<Tuple<int, Vector3>> ServerSPathQueue = new Queue<Tuple<int, Vector3>>();
+    public int SpathID = 0;
 
     private Coroutine MoveStateCoroutine;
    
@@ -96,20 +98,6 @@ public class UnitController : MonoBehaviour
 
     private bool CheckChangeDirection()
     {
-        //bool ret = false;
-        //
-        //float angle = Vector3.Angle(m_NormBefore, gameObject.transform.forward);
-        //float distance = Vector3.Distance(m_PosBefore, gameObject.transform.position);
-        //
-        //if (angle > 1f && distance > 1f)
-        //{
-        //    ret = true;
-        //    m_NormBefore = gameObject.transform.forward.normalized;
-        //    m_PosBefore = gameObject.transform.position;
-        //}
-        //
-        //return ret;
-
         float angle = Vector3.Angle(m_NormBefore, gameObject.transform.forward);
         if(angle > 1f)
         {
@@ -218,6 +206,25 @@ public class UnitController : MonoBehaviour
                                 yield return new WaitForSeconds(1f);
                             }
                         }
+                        else
+                        {
+                            // 공격 불가 && 유닛의 제자리 걸음
+                            if (Vector3.Distance(beforePosition, gameObject.transform.position) < 1f)
+                            {
+                                if (unchangedCount++ > 3)
+                                {
+                                    // 제자리 걸음 유지
+                                    // => UNIT_S_REQ_TRACE_PATH_FINDING 메시지 전송을 통해 서버 측 JPS 경로 계산 유도
+
+                                    ServerSPathQueue.Clear();
+                                    ServerPathFinding = true;
+                                    ServerPathPending = true;
+                                    Send_PathFindingReqMessage(m_NavMeshAgent.destination, ++SpathID);
+
+                                    yield return new WaitForSeconds(1f);
+                                }
+                            }
+                        }
                     }
                     else
                     {
@@ -310,7 +317,7 @@ public class UnitController : MonoBehaviour
                 continue;
             }
 
-            if (!m_NavMeshAgent.pathPending && !ServerPathPending)
+            if (!m_NavMeshAgent.pathPending && !ServerPathFinding)
             {
                 if (m_AttackController.m_TargetObject != null)
                 {
@@ -373,9 +380,10 @@ public class UnitController : MonoBehaviour
                                 // 제자리 걸음 유지
                                 // => UNIT_S_REQ_TRACE_PATH_FINDING 메시지 전송을 통해 서버 측 JPS 경로 계산 유도
 
-                                Send_PathFindingReqMessage(m_NavMeshAgent.destination);
-
+                                ServerSPathQueue.Clear();
+                                ServerPathFinding = true;
                                 ServerPathPending = true;
+                                Send_PathFindingReqMessage(m_NavMeshAgent.destination, ++SpathID);
 
                                 yield return new WaitForSeconds(1f);
                             }
@@ -398,9 +406,13 @@ public class UnitController : MonoBehaviour
 
     private IEnumerator MoveStateByServerPathFindingCoroutine()
     {
+        int unchangedCount = 0;
+        Vector3 beforePosition, nextPostion;
+        beforePosition = nextPostion = gameObject.transform.position;    
+
         while (true)
         {
-            if(State != enUnitState.MOVE_SPATH || m_UnitMovement.isCommandedToMove)
+            if(State != enUnitState.MOVE_SPATH || m_UnitMovement.isCommandedToMove || !ServerPathFinding)
             {
                 yield return new WaitForSeconds(0.1f);
                 continue;
@@ -409,7 +421,7 @@ public class UnitController : MonoBehaviour
             if (!m_NavMeshAgent.pathPending && !ServerPathPending)
             {
                 // 타겟이 유효하고, 공격 범위 내 존재
-                if(m_AttackController.m_TargetObject != null)
+                if (m_AttackController.m_TargetObject != null)
                 {
                     float distanceToTarget = Vector3.Distance(transform.position, m_AttackController.m_TargetObject.transform.position);
                     float unitRadius = m_Unit.m_radius;
@@ -427,17 +439,31 @@ public class UnitController : MonoBehaviour
                     }
                     else
                     {
-                        // 공격 불가, SPATH 기반으로 이동 유지
-                        if (m_NavMeshAgent.remainingDistance < m_NavMeshAgent.stoppingDistance)
+                        float distance = Vector3.Distance(nextPostion, gameObject.transform.position);
+                        if (distance < m_NavMeshAgent.stoppingDistance)
                         {
-                            if (PathFindingRoutes.Count > 0)
+                            bool hasPath = false;
+                            while(ServerSPathQueue.Count > 0)
                             {
-                                Vector3 nextPosition = PathFindingRoutes.Dequeue();
-                                Send_MoveStartMessage(nextPosition);
+                                Tuple<int, Vector3> spath = ServerSPathQueue.Dequeue();
+                                if (spath.Item1 == SpathID)
+                                {
+                                    Send_MoveStartMessage(spath.Item2);
+                                    nextPostion = spath.Item2;
+                                    beforePosition = gameObject.transform.position;
+                                    hasPath = true;
+                                    break;
+                                }
+                            }
+
+                            if (hasPath)
+                            {
                                 yield return new WaitForSeconds(0.1f);
                             }
                             else
                             {
+                                // 최종 spath 목적지까지 도착하였는데, 타겟 공격이 없다는 뜻
+                                // => idle 상태로 전이...
                                 Send_MoveStopMessage();
                                 yield return new WaitForSeconds(1f);
                             }
@@ -445,7 +471,29 @@ public class UnitController : MonoBehaviour
                         else
                         {
                             // 이동 유지..
-                            yield return null;
+                            // 그러나 여기서도 제자리 걸음이 유지된다면?
+                            if (Vector3.Distance(beforePosition, gameObject.transform.position) < 1f)
+                            {
+                                if (unchangedCount++ > 3)
+                                {
+                                    // 제자리 걸음 유지
+                                    // => UNIT_S_REQ_TRACE_PATH_FINDING 메시지 전송을 통해 서버 측 JPS 경로 계산 유도
+                                    //
+                                    //Send_PathFindingReqMessage(m_NavMeshAgent.destination, ++SpathID);
+                                    //
+                                    //ServerPathFinding = true;
+                                    //ServerPathPending = true;
+
+                                    Send_MoveStopMessage();
+
+                                    yield return new WaitForSeconds(1f);
+                                }
+                            }
+                            else
+                            {
+                                beforePosition = gameObject.transform.position;
+                                yield return new WaitForSeconds(0.1f);
+                            }
                         }
                     }
                 }
@@ -532,10 +580,11 @@ public class UnitController : MonoBehaviour
         return m_UnitSession.SendPacket<MSG_UNIT_S_SYNC_DIRECTION>(dirMsg);
     }
 
-    public bool Send_PathFindingReqMessage(Vector3 destination)
+    public bool Send_PathFindingReqMessage(Vector3 destination, int spathID)
     {
         MSG_UNIT_S_REQ_TRACE_PATH_FINDING pathFindingReqMsg = new MSG_UNIT_S_REQ_TRACE_PATH_FINDING();
         pathFindingReqMsg.type = (ushort)enPacketType.UNIT_S_REQ_TRACE_PATH_FINDING;
+        pathFindingReqMsg.spathID = spathID;
         pathFindingReqMsg.posX = gameObject.transform.position.x;
         pathFindingReqMsg.posZ = gameObject.transform.position.z;
         pathFindingReqMsg.normX = gameObject.transform.forward.normalized.x;

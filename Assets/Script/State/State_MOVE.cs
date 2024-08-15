@@ -48,12 +48,24 @@ public class State_MOVE : StateMachineBehaviour
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if(unitState == enUnitState.MOVE_TRACING && unitMovement.isCommandedToMove)
+        // => CommadToMove
+        if((unitState == enUnitState.MOVE_TRACING || unitState == enUnitState.MOVE_SPATH) && unitMovement.isCommandedToMove)
         {
-            animator.gameObject.GetComponent<UnitController>().State = enUnitState.MOVE_COMMAND;
-            unitState = enUnitState.MOVE_COMMAND;
+            if(unitController.ServerPathFinding)
+            {
+                unitController.ServerPathFinding = false;
+                unitController.ServerPathPending = false;
+                unitController.ServerSPathQueue.Clear();    
+            }
+            unitState = animator.gameObject.GetComponent<UnitController>().State = enUnitState.MOVE_COMMAND;
             unitController.StopMoveStateCoroutine();
+            unitController.StartMoveStateCoroutine(unitState);
+        }
 
+        if((unitState == enUnitState.MOVE_COMMAND || unitState == enUnitState.MOVE_TRACING) && unitController.ServerPathFinding)
+        {
+            unitState = animator.gameObject.GetComponent<UnitController>().State = enUnitState.MOVE_SPATH;
+            unitController.StopMoveStateCoroutine();
             unitController.StartMoveStateCoroutine(unitState);
         }
     }
@@ -64,6 +76,13 @@ public class State_MOVE : StateMachineBehaviour
         {
             Debug.Log("State_MOVE.OnStateExit*********************************************");
             unitController.StopMoveStateCoroutine();
+
+            if (unitController.ServerPathFinding)
+            {
+                unitController.ServerPathFinding = false;
+                unitController.ServerPathPending = false;
+                unitController.ServerSPathQueue.Clear();
+            }
         }
     }
 

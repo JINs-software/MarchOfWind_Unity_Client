@@ -140,6 +140,13 @@ enum enUnitAttackType
 	ATTACK_NORMAL,
 };
 
+public 
+enum enSPathStateType
+{
+	PATH,
+	END_OF_PATH,
+};
+
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public class MSG_COM_REQUEST
 {
@@ -344,6 +351,7 @@ public class MSG_UNIT_S_SYNC_DIRECTION
 public class MSG_UNIT_S_REQ_TRACE_PATH_FINDING
 {
 	public ushort type;
+	public int spathID;
 	public float posX;
 	public float posZ;
 	public float normX;
@@ -357,16 +365,18 @@ public class MSG_S_MGR_REPLY_TRACE_PATH_FINDING
 {
 	public ushort type;
 	public int unitID;
+	public int spathID;
 };
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public class MSG_S_MGR_TRACE_SPATH
 {
 	public ushort type;
+	public int unitID;
+	public int spathID;
 	public float posX;
 	public float posZ;
-	public float normX;
-	public float normZ;
+	public byte spathState;
 };
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
