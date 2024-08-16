@@ -108,6 +108,7 @@ public class Unit : MonoBehaviour
 
         if (gameObject.GetComponent<UnitController>() != null)
         {
+            gameObject.GetComponent<UnitController>().ServerPathFinding = false;
             gameObject.GetComponent<UnitController>().OnMoving = false;
         }
     }
@@ -144,6 +145,7 @@ public class Unit : MonoBehaviour
 
         if (gameObject.GetComponent<UnitController>() != null)
         {
+            gameObject.GetComponent<UnitController>().ServerPathFinding = false;    
             gameObject.GetComponent<UnitController>().OnMoving = false;
         }
     }
@@ -237,18 +239,36 @@ public class Unit : MonoBehaviour
         }
     }
 
-    internal void RecvSPath(MSG_S_MGR_TRACE_SPATH msg)
+    public void RecvJpsReqReply()
+    {
+        m_Animator.ResetTrigger("trIdle");
+        m_Animator.ResetTrigger("trAttack");
+        m_Animator.SetTrigger("trMove");
+
+        UnitController unitController = gameObject.GetComponent<UnitController>();
+
+        if (unitController != null)
+        {
+            unitController.ServerPathFinding = true;
+        }
+    }
+
+    public void RecvSPath(MSG_S_MGR_TRACE_SPATH msg)
     {
         UnitController unitController = gameObject.GetComponent<UnitController>();
-        if (unitController != null && unitController.ServerPathFinding)
+        if (unitController != null && unitController.ServerPathFindingReq)
         {
             if (msg.spathID == unitController.SpathID)
             {
                 enSPathStateType spathType = (enSPathStateType)msg.spathState;
                 if (spathType != enSPathStateType.END_OF_PATH)
                 {
-                    Tuple<int, Vector3> spath = new Tuple<int, Vector3>(msg.spathID, new Vector3(msg.posX, 0, msg.posZ));
+                    Vector3 position = new Vector3(msg.posX, 0, msg.posZ);
+                    Tuple<int, Vector3> spath = new Tuple<int, Vector3>(msg.spathID, position);
                     unitController.ServerSPathQueue.Enqueue(spath);
+
+                    GameObject prefab = Resources.Load<GameObject>("prefab/SPath");
+                    Instantiate(prefab, position, Quaternion.identity).SetActive(true);
                 }
                 else
                 {

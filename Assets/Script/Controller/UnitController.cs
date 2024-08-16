@@ -38,6 +38,7 @@ public class UnitController : MonoBehaviour
 
     public enUnitState State = enUnitState.IDLE;
 
+    public bool ServerPathFindingReq = false;
     public bool ServerPathFinding = false;
     public bool ServerPathPending = false;
     public Queue<Tuple<int, Vector3>> ServerSPathQueue = new Queue<Tuple<int, Vector3>>();
@@ -217,11 +218,13 @@ public class UnitController : MonoBehaviour
                                     // => UNIT_S_REQ_TRACE_PATH_FINDING 메시지 전송을 통해 서버 측 JPS 경로 계산 유도
 
                                     ServerSPathQueue.Clear();
+                                    ServerPathFindingReq = true;
                                     ServerPathFinding = true;
                                     ServerPathPending = true;
                                     Send_PathFindingReqMessage(m_NavMeshAgent.destination, ++SpathID);
 
-                                    yield return new WaitForSeconds(1f);
+                                    //yield return new WaitForSeconds(1f);
+                                    yield break;
                                 }
                             }
                         }
@@ -317,7 +320,7 @@ public class UnitController : MonoBehaviour
                 continue;
             }
 
-            if (!m_NavMeshAgent.pathPending && !ServerPathFinding)
+            if (!m_NavMeshAgent.pathPending && !ServerPathFindingReq)
             {
                 if (m_AttackController.m_TargetObject != null)
                 {
@@ -381,7 +384,8 @@ public class UnitController : MonoBehaviour
                                 // => UNIT_S_REQ_TRACE_PATH_FINDING 메시지 전송을 통해 서버 측 JPS 경로 계산 유도
 
                                 ServerSPathQueue.Clear();
-                                ServerPathFinding = true;
+                                ServerPathFindingReq = true;
+                                ServerPathFinding = false;
                                 ServerPathPending = true;
                                 Send_PathFindingReqMessage(m_NavMeshAgent.destination, ++SpathID);
 
@@ -484,7 +488,7 @@ public class UnitController : MonoBehaviour
                                     //ServerPathFinding = true;
                                     //ServerPathPending = true;
 
-                                    Send_MoveStopMessage();
+                                    //Send_MoveStopMessage();
 
                                     yield return new WaitForSeconds(1f);
                                 }

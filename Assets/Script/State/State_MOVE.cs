@@ -36,7 +36,7 @@ public class State_MOVE : StateMachineBehaviour
                 animator.gameObject.GetComponent<UnitController>().State = enUnitState.MOVE_COMMAND;
                 unitState = enUnitState.MOVE_COMMAND;
             }
-            else if(unitController.ServerPathFinding)
+            else if(unitController.ServerPathFindingReq || unitController.ServerPathFinding)
             {
                 animator.gameObject.GetComponent<UnitController>().State = enUnitState.MOVE_SPATH;
                 unitState = enUnitState.MOVE_SPATH;
@@ -53,11 +53,12 @@ public class State_MOVE : StateMachineBehaviour
 
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        // => CommadToMove
         if((unitState == enUnitState.MOVE_TRACING || unitState == enUnitState.MOVE_SPATH) && unitMovement.isCommandedToMove)
         {
-            if(unitController.ServerPathFinding)
+            // => 커맨드를 통한 이동으로 전이
+            if (unitController.ServerPathFindingReq || unitController.ServerPathFinding)
             {
+                unitController.ServerPathFindingReq = false;
                 unitController.ServerPathFinding = false;
                 unitController.ServerPathPending = false;
                 unitController.ServerSPathQueue.Clear();    
@@ -66,9 +67,9 @@ public class State_MOVE : StateMachineBehaviour
             unitController.StopMoveStateCoroutine();
             unitController.StartMoveStateCoroutine(unitState);
         }
-
-        if((unitState == enUnitState.MOVE_COMMAND || unitState == enUnitState.MOVE_TRACING) && unitController.ServerPathFinding)
+        else if((unitState == enUnitState.MOVE_COMMAND || unitState == enUnitState.MOVE_TRACING) && (unitController.ServerPathFindingReq || unitController.ServerPathFinding))
         {
+            // => 타겟 추적에서 서버 JPS 경로 이동으로 전이
             unitState = animator.gameObject.GetComponent<UnitController>().State = enUnitState.MOVE_SPATH;
             unitController.StopMoveStateCoroutine();
             unitController.StartMoveStateCoroutine(unitState);
@@ -82,9 +83,9 @@ public class State_MOVE : StateMachineBehaviour
             Debug.Log("State_MOVE.OnStateExit*********************************************");
             unitController.StopMoveStateCoroutine();
 
-            if (unitController.ServerPathFinding)
+            if (unitController.ServerPathFindingReq || unitController.ServerPathFinding)
             {
-                unitController.ServerPathFinding = false;
+                unitController.ServerPathFindingReq = false;
                 unitController.ServerPathPending = false;
                 unitController.ServerSPathQueue.Clear();
             }

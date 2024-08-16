@@ -435,7 +435,8 @@ public class BattleField : MonoBehaviour
             return;
         }
 
-        //Unit unit = m_Units[msg.unitID];
+        Unit unit = m_Units[msg.unitID];
+        unit.RecvJpsReqReply();
         Debug.Log("Recv Proc_PATH_FINDING_REPLY!");
     }
 
