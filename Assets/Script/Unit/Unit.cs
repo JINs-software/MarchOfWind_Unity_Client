@@ -241,6 +241,7 @@ public class Unit : MonoBehaviour
 
     public void RecvJpsReqReply()
     {
+        m_NavMeshAgent.isStopped = true;
         m_Animator.ResetTrigger("trIdle");
         m_Animator.ResetTrigger("trAttack");
         m_Animator.SetTrigger("trMove");

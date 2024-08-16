@@ -131,31 +131,37 @@ public class AttackController : MonoBehaviour
                         yield return null;
                     }
                 }
-                else if (raceCnt > 1)
-                {
-                    GameObject newTarget = ResetTarget();
-                    if(newTarget == null)
-                    {
-                        gameObject.GetComponent<UnitController>().Send_AttackStopMessage();
-                    }
-                    raceCnt = 0;
-                }
+                //else if (raceCnt > 1)
+                //{
+                //    GameObject newTarget = ResetTarget();
+                //    if(newTarget == null)
+                //    {
+                //        gameObject.GetComponent<UnitController>().Send_AttackStopMessage();
+                //    }
+                //    raceCnt = 0;
+                //}
+                //else
+                //{
+                //    raceCnt++;
+                //    // 추격
+                //    m_UnitController.Send_MoveStartMessage(m_TargetObject.transform.position);
+                //
+                //    // => 타겟 방향으로 공격이 가능한 위치까지만 이동
+                //    //Vector3 direction = (m_TargetObject.transform.position - gameObject.transform.position);
+                //    //float diff = (m_TargetObject.transform.position - gameObject.transform.position).magnitude - m_AttackDistance;
+                //    //Vector3 destination = gameObject.transform.position + direction.normalized * diff;
+                //    //m_UnitController.Send_MoveStartMessage(destination);
+                //}
                 else
                 {
-                    raceCnt++;
-                    // 추격
-                    m_UnitController.Send_MoveStartMessage(m_TargetObject.transform.position);
-
-                    // => 타겟 방향으로 공격이 가능한 위치까지만 이동
-                    //Vector3 direction = (m_TargetObject.transform.position - gameObject.transform.position);
-                    //float diff = (m_TargetObject.transform.position - gameObject.transform.position).magnitude - m_AttackDistance;
-                    //Vector3 destination = gameObject.transform.position + direction.normalized * diff;
-                    //m_UnitController.Send_MoveStartMessage(destination);
+                    gameObject.GetComponent<UnitController>().Send_AttackStopMessage();
+                    yield return new WaitForSeconds(1f);
                 }
             }
             else
             {
                 gameObject.GetComponent<UnitController>().Send_AttackStopMessage();
+                yield return new WaitForSeconds(1f);
             }
             //yield return new WaitForSeconds((1f / m_AttackRate) - m_AttackDelay);   // attack delay는 (1f / m_AttackRate) 보다 작아야 함.
             yield return null;

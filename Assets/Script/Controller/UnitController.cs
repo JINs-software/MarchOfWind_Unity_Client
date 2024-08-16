@@ -217,6 +217,8 @@ public class UnitController : MonoBehaviour
                                     // 제자리 걸음 유지
                                     // => UNIT_S_REQ_TRACE_PATH_FINDING 메시지 전송을 통해 서버 측 JPS 경로 계산 유도
 
+                                    Send_SyncPosMessage();
+
                                     ServerSPathQueue.Clear();
                                     ServerPathFindingReq = true;
                                     ServerPathFinding = true;
@@ -383,6 +385,8 @@ public class UnitController : MonoBehaviour
                                 // 제자리 걸음 유지
                                 // => UNIT_S_REQ_TRACE_PATH_FINDING 메시지 전송을 통해 서버 측 JPS 경로 계산 유도
 
+                                Send_SyncPosMessage();
+
                                 ServerSPathQueue.Clear();
                                 ServerPathFindingReq = true;
                                 ServerPathFinding = false;
@@ -446,23 +450,27 @@ public class UnitController : MonoBehaviour
                         float distance = Vector3.Distance(nextPostion, gameObject.transform.position);
                         if (distance < m_NavMeshAgent.stoppingDistance)
                         {
-                            bool hasPath = false;
+                            Vector3 newPosition = Vector3.zero;
                             while(ServerSPathQueue.Count > 0)
                             {
                                 Tuple<int, Vector3> spath = ServerSPathQueue.Dequeue();
                                 if (spath.Item1 == SpathID)
                                 {
+                                    // 방향성을 보고 방향이 
                                     Send_MoveStartMessage(spath.Item2);
                                     nextPostion = spath.Item2;
+                                    newPosition = spath.Item2;
                                     beforePosition = gameObject.transform.position;
-                                    hasPath = true;
                                     break;
                                 }
                             }
 
-                            if (hasPath)
+                            if (newPosition != Vector3.zero)
                             {
-                                yield return new WaitForSeconds(0.1f);
+                                unchangedCount = 0;
+                                //yield return new WaitForSeconds(0.1f);
+                                float expectedTime = Vector3.Distance(gameObject.transform.position, newPosition) / m_NavMeshAgent.speed;
+                                yield return new WaitForSeconds(expectedTime);
                             }
                             else
                             {
@@ -488,10 +496,12 @@ public class UnitController : MonoBehaviour
                                     //ServerPathFinding = true;
                                     //ServerPathPending = true;
 
-                                    //Send_MoveStopMessage();
-
-                                    yield return new WaitForSeconds(1f);
+                                    
+                                    Send_MoveStopMessage();
                                 }
+
+                                Send_SyncPosMessage();
+                                yield return new WaitForSeconds(1f);
                             }
                             else
                             {
