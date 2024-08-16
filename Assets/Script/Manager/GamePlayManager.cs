@@ -8,6 +8,8 @@ using UnityEngine.UIElements;
 
 public class GamePlayManager 
 {
+    public bool DebugMode = false;
+
     public string TeamTagStr = "TeamUnit";
     public string EnemyTagStr = "Enemy";
 
@@ -33,6 +35,15 @@ public class GamePlayManager
     public string GameServerIP;
 
     private int CrtCode = 0;
+
+    public void Update()
+    {
+        if (JpsObsMsgQueue.Count > 0)
+        {
+            MSG_S_MONT_JPS_OBSTACLE msg = JpsObsMsgQueue.Dequeue();
+            SetJpsObstacle(msg);
+        }
+    }
 
     public int MakeCrtMessage(MSG_UNIT_S_CREATE_UNIT crtMsg, enUnitType unitType)
     {
@@ -110,4 +121,41 @@ public class GamePlayManager
         }
     }
 
+    ///////////////////////////////////////////////////////
+    /// JPS Obstacle Mark (Debug)
+    ///////////////////////////////////////////////////////
+
+    public Queue<MSG_S_MONT_JPS_OBSTACLE> JpsObsMsgQueue = new Queue<MSG_S_MONT_JPS_OBSTACLE>();
+    Dictionary<Tuple<int, int>, GameObject> JpsObsMarksSet = new Dictionary<Tuple<int, int>, GameObject>();
+
+    internal void SetJpsObstacle(MSG_S_MONT_JPS_OBSTACLE msg)
+    {
+        if ((enJpsObstacleSetting)msg.setting == enJpsObstacleSetting.CLEAR)
+        {
+            foreach(var obs in JpsObsMarksSet)
+            {
+                obs.Value.SetActive(false);
+                GameObject.Destroy(obs.Value);
+            }
+            JpsObsMarksSet.Clear();
+        }
+        else if ((enJpsObstacleSetting)msg.setting == enJpsObstacleSetting.SET){
+            if (!JpsObsMarksSet.ContainsKey(new Tuple<int, int>(msg.x, msg.y)))
+            {
+                GameObject obsMark = GameObject.Instantiate(ColliderMarkObject, new Vector3(msg.x, 0f, msg.y), Quaternion.identity);
+                obsMark.SetActive(true);
+                JpsObsMarksSet.Add(new Tuple<int, int>(msg.x, msg.y), obsMark);
+            }
+        }
+        else if ((enJpsObstacleSetting)msg.setting == enJpsObstacleSetting.UNSET)
+        {
+            if(JpsObsMarksSet.ContainsKey(new Tuple<int, int>(msg.x, msg.y)))
+            {
+                GameObject gameObject = JpsObsMarksSet[new Tuple<int, int>(msg.x, msg.y)];
+                gameObject.SetActive(false);    
+                GameObject.Destroy(gameObject);
+                JpsObsMarksSet.Remove(new Tuple<int, int>(msg.x, msg.y));
+            }
+        }
+    }
 }

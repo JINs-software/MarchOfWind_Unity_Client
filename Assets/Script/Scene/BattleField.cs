@@ -184,7 +184,8 @@ public class BattleField : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Manager.UnitSelection.Update(); 
+        Manager.UnitSelection.Update();
+        Manager.GamePlayer.Update();
 
         if(Input.GetKeyDown(KeyCode.Escape))
         {
@@ -279,8 +280,6 @@ public class BattleField : MonoBehaviour
                             Proc_UNIT_DIED(msg);
                         }
                         break;
-
-
                     case enPacketType.S_MONT_COLLIDER_MAP_RENEW:
                         {
                             Manager.GamePlayer.ResetColliderMarks();
@@ -290,6 +289,13 @@ public class BattleField : MonoBehaviour
                         {
                             MSG_S_MONT_COLLIDER_MAP msg = Manager.Network.BytesToMessage<MSG_S_MONT_COLLIDER_MAP>(payload);
                             Manager.GamePlayer.SetColliderMarks(msg);
+                        }
+                        break;
+                    case enPacketType.S_MONT_JPS_OBSTACLE:
+                        {
+                            MSG_S_MONT_JPS_OBSTACLE msg = Manager.Network.BytesToMessage<MSG_S_MONT_JPS_OBSTACLE>(payload);
+                            //Manager.GamePlayer.SetJpsObstacle(msg);
+                            Manager.GamePlayer.JpsObsMsgQueue.Enqueue(msg);
                         }
                         break;
                     default:

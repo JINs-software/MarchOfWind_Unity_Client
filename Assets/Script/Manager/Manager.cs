@@ -33,6 +33,7 @@ public class Manager : MonoBehaviour
         if (IsGameMode)
         {
             m_UnitSelectionMgr.Update();
+            m_GamePlayMgr.Update();
         }
     }
 

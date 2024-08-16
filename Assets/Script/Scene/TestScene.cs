@@ -18,15 +18,17 @@ public class TestScene : MonoBehaviour
     bool ReadToStart = false;
 
     public bool ColliderMarkDebug = true;
+    public bool JpsObstacleMarkDebug = true;
 
     private void Start()
     {
-        if (ColliderMarkDebug)
+        if (ColliderMarkDebug || JpsObstacleMarkDebug)
         {
             GameObject prefab = Resources.Load<GameObject>("Prefab/ColliderElement");
             //gameObj = Instantiate(prefab, position, Quaternion.LookRotation(dir));
             Manager.GamePlayer.SetColliderMarkObject(prefab);
         }
+
     }
 
     public void OnInputPlayerName()
@@ -82,6 +84,12 @@ public class TestScene : MonoBehaviour
                     }
                 }
             }
+        }
+
+
+        if(PlayerName == "admin")
+        {
+            Manager.GamePlayer.DebugMode = true;   
         }
     }
 

@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
+
 static class PROTOCOL_CONSTANT
 {
 	public const int MAX_OF_PLAYER_NAME_LEN = 32;
@@ -47,6 +48,7 @@ enum enPacketType
 	MGR_UNIT_DIE_REQUEST,
 	S_MONT_COLLIDER_MAP_RENEW,
 	S_MONT_COLLIDER_MAP,
+	S_MONT_JPS_OBSTACLE,
 };
 
 public 
@@ -147,6 +149,14 @@ enum enSPathStateType
 {
 	PATH,
 	END_OF_PATH,
+};
+
+public 
+enum enJpsObstacleSetting
+{
+	SET,
+	UNSET,
+	CLEAR,
 };
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -475,5 +485,14 @@ public class MSG_S_MONT_COLLIDER_MAP
 	public int numOfElements;
 	[MarshalAs(UnmanagedType.ByValArray, SizeConst = PROTOCOL_CONSTANT.MAX_OF_COLLIDER_ELEMENTS)]
 	public Position[] colliders;
+};
+
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public class MSG_S_MONT_JPS_OBSTACLE
+{
+	public ushort type;
+	public byte setting;
+	public int x;
+	public int y;
 };
 
