@@ -114,7 +114,7 @@ public class UnitSelectionManager
             // clickable 객체를 선택할 때 
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, m_Attackable))
             {
-                Debug.Log("Enemy Hovered with mouse");
+                //Debug.Log("Enemy Hovered with mouse");
 
                 m_AttackCursorVisible = true;
 

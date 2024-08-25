@@ -50,7 +50,7 @@ public class UnitIdleState : StateMachineBehaviour
             {
                 if(!SendAttackMsg(animator)) 
                 {
-                    Debug.Log("SendAttackMsg Fail..");
+                    //Debug.Log("SendAttackMsg Fail..");
                 }
                 else {
                     bTranstion = true;
@@ -61,7 +61,7 @@ public class UnitIdleState : StateMachineBehaviour
             {
                 if(!SendMoveMsg(animator)) 
                 {
-                    Debug.Log("SendMoveMsg Fail..");
+                    //Debug.Log("SendMoveMsg Fail..");
                 }
                 else {
                     bTranstion = true;

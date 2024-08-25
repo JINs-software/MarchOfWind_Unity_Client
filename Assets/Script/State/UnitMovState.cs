@@ -22,7 +22,7 @@ public class UnitMovState : StateMachineBehaviour
 
         if (animator.gameObject.GetComponent<AttackController>() != null)
         {
-            Debug.Log("UnitMoveState, OnStateEnter@@@");
+            //Debug.Log("UnitMoveState, OnStateEnter@@@");
 
             bTranstion = false;
             fTransitionWaitTime = TRANSITION_WAIT_TIME;
@@ -33,12 +33,12 @@ public class UnitMovState : StateMachineBehaviour
 
             if(animator.gameObject.GetComponent<UnitController>() == null)
             {
-                Debug.Log("animator.gameObject.GetComponent<UnitController>() == null");
+                //Debug.Log("animator.gameObject.GetComponent<UnitController>() == null");
                 return;
             }
             if(animator.gameObject.GetComponent<UnitController>().Unit == null)
             {
-                Debug.Log("animator.gameObject.GetComponent<UnitController>().Unit == null");
+                //Debug.Log("animator.gameObject.GetComponent<UnitController>().Unit == null");
                 return;
             }
 
@@ -74,10 +74,10 @@ public class UnitMovState : StateMachineBehaviour
             {
                 animator.transform.GetComponent<UnitMovement>().isCommandedToMove = false;
 
-                Debug.Log("UnitMovState, SendMoveStopMsg 송신!");
+                //Debug.Log("UnitMovState, SendMoveStopMsg 송신!");
                 if (!SendMoveStopMsg(animator))
                 {
-                    Debug.Log("UnitMoveState, SendMoveStopMsg Fail..");
+                    //Debug.Log("UnitMoveState, SendMoveStopMsg Fail..");
                 }
                 else
                 {
@@ -90,10 +90,10 @@ public class UnitMovState : StateMachineBehaviour
                 float distanceFromTarget = Vector3.Distance(atkController.m_TargetObject.transform.position, animator.transform.position);
                 if (distanceFromTarget <= unitAttackDistance)
                 {
-                    Debug.Log("UnitMovState, SendAttackMsg 송신!");
+                    //Debug.Log("UnitMovState, SendAttackMsg 송신!");
                     if (!SendAttackMsg(animator))
                     {
-                        Debug.Log("UnitMoveState, SendAttackMsg Fail..");
+                        //Debug.Log("UnitMoveState, SendAttackMsg Fail..");
                     }
                     else
                     {

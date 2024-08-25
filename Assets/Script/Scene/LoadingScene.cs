@@ -12,7 +12,7 @@ public class LoadingScene : MonoBehaviour
         Manager.Network.SetRequstMessage(req, enProtocolComRequest.REQ_ENTER_TO_SELECT_FIELD);
         if (!Manager.Network.SendPacket<MSG_COM_REQUEST>(req))
         {
-            Debug.Log("로딩 씬, REQ_ENTER_TO_GAME_MODE 송신 실패");
+            //Debug.Log("로딩 씬, REQ_ENTER_TO_GAME_MODE 송신 실패");
         }
     }
 
@@ -24,7 +24,7 @@ public class LoadingScene : MonoBehaviour
             MSG_REPLY_ENTER_TO_SELECT_FIELD reply = new MSG_REPLY_ENTER_TO_SELECT_FIELD();    
             if(!Manager.Network.ReceivePacket<MSG_REPLY_ENTER_TO_SELECT_FIELD>(out reply))
             {
-                Debug.Log("로딩 씬, 게임 모드 접근 실패");
+                //Debug.Log("로딩 씬, 게임 모드 접근 실패");
                 return;
             }
             else

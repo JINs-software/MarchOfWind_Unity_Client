@@ -5,6 +5,6 @@ using UnityEngine;
 public class DestroyTracker : MonoBehaviour
 {
     private void OnDestroy() {
-        Debug.Log(gameObject.ToString() + "Destroy..");
+        //Debug.Log(gameObject.ToString() + "Destroy..");
     }
 }

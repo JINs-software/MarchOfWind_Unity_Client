@@ -68,13 +68,13 @@ public class Unit : MonoBehaviour
 
     public void Move_Start(Vector3 position, Vector3 destPosition, float Speed)
     {
-        Debug.Log("Recv Move_Start---------------------");
+        //Debug.Log("Recv Move_Start---------------------");
 
         m_NavMeshAgent.isStopped = false;
         m_NavMeshAgent.avoidancePriority = 99;       
         if (!m_NavMeshAgent.SetDestination(destPosition))
         {
-            Debug.Log("Move_Start, SetDestination returns Fail..");
+            //Debug.Log("Move_Start, SetDestination returns Fail..");
         }
 
         m_Animator.ResetTrigger("trIdle");
@@ -90,11 +90,11 @@ public class Unit : MonoBehaviour
     }
     public void Move_Stop(Vector3 position)
     {
-        Debug.Log("Recv Move_Stop---------------------");
+        //Debug.Log("Recv Move_Stop---------------------");
 
         if (!m_NavMeshAgent.Warp(position))
         {
-            Debug.Log("Move_Stop, Warp returns Fail..");
+            //Debug.Log("Move_Stop, Warp returns Fail..");
         }
         m_NavMeshAgent.isStopped = true;
         m_NavMeshAgent.avoidancePriority = 0;
@@ -120,7 +120,7 @@ public class Unit : MonoBehaviour
 
     public void Attack(Vector3 position, Vector3 dir, int attkType)
     {
-        Debug.Log("Recv Atack---------------------");
+        //Debug.Log("Recv Atack---------------------");
 
         gameObject.transform.forward = dir;
         // => 급격한 방향 전환이 어색함, Quaternion.Slerp 함수 사용
@@ -132,7 +132,7 @@ public class Unit : MonoBehaviour
 
         if (!m_NavMeshAgent.Warp(position))
         {
-            Debug.Log("Move_Stop, Warp returns Fail..");
+            //Debug.Log("Move_Stop, Warp returns Fail..");
         }
         m_NavMeshAgent.isStopped = true;
         m_NavMeshAgent.avoidancePriority = 10;
@@ -151,13 +151,13 @@ public class Unit : MonoBehaviour
     }
     public void Attack_Invalid(Vector3 position, Vector3 dir)
     {
-        Debug.Log("Recv Atack Invalid---------------------");
+        //Debug.Log("Recv Atack Invalid---------------------");
 
         gameObject.transform.forward = dir;
 
         if (!m_NavMeshAgent.Warp(position))
         {
-            Debug.Log("Move_Stop, Warp returns Fail..");
+            //Debug.Log("Move_Stop, Warp returns Fail..");
         }
         m_NavMeshAgent.isStopped = true;
         m_NavMeshAgent.avoidancePriority = 10;
@@ -176,11 +176,11 @@ public class Unit : MonoBehaviour
 
     public void AttackStop(Vector3 position)
     {
-        Debug.Log("Recv Atack Stop---------------------");
+        //Debug.Log("Recv Atack Stop---------------------");
 
         if (!m_NavMeshAgent.Warp(position))
         {
-            Debug.Log("Move_Stop, Warp returns Fail..");
+            //Debug.Log("Move_Stop, Warp returns Fail..");
         }
 
         //m_Animator.SetBool("bAttack", false);

@@ -28,7 +28,7 @@ public class State_MOVE : StateMachineBehaviour
         // 플레이어 유닛임을 UnitController 컴포넌트 소유로 식별
         if (unitController != null)
         {
-            Debug.Log("State_MOVE.OnStateEnter@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+            //Debug.Log("State_MOVE.OnStateEnter@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
             //animator.gameObject.GetComponent<UnitController>().State = enUnitState.MOVE;/
             //unitController.StartMoveStateCoroutine();
             if (unitMovement.isCommandedToMove)
@@ -74,13 +74,22 @@ public class State_MOVE : StateMachineBehaviour
             unitController.StopMoveStateCoroutine();
             unitController.StartMoveStateCoroutine(unitState);
         }
+        else if(unitState == enUnitState.MOVE_SPATH && (!unitController.ServerPathFindingReq && !unitController.ServerPathFinding))
+        {
+            // JPS 경로 이동 -> 타겟 추적
+            unitController.ServerSPathQueue.Clear();
+
+            unitState = animator.gameObject.GetComponent<UnitController>().State = enUnitState.MOVE_TRACING;
+            unitController.StopMoveStateCoroutine();
+            unitController.StartMoveStateCoroutine(unitState);
+        }
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         if (unitController != null)
         {
-            Debug.Log("State_MOVE.OnStateExit*********************************************");
+            //Debug.Log("State_MOVE.OnStateExit*********************************************");
             unitController.StopMoveStateCoroutine();
 
             if (unitController.ServerPathFindingReq || unitController.ServerPathFinding)

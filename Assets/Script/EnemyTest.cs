@@ -24,7 +24,7 @@ public class EnemyTest : MonoBehaviour
         connMsg.fieldID = Manager.GamePlayer.BattleFieldID;
         if (!network.SendPacket<MSG_UNIT_S_CONN_BATTLE_FIELD>(connMsg))
         {
-            Debug.Log("MSG_UNIT_S_CONN_BATTLE_FIELD 메시지 송신 실패");
+            //Debug.Log("MSG_UNIT_S_CONN_BATTLE_FIELD 메시지 송신 실패");
             return;
         }
 
@@ -40,7 +40,7 @@ public class EnemyTest : MonoBehaviour
 
         if (!network.SendPacket<MSG_UNIT_S_CREATE_UNIT>(crtMsg))
         {
-            Debug.Log("테스트 유닛 생성 메시지 송신 실패");
+            //Debug.Log("테스트 유닛 생성 메시지 송신 실패");
             return;
         }
 

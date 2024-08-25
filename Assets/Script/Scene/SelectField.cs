@@ -23,7 +23,7 @@ public class SelectField : MonoBehaviour
         
         if (!Manager.Network.SendPacket<MSG_COM_REQUEST>(req))
         {
-            Debug.Log("���� ���� �ʵ�,  REQ_NUM_OF_SELECTORS ��û �۽� ����");
+            //Debug.Log("���� ���� �ʵ�,  REQ_NUM_OF_SELECTORS ��û �۽� ����");
         }
 
         BattleField.InitCreatePostion();
@@ -36,7 +36,7 @@ public class SelectField : MonoBehaviour
             byte[] payload = Manager.Network.ReceivePacket();
             if (payload == null)
             {
-                Debug.Log("��ġ�� �޽��� ���� ����");
+                //Debug.Log("��ġ�� �޽��� ���� ����");
                 return;
             }
             else

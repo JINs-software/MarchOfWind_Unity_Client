@@ -52,7 +52,7 @@ public class TestScene : MonoBehaviour
             }
             else
             {
-                Debug.Log("Manager.Network.Connect(ServerIP) Fail.......");
+                //Debug.Log("Manager.Network.Connect(ServerIP) Fail.......");
                 return;
             }
         }
@@ -64,7 +64,7 @@ public class TestScene : MonoBehaviour
 
         if (!Manager.Network.SendPacket(msg))
         {
-            Debug.Log("Send MSG_REQ_SET_PLAYER_NAME fail..");
+            //Debug.Log("Send MSG_REQ_SET_PLAYER_NAME fail..");
             return;
         }
         else
@@ -72,7 +72,7 @@ public class TestScene : MonoBehaviour
             MSG_COM_REPLY reply = new MSG_COM_REPLY();
             if (!Manager.Network.ReceivePacket<MSG_COM_REPLY>(out reply))
             {
-                Debug.Log("Recv Rely SET_NAME fail..");
+                //Debug.Log("Recv Rely SET_NAME fail..");
             }
             else
             {
@@ -80,7 +80,7 @@ public class TestScene : MonoBehaviour
                 {
                     if(Manager.Network.CheckReplyCode(reply.replyCode, enProtocolComReply.SET_PLAYER_NAME_SUCCESS, "reply.replyCode != (ushort)enProtocolComReply.SET_PLAYER_NAME_SUCCESS"))
                     {
-                        Debug.Log("Connectted to Server!!");
+                        //Debug.Log("Connectted to Server!!");
                     }
                 }
             }
@@ -89,7 +89,7 @@ public class TestScene : MonoBehaviour
 
         if(PlayerName == "admin")
         {
-            Manager.GamePlayer.DebugMode = true;   
+            Manager.DebugManager.DebugMode = true;   
         }
     }
 
@@ -106,7 +106,7 @@ public class TestScene : MonoBehaviour
         msg.roomNameLen = RoomName.Length;
         if (!Manager.Network.SendPacket(msg))
         {
-            Debug.Log("Send MSG_REQ_MAKE_ROOM fail..");
+            //Debug.Log("Send MSG_REQ_MAKE_ROOM fail..");
             return;
         }
         else
@@ -114,7 +114,7 @@ public class TestScene : MonoBehaviour
             MSG_COM_REPLY reply = new MSG_COM_REPLY();
             if (!Manager.Network.ReceivePacket<MSG_COM_REPLY>(out reply))
             {
-                Debug.Log("Recv Reply MAKE_ROOM faill");
+                //Debug.Log("Recv Reply MAKE_ROOM faill");
             }
             else
             {
@@ -122,7 +122,7 @@ public class TestScene : MonoBehaviour
                 {
                     if(Manager.Network.CheckReplyCode(reply.replyCode, enProtocolComReply.MAKE_MATCH_ROOM_SUCCESS, "매치룸 생성 요청 반환 메시지 응답 코드 불일치"))
                     {
-                        Debug.Log("매치룸 생성 완료");
+                        //Debug.Log("매치룸 생성 완료");
                         InMatchRoom = true;
                     }
                 }
@@ -138,7 +138,7 @@ public class TestScene : MonoBehaviour
             Manager.Network.SetRequstMessage(req, enProtocolComRequest.REQ_GAME_START);
             if (!Manager.Network.SendPacket(req))
             {
-                Debug.Log("REQ_GAME_START 메시지 전송 실패");
+                //Debug.Log("REQ_GAME_START 메시지 전송 실패");
             }
         }
     }
@@ -160,14 +160,14 @@ public class TestScene : MonoBehaviour
         Manager.Network.SetRequstMessage(req, enProtocolComRequest.REQ_ENTER_MATCH_LOBBY);
         if (!Manager.Network.SendPacket(req))
         {
-            Debug.Log("REQ_ENTER_MATCH_LOBBY 메시지 송신 실패");
+            //Debug.Log("REQ_ENTER_MATCH_LOBBY 메시지 송신 실패");
         }
         else
         {
             MSG_COM_REPLY reply = new MSG_COM_REPLY();
             if (!Manager.Network.ReceivePacket<MSG_COM_REPLY>(out reply))
             {
-                Debug.Log("REQ_ENTER_MATCH_LOBBY 메시지 응답 없음");
+                //Debug.Log("REQ_ENTER_MATCH_LOBBY 메시지 응답 없음");
             }
             else
             {
@@ -175,7 +175,7 @@ public class TestScene : MonoBehaviour
                 {
                     if (Manager.Network.CheckReplyCode(reply.replyCode, enProtocolComReply.ENTER_MATCH_LOBBY_SUCCESS, "REQ_ENTER_MATCH_LOBBY 응답 코드 실패"))
                     {
-                        Debug.Log("로비 입장 성공");
+                        //Debug.Log("로비 입장 성공");
                         InLobbyRoom = true;
                     }
                 }
@@ -199,7 +199,7 @@ public class TestScene : MonoBehaviour
 
             if (!Manager.Network.SendPacket<MSG_REQ_JOIN_ROOM>(req))
             {
-                Debug.Log("Join Room 메시지 송신 실패");
+                //Debug.Log("Join Room 메시지 송신 실패");
                 return;
             }
         }
@@ -221,14 +221,14 @@ public class TestScene : MonoBehaviour
                 Manager.Network.SetRequstMessage(req, enProtocolComRequest.REQ_ENTER_MATCH_ROOM);
                 if (!Manager.Network.SendPacket(req))
                 {
-                    Debug.Log("매치룸 입장 확인 요청 메시지 송신 실패");
+                    //Debug.Log("매치룸 입장 확인 요청 메시지 송신 실패");
                 }
                 else
                 {
                     MSG_COM_REPLY reply = new MSG_COM_REPLY();
                     if (!Manager.Network.ReceivePacket<MSG_COM_REPLY>(out reply, true, 100000000))
                     {
-                        Debug.Log("매치룸 입장 확인 요청 메시지 응답 없음");
+                        //Debug.Log("매치룸 입장 확인 요청 메시지 응답 없음");
                     }
                     else
                     {
@@ -236,7 +236,7 @@ public class TestScene : MonoBehaviour
                         {
                             if (Manager.Network.CheckReplyCode(reply.replyCode, enProtocolComReply.ENTER_MATCH_ROOM_SUCCESS, "매치룸 입장 확인 요청 메시지 타입 불일치"))
                             {
-                                Debug.Log("매치룸 입장 확인 성공!");
+                                //Debug.Log("매치룸 입장 확인 성공!");
                                 SendEnterMatchRoomMsg = true;
                             }
                         }
@@ -249,7 +249,7 @@ public class TestScene : MonoBehaviour
                 byte[] payload = Manager.Network.ReceivePacket();
                 if (payload == null)
                 {
-                    Debug.Log("매치룸 메시지 수신 에러");
+                    //Debug.Log("매치룸 메시지 수신 에러");
                     return;
                 }
                 else
@@ -262,7 +262,7 @@ public class TestScene : MonoBehaviour
 
                         string playerName = new string(msg.playerName);
                         string enterStr = "name: " + playerName + ", type: " + msg.playerType + ", order: " + msg.order;
-                        Debug.Log(enterStr);
+                        //Debug.Log(enterStr);
                     }
                     // Ready or ReadToStart 메시지 수신
                     else if (packetType == enPacketType.SERVE_READY_TO_START)
@@ -273,11 +273,11 @@ public class TestScene : MonoBehaviour
                         {
                             ushort playerID = msg.playerID;
                             string readyInfo = "" + playerID + ", Ready!";
-                            Debug.Log(readyInfo);
+                            //Debug.Log(readyInfo);
                         }
                         else if (msg.code == (ushort)enReadyToStartCode.ReadToStart)
                         {
-                            Debug.Log("Ready To Start!");
+                            //Debug.Log("Ready To Start!");
                             ReadToStart = true;
                         }
                     }
@@ -292,7 +292,7 @@ public class TestScene : MonoBehaviour
                     }
                     else
                     {
-                        Debug.Log("type:" + packetType);
+                        //Debug.Log("type:" + packetType);
                     }
                 }
             }
@@ -306,7 +306,7 @@ public class TestScene : MonoBehaviour
                 byte[] payload = Manager.Network.ReceivePacket();
                 if (payload == null)
                 {
-                    Debug.Log("매치룸 메시지 수신 에러");
+                    //Debug.Log("매치룸 메시지 수신 에러");
                     return;
                 }
                 else
@@ -319,25 +319,25 @@ public class TestScene : MonoBehaviour
 
                         string roomName = new string(msg.roomName);
                         string roomList = "roomName: " + roomName + ", roomID: " + msg.roomID + ", order: " + msg.order;
-                        Debug.Log(roomList);
+                        //Debug.Log(roomList);
                     }
                     else if(packetType == enPacketType.COM_REPLY)
                     {
                         MSG_COM_REPLY reply = Manager.Network.BytesToMessage<MSG_COM_REPLY>(payload);
                         if(reply.replyCode == (ushort)enProtocolComReply.JOIN_MATCH_ROOM_SUCCESS)
                         {
-                            Debug.Log("join 매치룸 성공");
+                            //Debug.Log("join 매치룸 성공");
 
                             MSG_COM_REQUEST req = new MSG_COM_REQUEST();
                             Manager.Network.SetRequstMessage(req, enProtocolComRequest.REQ_ENTER_MATCH_ROOM);
                             if (!Manager.Network.SendPacket(req))
                             {
-                                Debug.Log("매치룸 입장 확인 요청 메시지 송신 실패");
+                                //Debug.Log("매치룸 입장 확인 요청 메시지 송신 실패");
                             }
                         }
                         else if(reply.replyCode == (ushort)enProtocolComReply.ENTER_MATCH_ROOM_SUCCESS)
                         {
-                            Debug.Log("매치룸 입장 확인 요청 응답 확인");
+                            //Debug.Log("매치룸 입장 확인 요청 응답 확인");
                         }
                     }
                     // 플레이어 입장
@@ -347,7 +347,7 @@ public class TestScene : MonoBehaviour
 
                         string playerName = new string(msg.playerName);
                         string enterStr = "name: " + playerName + ", type: " + msg.playerType + ", order: " + msg.order;
-                        Debug.Log(enterStr);
+                        //Debug.Log(enterStr);
                     }
                     // 게임 시작 메시지
                     else if (packetType == enPacketType.SERVE_BATTLE_START)
@@ -360,7 +360,7 @@ public class TestScene : MonoBehaviour
                     }
                     else
                     {
-                        Debug.Log("type:" + packetType);
+                        //Debug.Log("type:" + packetType);
                     }
                 }
             }

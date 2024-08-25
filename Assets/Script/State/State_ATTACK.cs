@@ -13,7 +13,7 @@ public class State_ATTACK : StateMachineBehaviour
 
         if (animator.gameObject.GetComponent<UnitController>() != null)
         {
-            Debug.Log("State_ATTACK.OnStateEnter@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+            //Debug.Log("State_ATTACK.OnStateEnter@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
             animator.gameObject.GetComponent<UnitController>().State = enUnitState.ATTACK;
             animator.gameObject.GetComponent<AttackController>().StartAttackJudgmentCoroutine();
         }
@@ -25,7 +25,7 @@ public class State_ATTACK : StateMachineBehaviour
     {
         if (animator.gameObject.GetComponent<UnitController>() != null)
         {
-            Debug.Log("State_ATTACK.OnStateExit*********************************************");
+            //Debug.Log("State_ATTACK.OnStateExit*********************************************");
 
             animator.gameObject.GetComponent<AttackController>().StopAttackJudgmentCoroutine();
 

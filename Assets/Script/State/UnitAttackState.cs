@@ -31,7 +31,7 @@ public class UnitAttackState : StateMachineBehaviour
         }
         else 
         {
-            Debug.Log("animator.gameObject.GetComponent<MuzzleEffect>().MuzzleObject == NULL");
+            //Debug.Log("animator.gameObject.GetComponent<MuzzleEffect>().MuzzleObject == NULL");
         }
 
         animator.gameObject.GetComponent<NavMeshAgent>().avoidancePriority = 10;
@@ -80,7 +80,7 @@ public class UnitAttackState : StateMachineBehaviour
         {
             if(!SendAttackStopMsg(animator))
             {
-                Debug.Log("SendAttackStopMsg Fail..");
+                //Debug.Log("SendAttackStopMsg Fail..");
             }
             else
             {
@@ -95,7 +95,7 @@ public class UnitAttackState : StateMachineBehaviour
             {
                 if(!SendAttackStopMsg(animator)) 
                 {
-                    Debug.Log("SendAttackStopMsg Fail..");
+                    //Debug.Log("SendAttackStopMsg Fail..");
                     animator.SetBool("bAttack", false);
                 }
                 else{
@@ -111,7 +111,7 @@ public class UnitAttackState : StateMachineBehaviour
                 {
                     if(!SendAttackMsg(animator))
                     {
-                        Debug.Log("SendAttackMsg Fail..");
+                        //Debug.Log("SendAttackMsg Fail..");
                     }
                     attackTimer = 1f / unitAttackRate;
                 }
@@ -129,7 +129,7 @@ public class UnitAttackState : StateMachineBehaviour
             {
                 if(!SendAttackStopMsg(animator)) 
                 {
-                    Debug.Log("SendAttackStopMsg Fail..");
+                    //Debug.Log("SendAttackStopMsg Fail..");
                 }
                 else{
                     bTranstion = true;
@@ -146,7 +146,7 @@ public class UnitAttackState : StateMachineBehaviour
 
                         if (!SendAttackMsg(animator))
                         {
-                            Debug.Log("SendAttackMsg Fail..");
+                            //Debug.Log("SendAttackMsg Fail..");
                         }
 
                         attackTimer = 1f / unitAttackRate;
@@ -161,7 +161,7 @@ public class UnitAttackState : StateMachineBehaviour
                     {
                         if(!SendAttackStopMsg(animator)) 
                         {
-                            Debug.Log("SendAttackStopMsg Fail..");
+                            //Debug.Log("SendAttackStopMsg Fail..");
                             animator.SetBool("bAttack", false);
                         }
                         else{

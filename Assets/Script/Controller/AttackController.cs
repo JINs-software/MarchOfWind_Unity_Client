@@ -5,11 +5,13 @@ using System.Diagnostics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Rendering;
 using static UnityEngine.GraphicsBuffer;
 
 public class AttackController : MonoBehaviour
 {
-    public GameObject m_TargetObject;
+    public GameObject       m_TargetObject;
+    public List<GameObject> m_NearTargets = new List<GameObject>();
 
     public float m_AttackDistance;
     public float m_StopAttackDistance;
@@ -26,7 +28,7 @@ public class AttackController : MonoBehaviour
 
     public void StartCheckTargetCoroutine()
     {
-        UnityEngine.Debug.Log("StartCheckTargetCoroutine");
+        //UnityEngine.Debug.Log("StartCheckTargetCoroutine");
         if (CheckTargetCoroutine == null)
         {
             CheckTargetCoroutine = StartCoroutine(CheckTarget());
@@ -34,7 +36,7 @@ public class AttackController : MonoBehaviour
     }
     public void StopCheckTargetCoroutine()
     {
-        UnityEngine.Debug.Log("StopCheckTargetCoroutine");
+        //UnityEngine.Debug.Log("StopCheckTargetCoroutine");
         if (CheckTargetCoroutine != null)
         {
             StopCoroutine(CheckTargetCoroutine);
@@ -70,12 +72,14 @@ public class AttackController : MonoBehaviour
            yield return new WaitForSeconds(1f);
         }
 
-        yield break;    
+        //yield break;    
+        // 현재 움직임이 없는 유닛 존재 발생
+        // AttackJudgmentCoroutine의 yield break와 함께 의심해 볼것
     }
 
     public void StartAttackJudgmentCoroutine()
     {
-        UnityEngine.Debug.Log("StartAttackJudgmentCoroutine");
+        //UnityEngine.Debug.Log("StartAttackJudgmentCoroutine");
         if(AttackJudgmentCoroutine == null)
         {
             AttackJudgmentCoroutine = StartCoroutine(AttackJudgment());
@@ -83,7 +87,7 @@ public class AttackController : MonoBehaviour
     }
     public void StopAttackJudgmentCoroutine()
     {
-        UnityEngine.Debug.Log("StopAttackJudgmentCoroutine");
+        //UnityEngine.Debug.Log("StopAttackJudgmentCoroutine");
         if (AttackJudgmentCoroutine != null )
         {
             StopCoroutine(AttackJudgmentCoroutine); 
@@ -124,34 +128,13 @@ public class AttackController : MonoBehaviour
                         float angle = Vector3.Angle(normToTarget, gameObject.transform.forward);
                         if (angle > 1f)
                         {
-                            UnityEngine.Debug.Log("Send_MoveDirChangeMessage");
+                            //UnityEngine.Debug.Log("Send_MoveDirChangeMessage");
                             m_UnitController.Send_MoveDirChangeMessage(normToTarget);
                         }
 
                         yield return null;
                     }
                 }
-                //else if (raceCnt > 1)
-                //{
-                //    GameObject newTarget = ResetTarget();
-                //    if(newTarget == null)
-                //    {
-                //        gameObject.GetComponent<UnitController>().Send_AttackStopMessage();
-                //    }
-                //    raceCnt = 0;
-                //}
-                //else
-                //{
-                //    raceCnt++;
-                //    // 추격
-                //    m_UnitController.Send_MoveStartMessage(m_TargetObject.transform.position);
-                //
-                //    // => 타겟 방향으로 공격이 가능한 위치까지만 이동
-                //    //Vector3 direction = (m_TargetObject.transform.position - gameObject.transform.position);
-                //    //float diff = (m_TargetObject.transform.position - gameObject.transform.position).magnitude - m_AttackDistance;
-                //    //Vector3 destination = gameObject.transform.position + direction.normalized * diff;
-                //    //m_UnitController.Send_MoveStartMessage(destination);
-                //}
                 else
                 {
                     gameObject.GetComponent<UnitController>().Send_AttackStopMessage();
@@ -180,12 +163,13 @@ public class AttackController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        UnityEngine.Debug.Log("OnTriggerEnter!");
-
-        // �浹���� �±װ� "��"�̸鼭 ���ÿ� ���� Ÿ�� ����� ���� ��� Ÿ�� ������� ����
-        if (other.CompareTag("Enemy") && m_TargetObject == null)
+        if(other.CompareTag("Enemy"))
         {
-            m_TargetObject = other.gameObject;
+            m_NearTargets.Add(other.gameObject);
+            if(m_TargetObject == null)
+            {
+                m_TargetObject = other.gameObject;
+            }
         }
     }
 
@@ -193,17 +177,36 @@ public class AttackController : MonoBehaviour
     {
         if (other.CompareTag("Enemy") && m_TargetObject == null)
         {
-            m_TargetObject = other.gameObject;
+            GameObject nearestEnemy = GetNearestTarget();
+            if (nearestEnemy == other.gameObject)
+            {
+                m_TargetObject = other.gameObject;
+            }
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        UnityEngine.Debug.Log("OnTriggerExit!");
-
-        if (other.CompareTag("Enemy") && m_TargetObject != null)
+        if (other.CompareTag("Enemy"))
         {
-            m_TargetObject = ResetTarget();
+            if (m_NearTargets.Contains(other.gameObject))
+            {
+                m_NearTargets.Remove(other.gameObject);   
+            }
+
+            if (m_TargetObject != null && m_TargetObject == other.gameObject)
+            {
+                m_TargetObject = null;
+                float minDistance = float.MaxValue;
+                foreach(var target in m_NearTargets)
+                {
+                    if(minDistance > Vector3.Distance(gameObject.transform.position, target.transform.position))
+                    {
+                        minDistance = Vector3.Distance(gameObject.transform.position, target.transform.position);
+                        m_TargetObject = target;
+                    }
+                }
+            }
         }
     }
 
@@ -218,37 +221,50 @@ public class AttackController : MonoBehaviour
 
     private void OnEnemyDestroyed(GameObject enemy) 
     {
+        if (m_NearTargets.Contains(enemy))
+        {
+            m_NearTargets.Remove(enemy);    
+        }
         if(m_TargetObject == enemy)
         {
-            UnityEngine.Debug.Log("Enemy Destroyed! : " + enemy.ToString());
-            m_TargetObject = ResetTarget();
+            m_TargetObject = GetNearestTarget();
         }
     }
                    
-    public GameObject ResetTarget()
+    public GameObject GetNearestTarget()
     {
-        Collider[] colliders = Physics.OverlapSphere(gameObject.transform.position, m_TracingRange);
-        float minDistance = m_TracingRange;
-        GameObject minDistanceEnemy = null;
-        foreach (Collider collider in colliders)
+        GameObject nearestTarget = null;
+        float minDistance = float.MaxValue;
+        foreach (var target in m_NearTargets)
         {
-            if (collider.gameObject.tag == Manager.GamePlayer.EnemyTagStr)
-            {
-                float distance = Vector3.Distance(collider.gameObject.transform.position, gameObject.transform.position);
-                if (m_TargetObject != collider.gameObject && distance < minDistance)
-                {
-                    minDistance = distance;
-                    minDistanceEnemy = collider.gameObject;
-                }
-            }
+            if(target == null) continue;
 
-            if (m_TargetObject != minDistanceEnemy)
+            if (minDistance > Vector3.Distance(gameObject.transform.position, target.transform.position))
             {
-                m_TargetObject = minDistanceEnemy;
+                minDistance = Vector3.Distance(gameObject.transform.position, target.transform.position);
+                nearestTarget = target;
             }
         }
 
-        return minDistanceEnemy;
+        return nearestTarget;
+    }
+
+    public GameObject GetOtherTarget()
+    {
+        GameObject nearestOtherTarget = null;
+        float minDistance = float.MaxValue;
+        foreach (var target in m_NearTargets)
+        {
+            if (target == null || target == m_TargetObject) continue;
+
+            if (minDistance > Vector3.Distance(gameObject.transform.position, target.transform.position))
+            {
+                minDistance = Vector3.Distance(gameObject.transform.position, target.transform.position);
+                nearestOtherTarget = target;
+            }
+        }
+
+        return nearestOtherTarget;
     }
 
     private void OnDrawGizmos()

@@ -570,7 +570,7 @@ public class NetworkManager
     {
         if(msgType != (ushort)expectedType)
         {
-            UnityEngine.Debug.Log(debugLog);
+            //UnityEngine.Debug.Log(debugLog);
             return false;
         }
         
@@ -581,7 +581,7 @@ public class NetworkManager
     {
         if(replyCode != (ushort)expectedReplyCode)
         {
-            UnityEngine.Debug.Log(debugLog);
+            //UnityEngine.Debug.Log(debugLog);
             return false;
         }
 

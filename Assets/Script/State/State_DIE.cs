@@ -13,7 +13,7 @@ public class State_DIE : StateMachineBehaviour
 
         if (unitController != null)
         {
-            Debug.Log("State_DIE.OnStateEnter@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+            //Debug.Log("State_DIE.OnStateEnter@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
             unitController.State = enUnitState.DIE;
         }

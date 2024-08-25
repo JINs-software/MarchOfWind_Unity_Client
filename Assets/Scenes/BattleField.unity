@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 154748131}
   - component: {fileID: 154748133}
   - component: {fileID: 154748132}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Checkmark
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1020,7 +1020,7 @@ GameObject:
   - component: {fileID: 733237474}
   - component: {fileID: 733237476}
   - component: {fileID: 733237475}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Checkmark
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1232,7 +1232,7 @@ GameObject:
   - component: {fileID: 778918700}
   - component: {fileID: 778918702}
   - component: {fileID: 778918701}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1308,7 +1308,7 @@ GameObject:
   - component: {fileID: 898848012}
   - component: {fileID: 898848014}
   - component: {fileID: 898848013}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1678,8 +1678,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 437679604}
-  - {fileID: 1230803081}
   - {fileID: 1565317396}
+  - {fileID: 1230803081}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1980,7 +1980,7 @@ GameObject:
   - component: {fileID: 1130211328}
   - component: {fileID: 1130211330}
   - component: {fileID: 1130211329}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2123,7 +2123,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1230803081}
   - component: {fileID: 1230803082}
-  m_Layer: 5
+  - component: {fileID: 1230803083}
+  m_Layer: 9
   m_Name: EnemyCrtToggle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2146,9 +2147,9 @@ RectTransform:
   - {fileID: 1640246402}
   m_Father: {fileID: 983653940}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 524.7, y: 103.4}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 90.7, y: -38.2}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1230803082
@@ -2199,6 +2200,18 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsOn: 0
+--- !u!114 &1230803083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1230803080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df295edbe9c20c849afa2ff3ca9b289d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1428246437
 GameObject:
   m_ObjectHideFlags: 0
@@ -2534,7 +2547,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1565317396}
   - component: {fileID: 1565317397}
-  m_Layer: 5
+  - component: {fileID: 1565317398}
+  m_Layer: 9
   m_Name: DummyCrtToggle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2557,9 +2571,9 @@ RectTransform:
   - {fileID: 898848012}
   m_Father: {fileID: 983653940}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 524.6, y: 122.9}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 90, y: -18}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1565317397
@@ -2608,8 +2622,32 @@ MonoBehaviour:
   m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_IsOn: 0
+--- !u!114 &1565317398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1565317395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df295edbe9c20c849afa2ff3ca9b289d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1640246401
 GameObject:
   m_ObjectHideFlags: 0
@@ -2621,7 +2659,7 @@ GameObject:
   - component: {fileID: 1640246402}
   - component: {fileID: 1640246404}
   - component: {fileID: 1640246403}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}

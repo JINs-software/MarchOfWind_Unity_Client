@@ -15,11 +15,14 @@ public class Manager : MonoBehaviour
     UnitSelectionManager    m_UnitSelectionMgr = new UnitSelectionManager();
     GamePlayManager         m_GamePlayMgr = new GamePlayManager();  
     SceneTransfer           m_SceneTransfer = new SceneTransfer();  
+    DebugManager            m_DebugManager = new DebugManager();
 
     public static NetworkManager Network { get { return Instance.m_NetworkMgr; } }
     public static UnitSelectionManager UnitSelection { get { return Instance.m_UnitSelectionMgr; } }    
     public static GamePlayManager GamePlayer { get { return Instance.m_GamePlayMgr; } } 
     public static SceneTransfer SceneTransfer { get { return Instance.m_SceneTransfer; } }
+
+    public static DebugManager DebugManager { get { return Instance.m_DebugManager; } }
 
     // Start is called before the first frame update
     void Start()
@@ -30,11 +33,13 @@ public class Manager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (IsGameMode)
-        {
-            m_UnitSelectionMgr.Update();
-            m_GamePlayMgr.Update();
-        }
+        //if (IsGameMode)
+        //{
+        //    m_UnitSelectionMgr.Update();
+        //    m_GamePlayMgr.Update();
+        //}
+
+        m_DebugManager.Update();    
     }
 
     static void Init()

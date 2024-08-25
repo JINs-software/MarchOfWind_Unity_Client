@@ -1,11 +1,7 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Scripting;
-using UnityEngine.UIElements;
 
 public class BattleField : MonoBehaviour
 {
@@ -126,7 +122,7 @@ public class BattleField : MonoBehaviour
         Manager.Network.SetRequstMessage(req, enProtocolComRequest.REQ_MOVE_SELECT_FIELD_TO_BATTLE_FIELD);
         if (!Manager.Network.SendPacket<MSG_COM_REQUEST>(req))
         {
-            Debug.Log("REQ_SELECT_FIELD_TO_BATTLE_FIELD �۽� ����");
+            //Debug.Log("REQ_SELECT_FIELD_TO_BATTLE_FIELD �۽� ����");
         }
 
         foreach (var crt in Manager.GamePlayer.CrtMessageList)
@@ -135,7 +131,7 @@ public class BattleField : MonoBehaviour
             MSG_UNIT_S_CREATE_UNIT msg = crt.Item2;
             if (!session.SendPacket<MSG_UNIT_S_CREATE_UNIT>(msg))
             {
-                Debug.Log("���� ���� �޽��� �۽� ����");
+                //Debug.Log("���� ���� �޽��� �۽� ����");
             }
         }
         Manager.GamePlayer.CrtMessageList.Clear();
@@ -147,7 +143,7 @@ public class BattleField : MonoBehaviour
         Manager.Network.SetRequstMessage(req, enProtocolComRequest.REQ_MOVE_BATTLE_FIELD_TO_SELECT_FIELD);
         if (!Manager.Network.SendPacket<MSG_COM_REQUEST>(req))
         {
-            Debug.Log("Send REQ_MOVE_BATTLE_FIELD_TO_SELECT_FIELD fail.....");
+            //Debug.Log("Send REQ_MOVE_BATTLE_FIELD_TO_SELECT_FIELD fail.....");
         }
         else
         {
@@ -159,7 +155,7 @@ public class BattleField : MonoBehaviour
                     byte[] payload = Manager.Network.ReceivePacket();
                     if (payload == null)
                     {
-                        Debug.Log("ReceiveDataAvailable, but ReceivePacket() => null");
+                        //Debug.Log("ReceiveDataAvailable, but ReceivePacket() => null");
                         return;
                     }
                     else
@@ -175,7 +171,7 @@ public class BattleField : MonoBehaviour
                         }
                     }
 
-                    Debug.Log("REPLY_MOVE_BATTLE_FIELD_TO_SELECT_FIELD 메시지 수신 대기................");
+                    //Debug.Log("REPLY_MOVE_BATTLE_FIELD_TO_SELECT_FIELD 메시지 수신 대기................");
                 }
             }
         }
@@ -216,7 +212,7 @@ public class BattleField : MonoBehaviour
             byte[] payload = Manager.Network.ReceivePacket();
             if (payload == null)
             {
-                Debug.Log("수신 메시지 완성 불가!!!");
+                //Debug.Log("수신 메시지 완성 불가!!!");
                 //return;
                 break;
             }
@@ -331,11 +327,11 @@ public class BattleField : MonoBehaviour
             newUnit.GetComponent<UnitController>().m_Unit = newUnit.GetComponent<Unit>();
             if (!Manager.GamePlayer.NewUnitSessions.ContainsKey(msg.crtCode))
             {
-                Debug.Log("[CRT CODE ERROR]");
-                Debug.Log("msg.crtCode: " + msg.crtCode);
+                //Debug.Log("[CRT CODE ERROR]");
+                //Debug.Log("msg.crtCode: " + msg.crtCode);
                 foreach(var code in Manager.GamePlayer.NewUnitSessions)
                 {
-                    Debug.Log("contained code: " + code);
+                    //Debug.Log("contained code: " + code);
                 }
             }
             newUnit.GetComponent<UnitController>().UnitSession = Manager.GamePlayer.NewUnitSessions[msg.crtCode];
@@ -443,7 +439,7 @@ public class BattleField : MonoBehaviour
 
         Unit unit = m_Units[msg.unitID];
         unit.RecvJpsReqReply();
-        Debug.Log("Recv Proc_PATH_FINDING_REPLY!");
+        //Debug.Log("Recv Proc_PATH_FINDING_REPLY!");
     }
 
     private void Proc_TRACE_SPATH(MSG_S_MGR_TRACE_SPATH msg)
@@ -454,6 +450,7 @@ public class BattleField : MonoBehaviour
         }
 
         Unit unit = m_Units[msg.unitID];
+        Debug.Log("Proc_TRACE_SPATH, unitID: " + msg.unitID + ", spaathID: " + msg.spathID);
         unit.RecvSPath(msg);
     }
 

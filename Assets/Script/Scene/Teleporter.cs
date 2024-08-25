@@ -31,7 +31,7 @@ public class Teleporter : MonoBehaviour {
             connMsg.fieldID = Manager.GamePlayer.BattleFieldID;
             if (!session.SendPacket<MSG_UNIT_S_CONN_BATTLE_FIELD>(connMsg))
             {
-                Debug.Log("MSG_UNIT_S_CONN_BATTLE_FIELD 메시지 송신 실패");
+                //Debug.Log("MSG_UNIT_S_CONN_BATTLE_FIELD 메시지 송신 실패");
                 return;
             }
 

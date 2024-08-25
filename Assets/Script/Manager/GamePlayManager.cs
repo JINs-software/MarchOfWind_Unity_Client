@@ -8,8 +8,6 @@ using UnityEngine.UIElements;
 
 public class GamePlayManager 
 {
-    public bool DebugMode = false;
-
     public string TeamTagStr = "TeamUnit";
     public string EnemyTagStr = "Enemy";
 
