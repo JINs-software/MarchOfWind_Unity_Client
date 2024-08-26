@@ -313,8 +313,6 @@ public class UnitController : MonoBehaviour
 
     private IEnumerator MoveStateByTracingCoroutine()
     {
-        int unchangedCount = 0;
-
         while (true)
         {
             if(State != enUnitState.MOVE_TRACING || m_UnitMovement.isCommandedToMove)

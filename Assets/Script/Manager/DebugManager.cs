@@ -14,8 +14,6 @@ public class DebugManager
     private Camera m_Camera;
     private LayerMask LClickLayerMask;
 
-    private int CrtCode = 0;
-
     public void Update()
     {
         if(m_Camera == null)

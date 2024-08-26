@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- Generated file, do not modify, your changes will be overwritten (use AssetPostprocessor.OnGeneratedCSProject) -->
   <PropertyGroup>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -10,7 +10,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{A33D8DF6-3332-AB9D-B7B6-64D48A6CF336}</ProjectGuid>
+    <ProjectGuid>{F0FEC131-9DE2-2AFB-FAB0-2F7AABD512C9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -55,19 +55,21 @@
     <UnityVersion>2022.3.38f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Analyzer Include="C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
-    <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.3.38f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.SourceGenerators.dll" />
-    <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.3.38f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Assets\Script\State\State_WAIT.cs" />
+    <Compile Include="Assets\Unity UI Samples\Scripts\PanelManager.cs" />
+    <Compile Include="Assets\Unity UI Samples\Scripts\ChangeColor.cs" />
     <Compile Include="Assets\Script\Unit\Unit.cs" />
+    <Compile Include="Assets\Script\Scene\LoginScene.cs" />
+    <Compile Include="Assets\Script\Unity_Util\Managers\SceneManagerEx.cs" />
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\WFX_Demo_Wall.cs" />
     <Compile Include="Assets\Script\Controller\ToggleController.cs" />
     <Compile Include="Assets\Teleport\Scripts\teleport\SpawnPoint.cs" />
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\CFX_Demo_RotateCamera.cs" />
     <Compile Include="Assets\Script\State\State_MOVE.cs" />
+    <Compile Include="Assets\Unity UI Samples\Scripts\ApplicationManager.cs" />
+    <Compile Include="Assets\Script\Unity_Util\Managers\ResourceManager.cs" />
     <Compile Include="Assets\Script\State\State_IDLE.cs" />
+    <Compile Include="Assets\Script\UI\LobbyUI.cs" />
     <Compile Include="Assets\Script\SelectorUnit.cs" />
     <Compile Include="Assets\Script\Manager\DebugManager.cs" />
     <Compile Include="Assets\Script\UnitSelectionBox.cs" />
@@ -77,17 +79,21 @@
     <Compile Include="Assets\Script\EnemyTest.cs" />
     <Compile Include="Assets\Script\Debug\SimplePatrol.cs" />
     <Compile Include="Assets\Script\Manager\SceneTransfer.cs" />
+    <Compile Include="Assets\Script\Unity_Util\Scene\Sample\TestScene.cs" />
     <Compile Include="Assets\Script\HealthController.cs" />
     <Compile Include="Assets\Teleport\Scripts\teleport\PortTrigger.cs" />
+    <Compile Include="Assets\Script\Unity_Util\UI\Sample\UI_BtnsCanvas.cs" />
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\WFX_Demo_New.cs" />
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\WFX_Demo_DeleteAfterDelay.cs" />
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\WFX_Demo.cs" />
     <Compile Include="Assets\Script\Controller\CameraController.cs" />
+    <Compile Include="Assets\Script\UI\InitUI.cs" />
     <Compile Include="Assets\Script\Scene\LoadingScene.cs" />
     <Compile Include="Assets\Teleport\Scripts\player\PlayerManager.cs" />
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\CFX_AutoStopLoopedEffect.cs" />
     <Compile Include="Assets\DestroyTracker.cs" />
     <Compile Include="Assets\WarFX\WarFX\Scripts\CFX_LightIntensityFade.cs" />
+    <Compile Include="Assets\Script\Scene\InitScene.cs" />
     <Compile Include="Assets\MonsterGolem\02_Golem\Scripts\CharacterRotator.cs" />
     <Compile Include="Assets\Animated Fantasy Planet\Demo\Script\LookCamera.cs" />
     <Compile Include="Assets\Script\SPath.cs" />
@@ -98,38 +104,53 @@
     <Compile Include="Assets\Script\Controller\AttackController.cs" />
     <Compile Include="Assets\Teleport\Scripts\player\PlayerMovement.cs" />
     <Compile Include="Assets\Script\Controller\UnitController.cs" />
+    <Compile Include="Assets\Script\Unity_Util\Utils\Util.cs" />
+    <Compile Include="Assets\Unity UI Samples\Scripts\ShowSliderValue.cs" />
     <Compile Include="Assets\Script\State\State_INIT.cs" />
     <Compile Include="Assets\Script\DummySpawn.cs" />
+    <Compile Include="Assets\Script\Unity_Util\UI\UI_Base.cs" />
+    <Compile Include="Assets\Unity UI Samples\Scripts\ResizePanel.cs" />
     <Compile Include="Assets\Tarantula\CrabMonster\Scripts\Rikayon.cs" />
     <Compile Include="Assets\Script\Controller\NavMeshController.cs" />
     <Compile Include="Assets\Script\Enemy.cs" />
+    <Compile Include="Assets\Unity UI Samples\Scripts\TiltWindow.cs" />
     <Compile Include="Assets\Script\State\UnitMovState.cs" />
     <Compile Include="Assets\Episode10_Assets_RTS\DirectionIndicator.cs" />
     <Compile Include="Assets\Teleport\Scripts\player\PlayerController.cs" />
+    <Compile Include="Assets\Script\Unity_Util\UI\UI_EventHandler.cs" />
     <Compile Include="Assets\Script\State\State_ATTACK.cs" />
     <Compile Include="Assets\Script\Manager\GamePlayManager.cs" />
     <Compile Include="Assets\Script\Manager\Manager.cs" />
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\CFX_Demo_Translate.cs" />
+    <Compile Include="Assets\Script\Unity_Util\Managers\NetworkManager.cs" />
     <Compile Include="Assets\WarFX\WarFX\Spawn System\CFX_SpawnSystem.cs" />
     <Compile Include="Assets\WarFX\WarFX\Scripts\WFX_BulletHoleDecal.cs" />
     <Compile Include="Assets\WarFX\WarFX\Scripts\CFX_AutoDestructShuriken.cs" />
+    <Compile Include="Assets\Script\Unity_Util\Managers\Managers.cs" />
     <Compile Include="Assets\Script\HealthTracker.cs" />
-    <Compile Include="Assets\Script\Define.cs" />
+    <Compile Include="Assets\Unity UI Samples\Scripts\DragMe.cs" />
+    <Compile Include="Assets\Script\UI\CreateMatchUI.cs" />
     <Compile Include="Assets\Script\Scene\SelectField.cs" />
     <Compile Include="Assets\Script\GroundMarker.cs" />
     <Compile Include="Assets\Script\Data\Data.cs" />
-    <Compile Include="Assets\Script\Manager\NetworkManager.cs" />
     <Compile Include="Assets\MonsterGolem\02_Golem\Scripts\AnimationButton.cs" />
+    <Compile Include="Assets\Script\Unity_Util\Utils\Extension.cs" />
     <Compile Include="Assets\Tarantula\CrabMonster\LB3DGameManager.cs" />
     <Compile Include="Assets\Script\MuzzleEffect.cs" />
+    <Compile Include="Assets\Unity UI Samples\Scripts\DropMe.cs" />
     <Compile Include="Assets\Script\UnitMovement.cs" />
+    <Compile Include="Assets\Script\Unity_Util\Managers\InputManager.cs" />
+    <Compile Include="Assets\Unity UI Samples\Scripts\ActiveStateToggler.cs" />
     <Compile Include="Assets\Script\State\SelectorIdleState.cs" />
-    <Compile Include="Assets\Script\Scene\TestScene.cs" />
+    <Compile Include="Assets\Unity UI Samples\Scripts\DragPanel.cs" />
+    <Compile Include="Assets\Script\Unity_Util\Scene\BaseScene.cs" />
+    <Compile Include="Assets\Unity UI Samples\Scripts\ScrollDetailTexture.cs" />
     <Compile Include="Assets\Script\Scene\BattleField.cs" />
     <Compile Include="Assets\Script\Scene\Teleporter.cs" />
     <Compile Include="Assets\Script\State\State_DIE.cs" />
     <Compile Include="Assets\Script\Data\Protocol.cs" />
     <Compile Include="Assets\WarFX\WarFX\Scripts\WFX_LightFlicker.cs" />
+    <Compile Include="Assets\Script\Unity_Util\Utils\Define.cs" />
     <Compile Include="Assets\Script\State\UnitAttackState.cs" />
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\CFX_Demo_RandomDir.cs" />
     <Compile Include="Assets\Script\Scene\Teleportable.cs" />
@@ -137,7 +158,6 @@
     <Compile Include="Assets\Script\State\SelectorMovingState.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\TerrainSample\ThirdPartyNotices.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
     <None Include="Assets\WarFX\WarFX\Shaders\WFX_S Multiply Soft.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
@@ -147,8 +167,10 @@
     <None Include="Assets\Tarantula\CrabMonster\DOCUMENTATION.txt" />
     <None Include="Assets\WarFX\WarFX\Shaders\WFX_S Alpha-Specular TintColor.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Mobile.cginc" />
+    <None Include="Assets\Unity UI Samples\Textures and Sprites\SF UI\Background\LICENSE.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF SSD.shader" />
     <None Include="Assets\WarFX\WarFX\Shaders\WFX_S Add Scroll.shader" />
+    <None Include="Assets\Unity UI Samples\Materials\UI-Default-No-Alpha.shader" />
     <None Include="Assets\WarFX\Cartoon FX Easy Editor\CartoonFX Easy Editor Readme.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface-Mobile.shader" />
     <None Include="Assets\WarFX\WarFX\_Effects (Mobile)\MuzzleFlashes\!MuzzleFlash Differences.txt" />
@@ -165,6 +187,7 @@
     <None Include="Assets\WarFX\WarFX\Shaders\WFX_S AlphaBlend Scroll.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Properties.cginc" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Surface.cginc" />
+    <None Include="Assets\Unity UI Samples\Fonts\Jupiter\LICENSE.txt" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader" />
     <None Include="Assets\WarFX\WarFX\Shaders\WFX_S Particle AddSoft A8.shader" />
@@ -175,7 +198,6 @@
     <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader" />
     <None Include="Assets\WarFX\WarFX\Shaders\WFX_S AlphaBlend NoSoftParticles.shader" />
-    <None Include="Assets\TerrainSample\ShaderGraphs\CustomFunctions\CustomLighting.hlsl" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Sprite.shader" />
   </ItemGroup>
   <ItemGroup>

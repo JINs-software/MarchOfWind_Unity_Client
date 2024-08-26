@@ -97,7 +97,6 @@ public class AttackController : MonoBehaviour
 
     private IEnumerator AttackJudgment()
     {
-        int raceCnt = 0;
         float attackWaitTime = 0f;
 
         while (m_UnitController.State == enUnitState.ATTACK && m_UnitMovement.isCommandedToMove == false)

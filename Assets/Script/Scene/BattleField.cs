@@ -5,8 +5,6 @@ using UnityEngine.AI;
 
 public class BattleField : MonoBehaviour
 {
-    static string TeamTagStr = "TEAM_UNIT";
-
     private static Vector3 SpawnPointA = new Vector3(150f, 0, 150f);
     private static Vector3 SpawnPointB = new Vector3(250f, 0, 150f);
     private static Vector3 SpawnPointC = new Vector3(250f, 0, 250f);

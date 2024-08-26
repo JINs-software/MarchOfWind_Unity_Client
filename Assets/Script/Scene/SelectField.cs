@@ -81,7 +81,6 @@ public class SelectField : MonoBehaviour
 
     void CreateSelectorMan(GameObject selectorPrefab, int cnt)
     {
-        int loopCnt = 0;
         for(int i=0; i<cnt; i++)
         {
             Vector3 spawnPos = GetRandomPositionOnCylinder(m_InitPoint);
