@@ -75,14 +75,7 @@ public class UnitMovState : StateMachineBehaviour
                 animator.transform.GetComponent<UnitMovement>().isCommandedToMove = false;
 
                 //Debug.Log("UnitMovState, SendMoveStopMsg 송신!");
-                if (!SendMoveStopMsg(animator))
-                {
-                    //Debug.Log("UnitMoveState, SendMoveStopMsg Fail..");
-                }
-                else
-                {
-                    bTranstion = true;
-                }
+                SendMoveStopMsg(animator);
             }
 
             if (atkController != null && atkController.m_TargetObject != null && animator.transform.GetComponent<UnitMovement>().isCommandedToMove == false)
@@ -91,14 +84,7 @@ public class UnitMovState : StateMachineBehaviour
                 if (distanceFromTarget <= unitAttackDistance)
                 {
                     //Debug.Log("UnitMovState, SendAttackMsg 송신!");
-                    if (!SendAttackMsg(animator))
-                    {
-                        //Debug.Log("UnitMoveState, SendAttackMsg Fail..");
-                    }
-                    else
-                    {
-                        bTranstion = true;
-                    }
+                    SendAttackMsg(animator);
                 }
             }
         }
@@ -137,7 +123,7 @@ public class UnitMovState : StateMachineBehaviour
         return false;
     }
 
-    private bool SendMoveStopMsg(Animator animator){
+    private void SendMoveStopMsg(Animator animator){
         MSG_UNIT_S_MOVE movMsg = new MSG_UNIT_S_MOVE();
         movMsg.type = (ushort)enPacketType.UNIT_S_MOVE;  
         movMsg.moveType = (byte)(enUnitMoveType.Move_Stop);    
@@ -146,9 +132,9 @@ public class UnitMovState : StateMachineBehaviour
         movMsg.normX = animator.transform.forward.normalized.x;
         movMsg.normZ = animator.transform.forward.normalized.z;
 
-        return animator.gameObject.GetComponent<UnitController>().UnitSession.SendPacket<MSG_UNIT_S_MOVE>(movMsg);
+        animator.gameObject.GetComponent<UnitController>().UnitSession.SendPacket<MSG_UNIT_S_MOVE>(movMsg);
     }
-    private bool SendAttackMsg(Animator animator)
+    private void SendAttackMsg(Animator animator)
     {
         MSG_UNIT_S_ATTACK atkMsg = new MSG_UNIT_S_ATTACK();
         atkMsg.type = (ushort)enPacketType.UNIT_S_ATTACK;
@@ -160,6 +146,6 @@ public class UnitMovState : StateMachineBehaviour
         atkMsg.targetID = atkController.m_TargetObject.GetComponent<Enemy>().m_Unit.m_id;
         atkMsg.attackType = (int)enUnitAttackType.ATTACK_NORMAL;
 
-        return animator.gameObject.GetComponent<UnitController>().UnitSession.SendPacket<MSG_UNIT_S_ATTACK>(atkMsg);
+        animator.gameObject.GetComponent<UnitController>().UnitSession.SendPacket<MSG_UNIT_S_ATTACK>(atkMsg);
     }
 }

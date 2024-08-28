@@ -11,12 +11,14 @@ public class Manager : MonoBehaviour
     static bool IsGameMode = false;
     public static bool GameMode { get { return IsGameMode; } set { IsGameMode = value; } }
 
+    ResourceManager         m_ResourceMgr = new ResourceManager();
     NetworkManager          m_NetworkMgr = new NetworkManager();
     UnitSelectionManager    m_UnitSelectionMgr = new UnitSelectionManager();
     GamePlayManager         m_GamePlayMgr = new GamePlayManager();  
     SceneTransfer           m_SceneTransfer = new SceneTransfer();  
     DebugManager            m_DebugManager = new DebugManager();
 
+    public static ResourceManager Resource { get { return Instance.m_ResourceMgr; } }
     public static NetworkManager Network { get { return Instance.m_NetworkMgr; } }
     public static UnitSelectionManager UnitSelection { get { return Instance.m_UnitSelectionMgr; } }    
     public static GamePlayManager GamePlayer { get { return Instance.m_GamePlayMgr; } } 

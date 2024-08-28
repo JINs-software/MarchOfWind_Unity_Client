@@ -19,12 +19,11 @@ public class SelectField : MonoBehaviour
 
         // ������ ���� ��û
         MSG_COM_REQUEST req = new MSG_COM_REQUEST();
-        Manager.Network.SetRequstMessage(req, enProtocolComRequest.REQ_NUM_OF_SELECTORS);
-        
-        if (!Manager.Network.SendPacket<MSG_COM_REQUEST>(req))
-        {
-            //Debug.Log("���� ���� �ʵ�,  REQ_NUM_OF_SELECTORS ��û �۽� ����");
-        }
+        //Manager.Network.SetRequstMessage(req, enProtocolComRequest.REQ_NUM_OF_SELECTORS);
+        req.type = (ushort)enPacketType.COM_REQUSET;
+        req.type = (ushort)enProtocolComRequest.REQ_NUM_OF_SELECTORS;
+
+        Manager.Network.SendPacket<MSG_COM_REQUEST>(req);
 
         BattleField.InitCreatePostion();
     }
@@ -33,7 +32,8 @@ public class SelectField : MonoBehaviour
     {
         if (Manager.Network.ReceiveDataAvailable())
         {
-            byte[] payload = Manager.Network.ReceivePacket();
+            byte[] payload;
+            Manager.Network.ReceivePacket(out payload);
             if (payload == null)
             {
                 //Debug.Log("��ġ�� �޽��� ���� ����");

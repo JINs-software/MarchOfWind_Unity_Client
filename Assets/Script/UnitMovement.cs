@@ -58,10 +58,7 @@ public class UnitMovement : MonoBehaviour
 
                     //DistanceFromCenter = (Manager.UnitSelection.CenterOfUnitSelected - transform.position).magnitude;
                     DistanceFromCenter = Manager.UnitSelection.UnitSelectedCircumscriber * 2;
-                    if (!gameObject.GetComponent<UnitController>().Send_MoveStartMessage(hit.point))
-                    {
-                        //Debug.Log("UnitMovenent, Send_MoveStartMessage 송신 실패");
-                    }
+                    gameObject.GetComponent<UnitController>().Send_MoveStartMessage(hit.point);
                 }
             }
         }

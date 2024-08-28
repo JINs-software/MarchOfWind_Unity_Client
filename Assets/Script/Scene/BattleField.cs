@@ -117,20 +117,16 @@ public class BattleField : MonoBehaviour
         Manager.UnitSelection.Init();   
 
         MSG_COM_REQUEST req = new MSG_COM_REQUEST();
-        Manager.Network.SetRequstMessage(req, enProtocolComRequest.REQ_MOVE_SELECT_FIELD_TO_BATTLE_FIELD);
-        if (!Manager.Network.SendPacket<MSG_COM_REQUEST>(req))
-        {
-            //Debug.Log("REQ_SELECT_FIELD_TO_BATTLE_FIELD �۽� ����");
-        }
+        //Manager.Network.SetRequstMessage(req, enProtocolComRequest.REQ_MOVE_SELECT_FIELD_TO_BATTLE_FIELD);
+        req.type = (ushort)enPacketType.COM_REQUSET;
+        req.requestCode = (ushort)enProtocolComRequest.REQ_MOVE_SELECT_FIELD_TO_BATTLE_FIELD;
+        Manager.Network.SendPacket<MSG_COM_REQUEST>(req);
 
         foreach (var crt in Manager.GamePlayer.CrtMessageList)
         {
             NetworkManager session = crt.Item1;
             MSG_UNIT_S_CREATE_UNIT msg = crt.Item2;
-            if (!session.SendPacket<MSG_UNIT_S_CREATE_UNIT>(msg))
-            {
-                //Debug.Log("���� ���� �޽��� �۽� ����");
-            }
+            session.SendPacket<MSG_UNIT_S_CREATE_UNIT>(msg);
         }
         Manager.GamePlayer.CrtMessageList.Clear();
     }
@@ -138,39 +134,37 @@ public class BattleField : MonoBehaviour
     private void OnDestroy()
     {
         MSG_COM_REQUEST req = new MSG_COM_REQUEST();
-        Manager.Network.SetRequstMessage(req, enProtocolComRequest.REQ_MOVE_BATTLE_FIELD_TO_SELECT_FIELD);
-        if (!Manager.Network.SendPacket<MSG_COM_REQUEST>(req))
+        //Manager.Network.SetRequstMessage(req, enProtocolComRequest.REQ_MOVE_BATTLE_FIELD_TO_SELECT_FIELD);
+        req.type = (ushort)enPacketType.COM_REQUSET;
+        req.requestCode = (ushort)enProtocolComRequest.REQ_MOVE_BATTLE_FIELD_TO_SELECT_FIELD;
+        Manager.Network.SendPacket<MSG_COM_REQUEST>(req);
+
+        // REQ_MOVE_BATTLE_FIELD_TO_SELECT_FIELD 에 대한 응답을 받은 후 Battle 씬 파괴
+        while (true)
         {
-            //Debug.Log("Send REQ_MOVE_BATTLE_FIELD_TO_SELECT_FIELD fail.....");
-        }
-        else
-        {
-            // REQ_MOVE_BATTLE_FIELD_TO_SELECT_FIELD 에 대한 응답을 받은 후 Battle 씬 파괴
-            while (true)
+            if (Manager.Network.ReceiveDataAvailable())
             {
-                if (Manager.Network.ReceiveDataAvailable())
+                byte[] payload;
+                Manager.Network.ReceivePacket(out payload);
+                if (payload == null)
                 {
-                    byte[] payload = Manager.Network.ReceivePacket();
-                    if (payload == null)
+                    //Debug.Log("ReceiveDataAvailable, but ReceivePacket() => null");
+                    return;
+                }
+                else
+                {
+                    enPacketType packetType = Manager.Network.GetMsgTypeInBytes(payload);
+                    if (packetType == enPacketType.COM_REPLY)
                     {
-                        //Debug.Log("ReceiveDataAvailable, but ReceivePacket() => null");
-                        return;
-                    }
-                    else
-                    {
-                        enPacketType packetType = Manager.Network.GetMsgTypeInBytes(payload);
-                        if (packetType == enPacketType.COM_REPLY)
+                        MSG_COM_REPLY msg = Manager.Network.BytesToMessage<MSG_COM_REPLY>(payload);
+                        if (msg.replyCode == (int)enProtocolComReply.REPLY_MOVE_BATTLE_FIELD_TO_SELECT_FIELD)
                         {
-                            MSG_COM_REPLY msg = Manager.Network.BytesToMessage<MSG_COM_REPLY>(payload);
-                            if (msg.replyCode == (int)enProtocolComReply.REPLY_MOVE_BATTLE_FIELD_TO_SELECT_FIELD)
-                            {
-                                break;
-                            }
+                            break;
                         }
                     }
-
-                    //Debug.Log("REPLY_MOVE_BATTLE_FIELD_TO_SELECT_FIELD 메시지 수신 대기................");
                 }
+
+                //Debug.Log("REPLY_MOVE_BATTLE_FIELD_TO_SELECT_FIELD 메시지 수신 대기................");
             }
         }
     }
@@ -207,7 +201,8 @@ public class BattleField : MonoBehaviour
         // => 연속적으로 수신
         while(Manager.Network.ReceiveDataAvailable())
         {
-            byte[] payload = Manager.Network.ReceivePacket();
+            byte[] payload;
+            Manager.Network.ReceivePacket(out payload);
             if (payload == null)
             {
                 //Debug.Log("수신 메시지 완성 불가!!!");

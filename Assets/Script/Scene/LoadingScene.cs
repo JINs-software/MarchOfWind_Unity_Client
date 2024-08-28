@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LoadingScene : MonoBehaviour
 {
@@ -9,11 +10,10 @@ public class LoadingScene : MonoBehaviour
     {
         // 게임 시작 여부 확인 메시지 전송
         MSG_COM_REQUEST req = new MSG_COM_REQUEST();
-        Manager.Network.SetRequstMessage(req, enProtocolComRequest.REQ_ENTER_TO_SELECT_FIELD);
-        if (!Manager.Network.SendPacket<MSG_COM_REQUEST>(req))
-        {
-            //Debug.Log("로딩 씬, REQ_ENTER_TO_GAME_MODE 송신 실패");
-        }
+        //Manager.Network.SetRequstMessage(req, enProtocolComRequest.REQ_ENTER_TO_SELECT_FIELD);
+        req.type = (ushort)enPacketType.COM_REQUSET;
+        req.type = (ushort)enProtocolComRequest.REQ_ENTER_TO_SELECT_FIELD;
+        Manager.Network.SendPacket<MSG_COM_REQUEST>(req);
     }
 
     // Update is called once per frame

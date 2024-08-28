@@ -571,26 +571,23 @@ public class UnitController : MonoBehaviour
     /*****************************************************************************
      * Send Packet
      *****************************************************************************/
-    public bool Send_MoveStartMessage(Vector3 destionation)
+    public void Send_MoveStartMessage(Vector3 destionation)
     {
         MSG_UNIT_S_MOVE moveMsg = new MSG_UNIT_S_MOVE();
         moveMsg.type = (ushort)enPacketType.UNIT_S_MOVE;
         moveMsg.moveType = (byte)enUnitMoveType.Move_Start;
         moveMsg.posX = gameObject.transform.position.x;
         moveMsg.posZ = gameObject.transform.position.z; 
-        //moveMsg.normX = gameObject.transform.forward.normalized.x;
-        //moveMsg.normZ = gameObject.transform.forward.normalized.z;
         Vector3 dirVec = (destionation - gameObject.transform.position).normalized;
         moveMsg.normX = dirVec.x;
         moveMsg.normZ = dirVec.z;
         moveMsg.destX = destionation.x;
         moveMsg.destZ = destionation.z;
 
-        //Debug.Log("Send_MoveStartMessage");
-        return m_UnitSession.SendPacket<MSG_UNIT_S_MOVE>(moveMsg);
+        m_UnitSession.SendPacket<MSG_UNIT_S_MOVE>(moveMsg);
     }
 
-    public bool Send_MoveStopMessage()
+    public void Send_MoveStopMessage()
     {
         MSG_UNIT_S_MOVE stopMsg = new MSG_UNIT_S_MOVE();
         stopMsg.type = (ushort)enPacketType.UNIT_S_MOVE;
@@ -601,10 +598,10 @@ public class UnitController : MonoBehaviour
         stopMsg.normZ = gameObject.transform.forward.normalized.z;
 
         //Debug.Log("Send_MoveStopMessage");
-        return m_UnitSession.SendPacket<MSG_UNIT_S_MOVE>(stopMsg);
+        m_UnitSession.SendPacket<MSG_UNIT_S_MOVE>(stopMsg);
     }
 
-    public bool Send_MoveDirChangeMessage(Vector3 normVec)
+    public void Send_MoveDirChangeMessage(Vector3 normVec)
     {
         MSG_UNIT_S_MOVE dirCngMsg = new MSG_UNIT_S_MOVE();
         dirCngMsg.type = (ushort)enPacketType.UNIT_S_MOVE;
@@ -615,10 +612,10 @@ public class UnitController : MonoBehaviour
         dirCngMsg.normZ = normVec.z;
 
         //Debug.Log("Send_MoveStopMessage");
-        return m_UnitSession.SendPacket<MSG_UNIT_S_MOVE>(dirCngMsg);
+        m_UnitSession.SendPacket<MSG_UNIT_S_MOVE>(dirCngMsg);
     }
 
-    public bool Send_SyncPosMessage()
+    public void Send_SyncPosMessage()
     {
         MSG_UNIT_S_SYNC_POSITION syncMsg = new MSG_UNIT_S_SYNC_POSITION();
         syncMsg.type = (ushort)enPacketType.UNIT_S_SYNC_POSITION;
@@ -628,9 +625,9 @@ public class UnitController : MonoBehaviour
         syncMsg.normZ = gameObject.transform.forward.normalized.z;
 
         //Debug.Log("Send_SyncPosMessage");
-        return m_UnitSession.SendPacket<MSG_UNIT_S_SYNC_POSITION>(syncMsg);
+        m_UnitSession.SendPacket<MSG_UNIT_S_SYNC_POSITION>(syncMsg);
     }
-    public bool Send_SyncDirectionMessage()
+    public void Send_SyncDirectionMessage()
     {
         MSG_UNIT_S_SYNC_DIRECTION dirMsg = new MSG_UNIT_S_SYNC_DIRECTION();
         dirMsg.type = (ushort)enPacketType.UNIT_S_SYNC_DIRECTION;
@@ -638,10 +635,10 @@ public class UnitController : MonoBehaviour
         dirMsg.normZ = gameObject.transform.forward.normalized.z;
 
         //Debug.Log("Send_DirChangeMessage");
-        return m_UnitSession.SendPacket<MSG_UNIT_S_SYNC_DIRECTION>(dirMsg);
+        m_UnitSession.SendPacket<MSG_UNIT_S_SYNC_DIRECTION>(dirMsg);
     }
 
-    public bool Send_PathFindingReqMessage(Vector3 destination, int spathID)
+    public void Send_PathFindingReqMessage(Vector3 destination, int spathID)
     {
         MSG_UNIT_S_REQ_TRACE_PATH_FINDING pathFindingReqMsg = new MSG_UNIT_S_REQ_TRACE_PATH_FINDING();
         pathFindingReqMsg.type = (ushort)enPacketType.UNIT_S_REQ_TRACE_PATH_FINDING;
@@ -654,10 +651,10 @@ public class UnitController : MonoBehaviour
         pathFindingReqMsg.destZ = destination.z;
 
         Debug.Log("Send_PathFindingReqMessage, spathID: " + spathID);
-        return m_UnitSession.SendPacket<MSG_UNIT_S_REQ_TRACE_PATH_FINDING>(pathFindingReqMsg);  
+        m_UnitSession.SendPacket<MSG_UNIT_S_REQ_TRACE_PATH_FINDING>(pathFindingReqMsg);  
     }
 
-    public bool Send_AttackMessage(GameObject targetObject)
+    public void Send_AttackMessage(GameObject targetObject)
     {
         MSG_UNIT_S_ATTACK atkMsg = new MSG_UNIT_S_ATTACK();
         atkMsg.type = (ushort)enPacketType.UNIT_S_ATTACK;
@@ -670,10 +667,10 @@ public class UnitController : MonoBehaviour
         atkMsg.attackType = (int)enUnitAttackType.ATTACK_NORMAL;
 
         //Debug.Log("Send_AttackMessage");
-        return m_UnitSession.SendPacket<MSG_UNIT_S_ATTACK>(atkMsg);
+        m_UnitSession.SendPacket<MSG_UNIT_S_ATTACK>(atkMsg);
     }
 
-    public bool Send_AttackStopMessage()
+    public void Send_AttackStopMessage()
     {
         MSG_UNIT_S_ATTACK_STOP atkStopMsg = new MSG_UNIT_S_ATTACK_STOP();
         atkStopMsg.type = (ushort)enPacketType.UNIT_S_ATTACK_STOP;
@@ -683,6 +680,6 @@ public class UnitController : MonoBehaviour
         atkStopMsg.normZ = gameObject.transform.forward.z;
 
         //Debug.Log("Send_AttackStopMessage");
-        return m_UnitSession.SendPacket<MSG_UNIT_S_ATTACK_STOP>(atkStopMsg);
+        m_UnitSession.SendPacket<MSG_UNIT_S_ATTACK_STOP>(atkStopMsg);
     }
 }

@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- Generated file, do not modify, your changes will be overwritten (use AssetPostprocessor.OnGeneratedCSProject) -->
   <PropertyGroup>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>9.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -55,15 +55,20 @@
     <UnityVersion>2022.3.38f1</UnityVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Analyzer Include="C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Microsoft\Visual Studio Tools for Unity\Analyzers\Microsoft.Unity.Analyzers.dll" />
+    <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.3.38f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.SourceGenerators.dll" />
+    <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.3.38f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Assets\Script\State\State_WAIT.cs" />
     <Compile Include="Assets\Unity UI Samples\Scripts\PanelManager.cs" />
     <Compile Include="Assets\Unity UI Samples\Scripts\ChangeColor.cs" />
     <Compile Include="Assets\Script\Unit\Unit.cs" />
-    <Compile Include="Assets\Script\Scene\LoginScene.cs" />
     <Compile Include="Assets\Script\Unity_Util\Managers\SceneManagerEx.cs" />
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\WFX_Demo_Wall.cs" />
     <Compile Include="Assets\Script\Controller\ToggleController.cs" />
     <Compile Include="Assets\Teleport\Scripts\teleport\SpawnPoint.cs" />
+    <Compile Include="Assets\Script\RPC\JPD_ENUM.cs" />
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\CFX_Demo_RotateCamera.cs" />
     <Compile Include="Assets\Script\State\State_MOVE.cs" />
     <Compile Include="Assets\Unity UI Samples\Scripts\ApplicationManager.cs" />
@@ -71,6 +76,7 @@
     <Compile Include="Assets\Script\State\State_IDLE.cs" />
     <Compile Include="Assets\Script\UI\LobbyUI.cs" />
     <Compile Include="Assets\Script\SelectorUnit.cs" />
+    <Compile Include="Assets\Script\Unity_Util\Managers\Manager_Sample.cs" />
     <Compile Include="Assets\Script\Manager\DebugManager.cs" />
     <Compile Include="Assets\Script\UnitSelectionBox.cs" />
     <Compile Include="Assets\Script\State\UnitWaitState.cs" />
@@ -79,11 +85,11 @@
     <Compile Include="Assets\Script\EnemyTest.cs" />
     <Compile Include="Assets\Script\Debug\SimplePatrol.cs" />
     <Compile Include="Assets\Script\Manager\SceneTransfer.cs" />
-    <Compile Include="Assets\Script\Unity_Util\Scene\Sample\TestScene.cs" />
     <Compile Include="Assets\Script\HealthController.cs" />
     <Compile Include="Assets\Teleport\Scripts\teleport\PortTrigger.cs" />
     <Compile Include="Assets\Script\Unity_Util\UI\Sample\UI_BtnsCanvas.cs" />
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\WFX_Demo_New.cs" />
+    <Compile Include="Assets\Script\RPC\MOW_SERVER.cs" />
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\WFX_Demo_DeleteAfterDelay.cs" />
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\WFX_Demo.cs" />
     <Compile Include="Assets\Script\Controller\CameraController.cs" />
@@ -95,6 +101,7 @@
     <Compile Include="Assets\WarFX\WarFX\Scripts\CFX_LightIntensityFade.cs" />
     <Compile Include="Assets\Script\Scene\InitScene.cs" />
     <Compile Include="Assets\MonsterGolem\02_Golem\Scripts\CharacterRotator.cs" />
+    <Compile Include="Assets\Script\RPC\NetworkManager_old.cs" />
     <Compile Include="Assets\Animated Fantasy Planet\Demo\Script\LookCamera.cs" />
     <Compile Include="Assets\Script\SPath.cs" />
     <Compile Include="Assets\Episode10_Assets_RTS\CursorManager.cs" />
@@ -102,6 +109,7 @@
     <Compile Include="Assets\Script\Dummy.cs" />
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\WFX_Demo_RandomDir.cs" />
     <Compile Include="Assets\Script\Controller\AttackController.cs" />
+    <Compile Include="Assets\Script\UI\MatchRoomBtn.cs" />
     <Compile Include="Assets\Teleport\Scripts\player\PlayerMovement.cs" />
     <Compile Include="Assets\Script\Controller\UnitController.cs" />
     <Compile Include="Assets\Script\Unity_Util\Utils\Util.cs" />
@@ -110,6 +118,7 @@
     <Compile Include="Assets\Script\DummySpawn.cs" />
     <Compile Include="Assets\Script\Unity_Util\UI\UI_Base.cs" />
     <Compile Include="Assets\Unity UI Samples\Scripts\ResizePanel.cs" />
+    <Compile Include="Assets\Script\Scene\HubScene.cs" />
     <Compile Include="Assets\Tarantula\CrabMonster\Scripts\Rikayon.cs" />
     <Compile Include="Assets\Script\Controller\NavMeshController.cs" />
     <Compile Include="Assets\Script\Enemy.cs" />
@@ -120,18 +129,21 @@
     <Compile Include="Assets\Script\Unity_Util\UI\UI_EventHandler.cs" />
     <Compile Include="Assets\Script\State\State_ATTACK.cs" />
     <Compile Include="Assets\Script\Manager\GamePlayManager.cs" />
+    <Compile Include="Assets\Script\RPC\MOW_PRE_BATTLE_FIELD.cs" />
     <Compile Include="Assets\Script\Manager\Manager.cs" />
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\CFX_Demo_Translate.cs" />
     <Compile Include="Assets\Script\Unity_Util\Managers\NetworkManager.cs" />
     <Compile Include="Assets\WarFX\WarFX\Spawn System\CFX_SpawnSystem.cs" />
     <Compile Include="Assets\WarFX\WarFX\Scripts\WFX_BulletHoleDecal.cs" />
     <Compile Include="Assets\WarFX\WarFX\Scripts\CFX_AutoDestructShuriken.cs" />
-    <Compile Include="Assets\Script\Unity_Util\Managers\Managers.cs" />
+    <Compile Include="Assets\Script\RPC\Proxy.cs" />
     <Compile Include="Assets\Script\HealthTracker.cs" />
+    <Compile Include="Assets\Script\RPC\Stub.cs" />
     <Compile Include="Assets\Unity UI Samples\Scripts\DragMe.cs" />
     <Compile Include="Assets\Script\UI\CreateMatchUI.cs" />
     <Compile Include="Assets\Script\Scene\SelectField.cs" />
     <Compile Include="Assets\Script\GroundMarker.cs" />
+    <Compile Include="Assets\Script\RPC\MOW_BATTLE_FIELD.cs" />
     <Compile Include="Assets\Script\Data\Data.cs" />
     <Compile Include="Assets\MonsterGolem\02_Golem\Scripts\AnimationButton.cs" />
     <Compile Include="Assets\Script\Unity_Util\Utils\Extension.cs" />
@@ -140,6 +152,7 @@
     <Compile Include="Assets\Unity UI Samples\Scripts\DropMe.cs" />
     <Compile Include="Assets\Script\UnitMovement.cs" />
     <Compile Include="Assets\Script\Unity_Util\Managers\InputManager.cs" />
+    <Compile Include="Assets\Script\RPC\MOW_HUB.cs" />
     <Compile Include="Assets\Unity UI Samples\Scripts\ActiveStateToggler.cs" />
     <Compile Include="Assets\Script\State\SelectorIdleState.cs" />
     <Compile Include="Assets\Unity UI Samples\Scripts\DragPanel.cs" />
@@ -149,9 +162,11 @@
     <Compile Include="Assets\Script\Scene\Teleporter.cs" />
     <Compile Include="Assets\Script\State\State_DIE.cs" />
     <Compile Include="Assets\Script\Data\Protocol.cs" />
+    <Compile Include="Assets\Script\Unity_Util\Scene\Sample\Scene_Sample.cs" />
     <Compile Include="Assets\WarFX\WarFX\Scripts\WFX_LightFlicker.cs" />
     <Compile Include="Assets\Script\Unity_Util\Utils\Define.cs" />
     <Compile Include="Assets\Script\State\UnitAttackState.cs" />
+    <Compile Include="Assets\Script\RPC\RPC.cs" />
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\CFX_Demo_RandomDir.cs" />
     <Compile Include="Assets\Script\Scene\Teleportable.cs" />
     <Compile Include="Assets\Script\State\UnitIdleState.cs" />

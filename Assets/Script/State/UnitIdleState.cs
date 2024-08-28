@@ -48,29 +48,18 @@ public class UnitIdleState : StateMachineBehaviour
             float distanceFromTarget = Vector3.Distance(atkController.m_TargetObject.transform.position, animator.transform.position);
             if (distanceFromTarget <= unitAttackDistance)
             {
-                if(!SendAttackMsg(animator)) 
-                {
-                    //Debug.Log("SendAttackMsg Fail..");
-                }
-                else {
-                    bTranstion = true;
-                }
+                SendAttackMsg(animator);
+                bTranstion = true;
             }
             //if(distanceFromTarget > unitAttackDistance) 
             else 
             {
-                if(!SendMoveMsg(animator)) 
-                {
-                    //Debug.Log("SendMoveMsg Fail..");
-                }
-                else {
-                    bTranstion = true;
-                }
+                SendMoveMsg(animator);
             }
         }
     }
 
-    private bool SendMoveMsg(Animator animator){
+    private void SendMoveMsg(Animator animator){
         MSG_UNIT_S_MOVE movMsg = new MSG_UNIT_S_MOVE();
         movMsg.type = (ushort)enPacketType.UNIT_S_MOVE;  
         movMsg.moveType = (byte)(enUnitMoveType.Move_Start);    
@@ -83,9 +72,9 @@ public class UnitIdleState : StateMachineBehaviour
         movMsg.destZ = atkController.m_TargetObject.transform.position.z;
 
         animator.SetTrigger("trWait");
-        return animator.gameObject.GetComponent<UnitController>().UnitSession.SendPacket<MSG_UNIT_S_MOVE>(movMsg);
+        animator.gameObject.GetComponent<UnitController>().UnitSession.SendPacket<MSG_UNIT_S_MOVE>(movMsg);
     }
-    private bool SendAttackMsg(Animator animator)
+    private void SendAttackMsg(Animator animator)
     {
         MSG_UNIT_S_ATTACK atkMsg = new MSG_UNIT_S_ATTACK();
         atkMsg.type = (ushort)enPacketType.UNIT_S_ATTACK;
@@ -98,6 +87,6 @@ public class UnitIdleState : StateMachineBehaviour
         atkMsg.attackType = (int)enUnitAttackType.ATTACK_NORMAL;
 
         animator.SetTrigger("trWait");
-        return animator.gameObject.GetComponent<UnitController>().UnitSession.SendPacket<MSG_UNIT_S_ATTACK>(atkMsg);
+        animator.gameObject.GetComponent<UnitController>().UnitSession.SendPacket<MSG_UNIT_S_ATTACK>(atkMsg);
     }
 }

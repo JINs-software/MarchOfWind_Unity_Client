@@ -94,12 +94,8 @@ public class DebugManager
 
         MSG_UNIT_S_CONN_BATTLE_FIELD connMsg = new MSG_UNIT_S_CONN_BATTLE_FIELD();
         connMsg.type = (ushort)enPacketType.UNIT_S_CONN_BATTLE_FIELD;
-        connMsg.fieldID = Manager.GamePlayer.BattleFieldID;
-        if (!dummySession.SendPacket<MSG_UNIT_S_CONN_BATTLE_FIELD>(connMsg))
-        {
-            //Debug.Log("MSG_UNIT_S_CONN_BATTLE_FIELD 메시지 송신 실패");
-            return;
-        }
+        connMsg.fieldID = Manager.GamePlayer.BattleFieldID; 
+        dummySession.SendPacket<MSG_UNIT_S_CONN_BATTLE_FIELD>(connMsg);
 
         MSG_UNIT_S_CREATE_UNIT crtMsg = new MSG_UNIT_S_CREATE_UNIT();
         int crtCode = Manager.GamePlayer.MakeCrtMessage(crtMsg, unitType);
@@ -111,11 +107,7 @@ public class DebugManager
 
         Manager.GamePlayer.NewUnitSessionsDummy.Add(crtCode, dummySession);
 
-        if (!dummySession.SendPacket<MSG_UNIT_S_CREATE_UNIT>(crtMsg))
-        {
-            //Debug.Log("테스트 유닛 생성 메시지 송신 실패");
-            return;
-        }
+        dummySession.SendPacket<MSG_UNIT_S_CREATE_UNIT>(crtMsg);
     }
 
     private void CreateEnemySample(Vector3 position)
@@ -127,11 +119,7 @@ public class DebugManager
         MSG_UNIT_S_CONN_BATTLE_FIELD connMsg = new MSG_UNIT_S_CONN_BATTLE_FIELD();
         connMsg.type = (ushort)enPacketType.UNIT_S_CONN_BATTLE_FIELD;
         connMsg.fieldID = Manager.GamePlayer.BattleFieldID;
-        if (!network.SendPacket<MSG_UNIT_S_CONN_BATTLE_FIELD>(connMsg))
-        {
-            //Debug.Log("MSG_UNIT_S_CONN_BATTLE_FIELD 메시지 송신 실패");
-            return;
-        }
+        network.SendPacket<MSG_UNIT_S_CONN_BATTLE_FIELD>(connMsg);
 
         MSG_UNIT_S_CREATE_UNIT crtMsg = new MSG_UNIT_S_CREATE_UNIT();
         crtMsg.type = (ushort)enPacketType.UNIT_S_CREATE_UNIT;
@@ -143,10 +131,6 @@ public class DebugManager
         crtMsg.normX = 0;
         crtMsg.normZ = -1;
 
-        if (!network.SendPacket<MSG_UNIT_S_CREATE_UNIT>(crtMsg))
-        {
-            //Debug.Log("테스트 유닛 생성 메시지 송신 실패");
-            return;
-        }
+        network.SendPacket<MSG_UNIT_S_CREATE_UNIT>(crtMsg);
     }
 }

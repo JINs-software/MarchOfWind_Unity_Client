@@ -78,14 +78,8 @@ public class UnitAttackState : StateMachineBehaviour
 
         if (atkController.m_TargetObject == null)
         {
-            if(!SendAttackStopMsg(animator))
-            {
-                //Debug.Log("SendAttackStopMsg Fail..");
-            }
-            else
-            {
-                bTranstion = true;
-            }
+            SendAttackStopMsg(animator);
+            bTranstion = true;
         }
         else 
         {
@@ -93,14 +87,8 @@ public class UnitAttackState : StateMachineBehaviour
             float distanceFromTarget = Vector3.Distance(atkController.m_TargetObject.transform.position, animator.transform.position);
             if (distanceFromTarget > unitAttackStopDistance)
             {
-                if(!SendAttackStopMsg(animator)) 
-                {
-                    //Debug.Log("SendAttackStopMsg Fail..");
-                    animator.SetBool("bAttack", false);
-                }
-                else{
-                    bTranstion = true;
-                }
+                SendAttackStopMsg(animator);
+                bTranstion = true;
             }
             else
             {
@@ -109,10 +97,7 @@ public class UnitAttackState : StateMachineBehaviour
     
                 if(attackTimer <= 0f)
                 {
-                    if(!SendAttackMsg(animator))
-                    {
-                        //Debug.Log("SendAttackMsg Fail..");
-                    }
+                    SendAttackMsg(animator);
                     attackTimer = 1f / unitAttackRate;
                 }
                 else
@@ -174,7 +159,7 @@ public class UnitAttackState : StateMachineBehaviour
 */
     }
     
-    private bool SendAttackMsg(Animator animator)
+    private void SendAttackMsg(Animator animator)
     {
         MSG_UNIT_S_ATTACK atkMsg = new MSG_UNIT_S_ATTACK();
         atkMsg.type = (ushort)enPacketType.UNIT_S_ATTACK;
@@ -186,9 +171,9 @@ public class UnitAttackState : StateMachineBehaviour
         atkMsg.targetID = atkController.m_TargetObject.GetComponent<Enemy>().m_Unit.m_id;
         atkMsg.attackType = (int)enUnitAttackType.ATTACK_NORMAL;
 
-        return animator.gameObject.GetComponent<UnitController>().UnitSession.SendPacket<MSG_UNIT_S_ATTACK>(atkMsg);
+        animator.gameObject.GetComponent<UnitController>().UnitSession.SendPacket<MSG_UNIT_S_ATTACK>(atkMsg);
     }
-    private bool SendAttackStopMsg(Animator animator)
+    private void SendAttackStopMsg(Animator animator)
     {
         MSG_UNIT_S_ATTACK_STOP atkStopMsg = new MSG_UNIT_S_ATTACK_STOP();
         atkStopMsg.type = (ushort)enPacketType.UNIT_S_ATTACK_STOP;
@@ -197,7 +182,7 @@ public class UnitAttackState : StateMachineBehaviour
         atkStopMsg.normX = animator.transform.forward.normalized.x;
         atkStopMsg.normZ = animator.transform.forward.normalized.z;
 
-        return animator.gameObject.GetComponent<UnitController>().UnitSession.SendPacket<MSG_UNIT_S_ATTACK_STOP>(atkStopMsg);
+        animator.gameObject.GetComponent<UnitController>().UnitSession.SendPacket<MSG_UNIT_S_ATTACK_STOP>(atkStopMsg);
     }
 
     //private void LookAtTarget()
