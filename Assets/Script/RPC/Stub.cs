@@ -15,8 +15,8 @@ public class Stub : MonoBehaviour
         {"MATCH_ROOM_LIST", 1006},
         {"JOIN_TO_MATCH_ROOM_REPLY", 1008},
         {"MATCH_PLAYER_LIST", 1010},
-        {"MATCH_START_REPLY", 1013},
-        {"CHANGE_MATCH_HOST", 1014},
+        {"MATCH_START_REPLY", 1012},
+        {"MATCH_READY_REPLY", 1014},
         {"ENTER_TO_SELECT_FIELD_REPLY", 2003},
         {"SELECTOR_OPTION_REPLY", 2005},
         {"S_PLAYER_CREATE", 3003},
@@ -43,7 +43,7 @@ public abstract class Stub_MOW_HUB : Stub
         methods.Add(MessageIDs["JOIN_TO_MATCH_ROOM_REPLY"], JOIN_TO_MATCH_ROOM_REPLY);
         methods.Add(MessageIDs["MATCH_PLAYER_LIST"], MATCH_PLAYER_LIST);
         methods.Add(MessageIDs["MATCH_START_REPLY"], MATCH_START_REPLY);
-        methods.Add(MessageIDs["CHANGE_MATCH_HOST"], CHANGE_MATCH_HOST);
+        methods.Add(MessageIDs["MATCH_READY_REPLY"], MATCH_READY_REPLY);
         RPC.Instance.AttachStub(this);
     }
 
@@ -104,11 +104,11 @@ public abstract class Stub_MOW_HUB : Stub
         MATCH_START_REPLY(REPLY_CODE);
     }
 
-    public void CHANGE_MATCH_HOST(byte[] payload)
+    public void MATCH_READY_REPLY(byte[] payload)
     {
         int offset = 0;
-        UInt16 HOST_PLAYER_ID = BitConverter.ToUInt16(payload, offset); offset += sizeof(UInt16);
-        CHANGE_MATCH_HOST(HOST_PLAYER_ID);
+        UInt16 PLAYER_ID = BitConverter.ToUInt16(payload, offset); offset += sizeof(UInt16);
+        MATCH_READY_REPLY(PLAYER_ID);
     }
 
     protected abstract void CONNECTION_REPLY(byte REPLY_CODE, UInt16 PLAYER_ID);
@@ -123,7 +123,7 @@ public abstract class Stub_MOW_HUB : Stub
 
     protected abstract void MATCH_START_REPLY(byte REPLY_CODE);
 
-    protected abstract void CHANGE_MATCH_HOST(UInt16 HOST_PLAYER_ID);
+    protected abstract void MATCH_READY_REPLY(UInt16 PLAYER_ID);
 
 }
 

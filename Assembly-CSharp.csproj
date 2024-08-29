@@ -69,6 +69,7 @@
     <Compile Include="Assets\Script\Controller\ToggleController.cs" />
     <Compile Include="Assets\Teleport\Scripts\teleport\SpawnPoint.cs" />
     <Compile Include="Assets\Script\RPC\JPD_ENUM.cs" />
+    <Compile Include="Assets\Script\UI\PlayerBtn.cs" />
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\CFX_Demo_RotateCamera.cs" />
     <Compile Include="Assets\Script\State\State_MOVE.cs" />
     <Compile Include="Assets\Unity UI Samples\Scripts\ApplicationManager.cs" />
@@ -86,8 +87,8 @@
     <Compile Include="Assets\Script\Debug\SimplePatrol.cs" />
     <Compile Include="Assets\Script\Manager\SceneTransfer.cs" />
     <Compile Include="Assets\Script\HealthController.cs" />
-    <Compile Include="Assets\Teleport\Scripts\teleport\PortTrigger.cs" />
     <Compile Include="Assets\Script\Unity_Util\UI\Sample\UI_BtnsCanvas.cs" />
+    <Compile Include="Assets\Teleport\Scripts\teleport\PortTrigger.cs" />
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\WFX_Demo_New.cs" />
     <Compile Include="Assets\Script\RPC\MOW_SERVER.cs" />
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\WFX_Demo_DeleteAfterDelay.cs" />
@@ -122,6 +123,7 @@
     <Compile Include="Assets\Tarantula\CrabMonster\Scripts\Rikayon.cs" />
     <Compile Include="Assets\Script\Controller\NavMeshController.cs" />
     <Compile Include="Assets\Script\Enemy.cs" />
+    <Compile Include="Assets\Script\UI\MatchRoomUI.cs" />
     <Compile Include="Assets\Unity UI Samples\Scripts\TiltWindow.cs" />
     <Compile Include="Assets\Script\State\UnitMovState.cs" />
     <Compile Include="Assets\Episode10_Assets_RTS\DirectionIndicator.cs" />

@@ -25,26 +25,28 @@ public class Proxy
     };
 
 
-    public void CONNECTION(char[] PLAYER_NAME, byte LENGTH)
+    public void CONNECTION(byte[] PLAYER_NAME, byte LENGTH)
     {
         UInt16 type = MessageIDs["CONNECTION"];
-        byte[] payload = new byte[sizeof(UInt16) + sizeof(char) * 30 + sizeof(byte)];
+        byte[] payload = new byte[sizeof(UInt16) + sizeof(byte) * 30 + sizeof(byte)];
         int offset = 0;
         Buffer.BlockCopy(BitConverter.GetBytes(type), 0, payload, offset, sizeof(UInt16)); offset += sizeof(UInt16);
-        Buffer.BlockCopy(PLAYER_NAME, 0, payload, offset, sizeof(char) * 30); offset += sizeof(char) * 30;
-        Buffer.BlockCopy(BitConverter.GetBytes(LENGTH), 0, payload, offset, sizeof(byte)); offset += sizeof(byte);
+        //Buffer.BlockCopy(PLAYER_NAME, 0, payload, offset, sizeof(byte) * 30); offset += sizeof(byte) * 30;
+        Buffer.BlockCopy(PLAYER_NAME, 0, payload, offset, PLAYER_NAME.Length); offset += sizeof(byte) * 30;
+        payload[offset++] = LENGTH;
         RPC.Network.SendPacketBytes(payload, RPC.EnDecodeFlag);
     }
 
-    public void CREATE_MATCH_ROOM(char[] MATCH_ROOM_NAME, byte LENGTH, byte NUM_OF_PARTICIPANTS)
+    public void CREATE_MATCH_ROOM(byte[] MATCH_ROOM_NAME, byte LENGTH, byte NUM_OF_PARTICIPANTS)
     {
         UInt16 type = MessageIDs["CREATE_MATCH_ROOM"];
-        byte[] payload = new byte[sizeof(UInt16) + sizeof(char) * 50 + sizeof(byte) + sizeof(byte)];
+        byte[] payload = new byte[sizeof(UInt16) + sizeof(byte) * 50 + sizeof(byte) + sizeof(byte)];
         int offset = 0;
         Buffer.BlockCopy(BitConverter.GetBytes(type), 0, payload, offset, sizeof(UInt16)); offset += sizeof(UInt16);
-        Buffer.BlockCopy(MATCH_ROOM_NAME, 0, payload, offset, sizeof(char) * 50); offset += sizeof(char) * 50;
-        Buffer.BlockCopy(BitConverter.GetBytes(LENGTH), 0, payload, offset, sizeof(byte)); offset += sizeof(byte);
-        Buffer.BlockCopy(BitConverter.GetBytes(NUM_OF_PARTICIPANTS), 0, payload, offset, sizeof(byte)); offset += sizeof(byte);
+        //Buffer.BlockCopy(MATCH_ROOM_NAME, 0, payload, offset, sizeof(byte) * 50); offset += sizeof(byte) * 50;
+        Buffer.BlockCopy(MATCH_ROOM_NAME, 0, payload, offset, MATCH_ROOM_NAME.Length); offset += sizeof(byte) * 50;
+        payload[offset++] = LENGTH;
+        payload[offset++] = NUM_OF_PARTICIPANTS;
         RPC.Network.SendPacketBytes(payload, RPC.EnDecodeFlag);
     }
 
@@ -127,8 +129,8 @@ public class Proxy
         byte[] payload = new byte[sizeof(UInt16) + sizeof(byte) + sizeof(byte)];
         int offset = 0;
         Buffer.BlockCopy(BitConverter.GetBytes(type), 0, payload, offset, sizeof(UInt16)); offset += sizeof(UInt16);
-        Buffer.BlockCopy(BitConverter.GetBytes(OPTION_CODE), 0, payload, offset, sizeof(byte)); offset += sizeof(byte);
-        Buffer.BlockCopy(BitConverter.GetBytes(OPTION_VALUE), 0, payload, offset, sizeof(byte)); offset += sizeof(byte);
+        payload[offset++] = OPTION_CODE;
+        payload[offset++] = OPTION_VALUE;
         RPC.Network.SendPacketBytes(payload, RPC.EnDecodeFlag);
     }
 
@@ -158,8 +160,8 @@ public class Proxy
         int offset = 0;
         Buffer.BlockCopy(BitConverter.GetBytes(type), 0, payload, offset, sizeof(UInt16)); offset += sizeof(UInt16);
         Buffer.BlockCopy(BitConverter.GetBytes(CRT_CODE), 0, payload, offset, sizeof(Int32)); offset += sizeof(Int32);
-        Buffer.BlockCopy(BitConverter.GetBytes(UNIT_TYPE), 0, payload, offset, sizeof(byte)); offset += sizeof(byte);
-        Buffer.BlockCopy(BitConverter.GetBytes(TEAM_CODE), 0, payload, offset, sizeof(byte)); offset += sizeof(byte);
+        payload[offset++] = UNIT_TYPE;
+        payload[offset++] = TEAM_CODE;
         Buffer.BlockCopy(BitConverter.GetBytes(POS_X), 0, payload, offset, sizeof(float)); offset += sizeof(float);
         Buffer.BlockCopy(BitConverter.GetBytes(POS_Z), 0, payload, offset, sizeof(float)); offset += sizeof(float);
         Buffer.BlockCopy(BitConverter.GetBytes(NORM_X), 0, payload, offset, sizeof(float)); offset += sizeof(float);

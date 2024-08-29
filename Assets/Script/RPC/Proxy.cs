@@ -31,7 +31,8 @@ public class Proxy
         byte[] payload = new byte[sizeof(UInt16) + sizeof(byte) * 30 + sizeof(byte)];
         int offset = 0;
         Buffer.BlockCopy(BitConverter.GetBytes(type), 0, payload, offset, sizeof(UInt16)); offset += sizeof(UInt16);
-        Buffer.BlockCopy(PLAYER_NAME, 0, payload, offset, sizeof(byte) * 30); offset += sizeof(byte) * 30;
+        //Buffer.BlockCopy(PLAYER_NAME, 0, payload, offset, sizeof(byte) * 30); offset += sizeof(byte) * 30;
+        Buffer.BlockCopy(PLAYER_NAME, 0, payload, offset, PLAYER_NAME.Length); offset += sizeof(byte) * 30;
         payload[offset++] = LENGTH;
         RPC.Network.SendPacketBytes(payload, RPC.EnDecodeFlag);
     }
@@ -42,7 +43,8 @@ public class Proxy
         byte[] payload = new byte[sizeof(UInt16) + sizeof(byte) * 50 + sizeof(byte) + sizeof(byte)];
         int offset = 0;
         Buffer.BlockCopy(BitConverter.GetBytes(type), 0, payload, offset, sizeof(UInt16)); offset += sizeof(UInt16);
-        Buffer.BlockCopy(MATCH_ROOM_NAME, 0, payload, offset, sizeof(byte) * 50); offset += sizeof(byte) * 50;
+        //Buffer.BlockCopy(MATCH_ROOM_NAME, 0, payload, offset, sizeof(byte) * 50); offset += sizeof(byte) * 50;
+        Buffer.BlockCopy(MATCH_ROOM_NAME, 0, payload, offset, MATCH_ROOM_NAME.Length); offset += sizeof(byte) * 50;
         payload[offset++] = LENGTH;
         payload[offset++] = NUM_OF_PARTICIPANTS;
         RPC.Network.SendPacketBytes(payload, RPC.EnDecodeFlag);

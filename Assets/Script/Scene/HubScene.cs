@@ -10,9 +10,11 @@ public class HubScene : BaseScene
     public InitUI initUI;
     public CreateMatchUI createMatchUI;
     public LobbyUI lobbyUI;
+    public MatchRoomUI matchRoomUI;
 
     public UInt16 PlayerID;
-    public UInt16 RoomID;   
+    public UInt16 RoomID;
+    public bool IsHost = false;
 
     protected override void Init()
     {
@@ -51,12 +53,40 @@ public class HubScene : BaseScene
 
     public void OnReceiveCreateRoomSuccess()
     {
+        // 매치룸 입장
+        if (createMatchUI != null)
+        {
+            Manager.Resource.Destroy(createMatchUI.gameObject);
+            createMatchUI = null;
 
+            GameObject matchRoomUIObj = Manager.Resource.Instantiate("UI/MatchRoomUI");
+            if (matchRoomUIObj != null)
+            {
+                matchRoomUI = matchRoomUIObj.GetComponent<MatchRoomUI>();
+                matchRoomUI.StartReadyBtnClickHandler -= OnStartReadyRoomClicked;
+                matchRoomUI.StartReadyBtnClickHandler += OnStartReadyRoomClicked;
+                matchRoomUI.CancelBtnClickHandler -= OnMatchRoomCancelBtnClicked;
+                matchRoomUI.CancelBtnClickHandler += OnMatchRoomCancelBtnClicked;
+            }
+        }
     }
 
     public void OnReceiveJoinRoomSuccess()
     {
-
+        if (initUI != null)
+        {
+            Manager.Resource.Destroy(initUI.gameObject);
+            initUI = null;
+            GameObject lobbyUIObj = Manager.Resource.Instantiate("UI/LobbyUI");
+            if (lobbyUIObj != null)
+            {
+                lobbyUI = lobbyUI.GetComponent<LobbyUI>();
+                lobbyUI.MatchRoomBtnClickHandler -= OnMatchRoomBtnClick;
+                lobbyUI.MatchRoomBtnClickHandler += OnMatchRoomBtnClick;
+                lobbyUI.CancelBtnHandler -= OnLobbyCancelBtnClick;
+                lobbyUI.CancelBtnHandler += OnLobbyCancelBtnClick;
+            }
+        }
     }
 
     public void OnCreateBtnClicked()
@@ -78,16 +108,19 @@ public class HubScene : BaseScene
     public void OnJoinBtnClicked() {
         if (initUI != null)
         {
+            // 로비 입장 메시지 전송
+            RPC.proxy.ENTER_TO_ROBBY();
+
             Manager.Resource.Destroy(initUI.gameObject);
             initUI = null;
             GameObject lobbyUIObj = Manager.Resource.Instantiate("UI/LobbyUI");
             if (lobbyUIObj != null)
             {
-                lobbyUI= lobbyUI.GetComponent<LobbyUI>();
+                lobbyUI = lobbyUIObj.GetComponent<LobbyUI>();
                 lobbyUI.MatchRoomBtnClickHandler -= OnMatchRoomBtnClick;
                 lobbyUI.MatchRoomBtnClickHandler += OnMatchRoomBtnClick;
-                lobbyUI.CancelBtnHandler -= OnLobbyCancelBtnClick;
-                lobbyUI.CancelBtnHandler += OnLobbyCancelBtnClick;
+                lobbyUI.CancelBtnHandler -= OnLobbyCancelBtnClicked;
+                lobbyUI.CancelBtnHandler += OnLobbyCancelBtnClicked;
             }
         }
     }
@@ -114,6 +147,28 @@ public class HubScene : BaseScene
         }
     }
 
+    private void OnLobbyCancelBtnClicked()
+    {
+        if(lobbyUI != null)
+        {
+            Manager.Resource.Destroy(lobbyUI.gameObject);
+            lobbyUI = null;
+            GameObject initUIObj = Manager.Resource.Instantiate("UI/InitUI");
+            if (initUIObj != null)
+            {
+                initUI = initUIObj.GetComponent<InitUI>();
+                initUI.CreateBtnHandler -= OnCreateBtnClicked;
+                initUI.CreateBtnHandler += OnCreateBtnClicked;
+                initUI.JoinBtnHandler -= OnJoinBtnClicked;
+                initUI.JoinBtnHandler += OnJoinBtnClicked;
+                initUI.SettingBtnHandler -= OnSettingBtnClicked;
+                initUI.SettingBtnHandler += OnSettingBtnClicked;
+                initUI.QuitBtnHandler -= OnQuitBtnClicked;
+                initUI.QuitBtnHandler += OnQuitBtnClicked;
+            }
+        }
+    }
+
     private void OnMatchRoomBtnClick(UInt16 matchRoomID)
     {
         lobbyUI.SetOnlyCancelBtn();
@@ -122,6 +177,7 @@ public class HubScene : BaseScene
 
     private void OnLobbyCancelBtnClick()
     {
+        RPC.proxy.QUIT_FROM_ROBBY();
         if (lobbyUI != null)
         {
             Manager.Resource.Destroy(lobbyUI.gameObject);
@@ -138,6 +194,38 @@ public class HubScene : BaseScene
                 initUI.SettingBtnHandler += OnSettingBtnClicked;
                 initUI.QuitBtnHandler -= OnQuitBtnClicked;
                 initUI.QuitBtnHandler += OnQuitBtnClicked;
+            }
+        }
+    }
+
+    private void OnStartReadyRoomClicked()
+    {
+        // Start/Ready Btn 클릭
+        if (IsHost)
+        {
+            RPC.proxy.MATCH_START();
+        }
+        else
+        {
+            RPC.proxy.MATCH_READY();
+        }
+    }
+
+    private void OnMatchRoomCancelBtnClicked()
+    {
+        RPC.proxy.QUIT_FROM_MATCH_ROOM();   
+        if (matchRoomUI != null)
+        {
+            Manager.Resource.Destroy(matchRoomUI.gameObject);
+            matchRoomUI = null;
+            GameObject lobbyUIObj = Manager.Resource.Instantiate("UI/LobbyUI");
+            if (lobbyUIObj != null)
+            {
+                lobbyUI = lobbyUIObj.GetComponent<LobbyUI>();
+                lobbyUI.MatchRoomBtnClickHandler -= OnMatchRoomBtnClick;
+                lobbyUI.MatchRoomBtnClickHandler += OnMatchRoomBtnClick;
+                lobbyUI.CancelBtnHandler -= OnLobbyCancelBtnClicked;
+                lobbyUI.CancelBtnHandler += OnLobbyCancelBtnClicked;
             }
         }
     }

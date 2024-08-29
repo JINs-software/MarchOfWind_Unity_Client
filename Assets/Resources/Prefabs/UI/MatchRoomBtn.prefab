@@ -450,3 +450,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MatchRoomID: 0
   MatchRoomName: 
+  RoomNameTxt: {fileID: 8744658578163423878}
+  PlayerNameTxt: {fileID: 8563553480849133058}

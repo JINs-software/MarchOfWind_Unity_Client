@@ -1,14 +1,7 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Text;
-using Unity.VisualScripting;
-using UnityEditor.MemoryProfiler;
-using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static System.Net.Mime.MediaTypeNames;
-using UnityEngine.XR;
 using Text = UnityEngine.UI.Text;
 
 public class CreateMatchUI : UI_Base

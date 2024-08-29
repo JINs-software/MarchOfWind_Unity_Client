@@ -72,6 +72,11 @@ public class InitUI : UI_Base
             case enCONNECTION_REPLY_CODE.SUCCESS:
                 {
                     Get<Text>((int)Texts.StatusText).text = "Connetion Completed!";
+                    Get<InputField>((int)InputFields.ServerIpInput).interactable = false;
+                    Get<InputField>((int)InputFields.ServerPortInput).interactable = false;
+                    Get<InputField>((int)InputFields.PlayerNameInput).interactable = false;
+                    GetButton((int)Buttons.ConnectBtn).interactable = false;    
+
                     GetButton((int)Buttons.CreateBtn).interactable = true;
                     GetButton((int)Buttons.JoinBtn).interactable = true;
                 }
