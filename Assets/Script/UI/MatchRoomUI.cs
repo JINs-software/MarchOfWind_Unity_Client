@@ -61,6 +61,11 @@ public class MatchRoomUI : UI_Base
 
     public void SetPlayerInMatchRoom(UInt16 playerID, string playerName, byte playerIndex, byte totalPlayer)
     {
+        if(playerListContent == null)
+        {
+            playerListContent = Util.FindChild(gameObject, "Content", true);Util.FindChild(gameObject, "Content", true);    // Init() 함수 전 호출될 경우   
+        }
+
         if(playerIndex == totalPlayer)
         {
             // 플레이어 퇴장을 의미
@@ -138,6 +143,19 @@ public class MatchRoomUI : UI_Base
         }
     }
 
+    public void SetStartReadyBtn(bool isHost)
+    {
+        GameObject btnLabel = Util.FindChild(startReadyBtn.gameObject, "Label", true);
+        if (isHost)
+        {
+            btnLabel.GetComponent<Text>().text = "Start";
+        }
+        else
+        {
+            btnLabel.GetComponent<Text>().text = "Ready";
+        }
+    }
+
     private void OnStartReadyBtnClick(PointerEventData data)
     {
         StartReadyBtnClickHandler.Invoke();
@@ -150,9 +168,10 @@ public class MatchRoomUI : UI_Base
 
     private void ResetPlayerListView()
     {
-        for(int i=0; i<playerBtns.Length; i++)
+        for (int i = 0; i < playerBtns.Length; i++)
         {
-            if(playerBtns[i] != null)
+
+            if (playerBtns[i] != null && playerBtns[i].transform.GetSiblingIndex() != i)
             {
                 playerBtns[i].transform.SetSiblingIndex(i);
             }

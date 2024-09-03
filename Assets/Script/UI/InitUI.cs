@@ -158,6 +158,9 @@ public class InitUI : UI_Base
             }
         }
 
+        GamaManager.Instance.ServerIP = serverIpInput.text;
+        GamaManager.Instance.ServerPort = UInt16.Parse(serverPortInput.text);
+
         // Player 이름 전송
         string playerName = playerNameInput.text;
         byte[] playerNameBytes = Encoding.ASCII.GetBytes(playerName);
@@ -165,6 +168,12 @@ public class InitUI : UI_Base
 
         playerNameInput.interactable = false;
         connBtn.interactable = false;
+
+        // 디버그 모드
+        if(playerName == "DEBUG" || playerName == "debug" || playerName == "Debug")
+        {
+            Manager.DebugManager.DebugMode = true;
+        }
     }
 
     private void OnCreateBtnClicked(PointerEventData data)

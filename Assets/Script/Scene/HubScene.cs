@@ -48,7 +48,7 @@ public class HubScene : BaseScene
 
     public override void Clear()
     {
-        throw new System.NotImplementedException();
+        //throw new System.NotImplementedException();
     }
 
     public void OnReceiveCreateRoomSuccess()
@@ -73,23 +73,39 @@ public class HubScene : BaseScene
 
     public void OnReceiveJoinRoomSuccess()
     {
-        if (initUI != null)
+        if (lobbyUI != null)
         {
-            Manager.Resource.Destroy(initUI.gameObject);
-            initUI = null;
-            GameObject lobbyUIObj = Manager.Resource.Instantiate("UI/LobbyUI");
-            if (lobbyUIObj != null)
+            Manager.Resource.Destroy(lobbyUI.gameObject);
+            lobbyUI = null;
+
+            GameObject matchRoomUIObj = Manager.Resource.Instantiate("UI/MatchRoomUI");
+            if (matchRoomUIObj != null)
             {
-                lobbyUI = lobbyUI.GetComponent<LobbyUI>();
-                lobbyUI.MatchRoomBtnClickHandler -= OnMatchRoomBtnClick;
-                lobbyUI.MatchRoomBtnClickHandler += OnMatchRoomBtnClick;
-                lobbyUI.CancelBtnHandler -= OnLobbyCancelBtnClick;
-                lobbyUI.CancelBtnHandler += OnLobbyCancelBtnClick;
+                matchRoomUI = matchRoomUIObj.GetComponent<MatchRoomUI>();
+                matchRoomUI.StartReadyBtnClickHandler -= OnStartReadyRoomClicked;
+                matchRoomUI.StartReadyBtnClickHandler += OnStartReadyRoomClicked;
+                matchRoomUI.CancelBtnClickHandler -= OnMatchRoomCancelBtnClicked;
+                matchRoomUI.CancelBtnClickHandler += OnMatchRoomCancelBtnClicked;
             }
         }
     }
 
-    public void OnCreateBtnClicked()
+    public void OnReceivePlayerReady(UInt16 playerID)
+    {
+        if(matchRoomUI != null)
+        {
+            matchRoomUI.SetPlayerReady(playerID, true);
+        }
+    }
+
+    public void OnReceiveLaunchMatch()
+    {
+        // => 로딩 씬 전환
+        Manager.Scene.Clear();
+        Manager.Scene.LoadScene(Define.Scene.LoadScene);
+    }
+
+    private void OnCreateBtnClicked()
     {
         if(initUI != null)
         {
@@ -105,7 +121,7 @@ public class HubScene : BaseScene
         }
     }
 
-    public void OnJoinBtnClicked() {
+    private void OnJoinBtnClicked() {
         if (initUI != null)
         {
             // 로비 입장 메시지 전송
@@ -125,7 +141,7 @@ public class HubScene : BaseScene
         }
     }
 
-    public void OnCrtMatchCancelBtnClicked()
+    private void OnCrtMatchCancelBtnClicked()
     {
         if (createMatchUI != null)
         {

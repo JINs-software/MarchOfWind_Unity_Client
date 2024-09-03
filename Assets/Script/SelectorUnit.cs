@@ -13,7 +13,7 @@ public class SelectorUnit : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Manager.UnitSelection.UnitList.Add(gameObject); 
+        GamaManager.UnitSelection.UnitList.Add(gameObject); 
 
         m_Animator = GetComponent<Animator>();  
         m_NavMeshAgent = GetComponent<NavMeshAgent>();
@@ -36,10 +36,10 @@ public class SelectorUnit : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (Manager.UnitSelection.m_UnitsSelected.Contains(gameObject))
+        if (GamaManager.UnitSelection.m_UnitsSelected.Contains(gameObject))
         {
-            Manager.UnitSelection.m_UnitsSelected.Remove(gameObject);
+            GamaManager.UnitSelection.m_UnitsSelected.Remove(gameObject);
         }
-        Manager.UnitSelection.UnitList.Remove(gameObject);
+        GamaManager.UnitSelection.UnitList.Remove(gameObject);
     }
 }

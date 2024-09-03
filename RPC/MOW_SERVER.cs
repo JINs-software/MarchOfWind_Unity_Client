@@ -8,5 +8,10 @@ public class MOW_SERVER : Stub_MOW_SERVER
         base.Init();
     }
 
+    private void OnDestroy()
+    {
+        base.Clear();  
+    }
+
 
 }

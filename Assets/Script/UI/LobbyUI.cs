@@ -49,7 +49,10 @@ public class LobbyUI : UI_Base
     {
         foreach (var btn in matchRoomBtns)
         {
-            btn.gameObject.GetComponent<Button>().interactable = false;
+            if(btn != null)
+            {
+                btn.gameObject.GetComponent<Button>().interactable = false;
+            }
         }
     }
 
@@ -68,6 +71,11 @@ public class LobbyUI : UI_Base
 
     public void SetMatchRoomInLobby(UInt16 matchRoomID, string matchRoomName, UInt16 roomIndex, UInt16 totalRoom)
     {
+        if(matchRoomContent == null)
+        {
+            matchRoomContent = Util.FindChild(gameObject, "Content", true);
+        }
+
         if(roomIndex == totalRoom)
         {
             if(matchRoomMap.ContainsKey(matchRoomID))
@@ -85,12 +93,14 @@ public class LobbyUI : UI_Base
 
         if (!matchRoomMap.ContainsKey(matchRoomID))
         {
-            // 새로운 플레이어 입장
             GameObject matchRoomBtnObj = Manager.Resource.Instantiate("UI/MatchRoomBtn", matchRoomContent.transform);
             MatchRoomBtn matchRoomBtn = matchRoomBtnObj.GetComponent<MatchRoomBtn>();
             matchRoomBtn.MatchRoomID = matchRoomID;
             matchRoomBtn.MatchRoomName = matchRoomName;
             matchRoomBtn.RoomNameTxt.text = matchRoomName;
+
+            matchRoomBtn.ClickHandler -= OnMatchRoomBtnClick;
+            matchRoomBtn.ClickHandler += OnMatchRoomBtnClick;
 
             matchRoomMap.Add(matchRoomID, new Tuple<MatchRoomBtn, UInt16>(matchRoomBtn, roomIndex));
             matchRoomBtns[roomIndex] = matchRoomBtn;

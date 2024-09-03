@@ -1,13 +1,17 @@
 
 using System;
 using System.Text;
-using UnityEngine;
 
 public class MOW_HUB : Stub_MOW_HUB
 {
     private void Start() 
     {
         base.Init();
+    }
+
+    private void OnDestroy()
+    {
+        base.Clear();  
     }
 
 
@@ -106,21 +110,26 @@ public class MOW_HUB : Stub_MOW_HUB
     protected override void MATCH_PLAYER_LIST(UInt16 PLAYER_ID, byte[] MATCH_PLAYER_NAME, byte LENGTH, byte MATCH_PLAYER_INDEX, byte TOTAL_MATCH_PLAYER) 
     {
         HubScene hubScene = gameObject.GetComponent<HubScene>();
-
-        if(hubScene.matchRoomUI != null)
+        if (hubScene != null)
         {
-            string playerName = Encoding.ASCII.GetString(MATCH_PLAYER_NAME, 0, LENGTH);
-            hubScene.matchRoomUI.SetPlayerInMatchRoom(PLAYER_ID, playerName, MATCH_PLAYER_INDEX, TOTAL_MATCH_PLAYER);
 
-            if (MATCH_PLAYER_INDEX == 0)
+            if (hubScene.matchRoomUI != null)
             {
-                if (hubScene.PlayerID == PLAYER_ID)
+                string playerName = Encoding.ASCII.GetString(MATCH_PLAYER_NAME, 0, LENGTH);
+                hubScene.matchRoomUI.SetPlayerInMatchRoom(PLAYER_ID, playerName, MATCH_PLAYER_INDEX, TOTAL_MATCH_PLAYER);
+
+                if (MATCH_PLAYER_INDEX == 0)
                 {
-                    hubScene.IsHost = true;
-                }
-                else
-                {
-                    hubScene.IsHost = false;
+                    if (hubScene.PlayerID == PLAYER_ID)
+                    {
+                        hubScene.IsHost = true;
+                        hubScene.matchRoomUI.SetStartReadyBtn(true);    
+                    }
+                    else
+                    {
+                        hubScene.IsHost = false;
+                        hubScene.matchRoomUI.SetStartReadyBtn(false);
+                    }
                 }
             }
         }
@@ -134,12 +143,12 @@ public class MOW_HUB : Stub_MOW_HUB
         {
             case enMATCH_START_REPLY_CODE.SUCCESS:
                 {
-                    // ∞‘¿” Ω√¿€~!
+                    // ¬∞√î√Ä√ì ¬Ω√É√Ä√õ~!
                 }
                 break;
             case enMATCH_START_REPLY_CODE.NOT_FOUND_IN_MATCH_ROOM:
                 {
-                    if(hubScene.matchRoomUI != null)
+                    if (hubScene.matchRoomUI != null)
                     {
                         hubScene.matchRoomUI.SetStatusText("SERVER: NOT_FOUND_IN_MATCH_ROOM");
                     }
@@ -164,13 +173,22 @@ public class MOW_HUB : Stub_MOW_HUB
         }
     }
 
-    protected override void MATCH_READY_REPLY(UInt16 PLAYER_ID)
+    protected override void MATCH_READY_REPLY(UInt16 PLAYER_ID) 
     {
         HubScene hubScene = gameObject.GetComponent<HubScene>();
-
         if (hubScene.matchRoomUI != null)
         {
-            hubScene.matchRoomUI.SetPlayerReady(PLAYER_ID, true);
+            hubScene.OnReceivePlayerReady(PLAYER_ID);   
         }
     }
+
+    protected override void LAUNCH_MATCH() 
+    {
+        HubScene hubScene = gameObject.GetComponent<HubScene>();
+        if (hubScene.matchRoomUI != null)
+        {
+            hubScene.OnReceiveLaunchMatch();
+        }
+    }
+
 }

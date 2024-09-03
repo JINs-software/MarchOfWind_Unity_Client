@@ -516,11 +516,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4990813307228101280, guid: 5ee4390477795b144a8e88dd0e3a80a5, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00051064196
-      objectReference: {fileID: 0}
-    - target: {fileID: 7119465825377515979, guid: 5ee4390477795b144a8e88dd0e3a80a5, type: 3}
-      propertyPath: m_Size
-      value: 1
+      value: -0.00003300545
       objectReference: {fileID: 0}
     - target: {fileID: 7393212366334212195, guid: 5ee4390477795b144a8e88dd0e3a80a5, type: 3}
       propertyPath: m_AnchorMax.x
@@ -532,7 +528,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7393212366334212195, guid: 5ee4390477795b144a8e88dd0e3a80a5, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0.05647868
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8371979593991204896, guid: 5ee4390477795b144a8e88dd0e3a80a5, type: 3}
       propertyPath: m_AnchorMax.x
@@ -666,7 +662,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 9645406061809488, guid: 14989b2878ae9b54ab7c79658c1437c6, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00013220274
+      value: -0.13385086
       objectReference: {fileID: 0}
     - target: {fileID: 694840068545147083, guid: 14989b2878ae9b54ab7c79658c1437c6, type: 3}
       propertyPath: m_AnchorMax.x
@@ -678,7 +674,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 694840068545147083, guid: 14989b2878ae9b54ab7c79658c1437c6, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 0.07194239
       objectReference: {fileID: 0}
     - target: {fileID: 1333205060317084382, guid: 14989b2878ae9b54ab7c79658c1437c6, type: 3}
       propertyPath: m_Name
@@ -690,6 +686,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3653416554123290523, guid: 14989b2878ae9b54ab7c79658c1437c6, type: 3}
       propertyPath: m_Size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3653416554123290523, guid: 14989b2878ae9b54ab7c79658c1437c6, type: 3}
+      propertyPath: m_Value
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4020978448025314378, guid: 14989b2878ae9b54ab7c79658c1437c6, type: 3}
