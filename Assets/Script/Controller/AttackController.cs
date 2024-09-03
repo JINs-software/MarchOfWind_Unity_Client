@@ -1,12 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.Rendering;
-using static UnityEngine.GraphicsBuffer;
 
 public class AttackController : MonoBehaviour
 {
@@ -16,7 +11,8 @@ public class AttackController : MonoBehaviour
     public float m_AttackDistance;
     public float m_StopAttackDistance;
     public float m_AttackRate;
-    public float m_AttackDelay;
+    //public float m_AttackDelay;
+    public float m_Radius;
 
     public float m_TracingRange;
 
@@ -26,14 +22,74 @@ public class AttackController : MonoBehaviour
     UnitController m_UnitController;
     UnitMovement m_UnitMovement;
 
+    private void Awake()
+    {
+        //if(gameObject.tag == GamaManager.TEAM_TAG){
+        //    gameObject.GetComponent<SphereCollider>().radius = 50f / gameObject.transform.localScale.x; // 모든 유닛 추적 범위 동일
+        //}
+        //else {
+        //    gameObject.GetComponent<SphereCollider>().radius = 0f;
+        //}
+        m_UnitController = gameObject.GetComponent<UnitController>();
+        m_UnitMovement = gameObject.GetComponent<UnitMovement>();
+    }
+    //private void Start()
+    //{
+    //    //gameObject.GetComponent<SphereCollider>().radius = gameObject.GetComponent<UnitController>().Unit.m_AttackDistance * 1.5f / gameObject.transform.localScale.x;
+    //    gameObject.GetComponent<SphereCollider>().radius = 50f / gameObject.transform.localScale.x; // 모든 유닛 추적 범위 동일
+    //    m_UnitController = gameObject.GetComponent<UnitController>();
+    //    m_UnitMovement = gameObject.GetComponent<UnitMovement>();
+    //}
+
+    public void Init(Unit unit)
+    {
+        m_AttackDistance = unit.m_AttackDistance;
+        m_StopAttackDistance = unit.m_AttackDistance + 1f;
+        m_AttackRate = unit.m_AttackRate;
+        m_Radius = unit.m_radius;
+        //m_AttackDelay = ATTACK_DELAY;
+        m_TracingRange = unit.gameObject.transform.GetComponent<SphereCollider>().radius * unit.gameObject.transform.localScale.x;
+    }
+
+    public bool HasTarget()
+    {
+        return (m_TargetObject != null) ? true : false;
+    }
+
+    public int GetTargetID()
+    {
+        if(m_TargetObject == null)
+        {
+            return -1;
+        }
+        else
+        {
+            return m_TargetObject.GetComponent<Unit>().m_id;
+        }
+    }
+
+    public float GetDistanceFromTarget()
+    {
+        if(m_TargetObject == null)
+        {
+            return -1f;
+        }
+
+        float distanceToTarget = Vector3.Distance(transform.position, m_TargetObject.transform.position);
+        float unitRadius = m_Radius;
+        float targetRadius = m_TargetObject.GetComponent<Unit>().m_radius;
+        distanceToTarget -= (targetRadius + unitRadius);
+        return distanceToTarget;
+    }
+
     public void StartCheckTargetCoroutine()
     {
-        //UnityEngine.Debug.Log("StartCheckTargetCoroutine");
         if (CheckTargetCoroutine == null)
         {
             CheckTargetCoroutine = StartCoroutine(CheckTarget());
         }
     }
+
     public void StopCheckTargetCoroutine()
     {
         //UnityEngine.Debug.Log("StopCheckTargetCoroutine");
@@ -45,7 +101,7 @@ public class AttackController : MonoBehaviour
     }
     private IEnumerator CheckTarget()
     {
-        while (m_UnitController.State == enUnitState.IDLE && m_UnitMovement.isCommandedToMove == false)
+        while (m_UnitController.State == enUNIT_STATUS.IDLE && m_UnitMovement.isCommandedToMove == false)
         {
             if (m_TargetObject != null)
             {
@@ -55,17 +111,14 @@ public class AttackController : MonoBehaviour
                 if (distanceToTarget <= m_AttackDistance)
                 {
                     // 공격 
-                    gameObject.GetComponent<UnitController>().Send_AttackMessage(m_TargetObject);
+                    //gameObject.GetComponent<UnitController>().Send_AttackMessage(m_TargetObject);
+                    m_UnitController.LAUNCH_ATTACK();
                 }
                 else
                 {
                     // 추적
-                    m_UnitController.Send_MoveStartMessage(m_TargetObject.transform.position);
-                    //UnityEngine.Debug.Log("@@@@@@@@@@@@@@@ in Idle state -> trace @@@@@@@@@@@@@@@@@@ ");
-                    //Vector3 direction = (m_TargetObject.transform.position - gameObject.transform.position);
-                    //float diff = (m_TargetObject.transform.position - gameObject.transform.position).magnitude - m_AttackDistance;
-                    //Vector3 destination = gameObject.transform.position + direction.normalized * diff;
-                    //m_UnitController.Send_MoveStartMessage(destination);
+                    //m_UnitController.Send_MoveStartMessage(m_TargetObject.transform.position);
+                    m_UnitController.TRACE(m_TargetObject);
                 }
             }
 
@@ -82,7 +135,7 @@ public class AttackController : MonoBehaviour
         //UnityEngine.Debug.Log("StartAttackJudgmentCoroutine");
         if(AttackJudgmentCoroutine == null)
         {
-            AttackJudgmentCoroutine = StartCoroutine(AttackJudgment());
+            AttackJudgmentCoroutine = StartCoroutine(AttackJudgment_new());
         }
     }
     public void StopAttackJudgmentCoroutine()
@@ -95,69 +148,48 @@ public class AttackController : MonoBehaviour
         }
     }
 
-    private IEnumerator AttackJudgment()
+    private IEnumerator AttackJudgment_new()
     {
-        float attackWaitTime = 0f;
-
-        while (m_UnitController.State == enUnitState.ATTACK && m_UnitMovement.isCommandedToMove == false)
+        Vector3 beforeTargetPosion = Vector3.zero;
+        if (m_TargetObject.transform.position != null)
         {
-            if (m_TargetObject != null)
+            beforeTargetPosion = m_TargetObject.transform.position;
+        }
+        while (true)
+        {
+            if(m_UnitController.State != enUNIT_STATUS.ATTACK)
             {
-                float distanceToTarget = Vector3.Distance(transform.position, m_TargetObject.transform.position);
-                distanceToTarget -= m_TargetObject.GetComponent<Unit>().m_radius + m_UnitController.Unit.m_radius;
-                if (distanceToTarget <= m_AttackDistance)
-                {
-                    if(attackWaitTime <= 0f)
-                    {
-                        // 공격
-                        yield return new WaitForSeconds(m_AttackDelay);
-                        if (!m_UnitMovement.isCommandedToMove && m_TargetObject != null)
-                        {
-                            m_UnitController.Send_AttackMessage(m_TargetObject);
-                        }
+                yield return new WaitForSeconds(0.1f);
+                continue;
+            }
 
-                        attackWaitTime = (1f / m_AttackRate) - m_AttackDelay;
-                        yield return null;
-                    }
-                    else
-                    {
-                        attackWaitTime -= Time.deltaTime;
-
-                        Vector3 normToTarget = (m_TargetObject.transform.position - gameObject.transform.position).normalized;
-                        float angle = Vector3.Angle(normToTarget, gameObject.transform.forward);
-                        if (angle > 1f)
-                        {
-                            //UnityEngine.Debug.Log("Send_MoveDirChangeMessage");
-                            m_UnitController.Send_MoveDirChangeMessage(normToTarget);
-                        }
-
-                        yield return null;
-                    }
-                }
-                else
-                {
-                    gameObject.GetComponent<UnitController>().Send_AttackStopMessage();
-                    yield return new WaitForSeconds(1f);
-                }
+            if(m_TargetObject == null)
+            {
+                m_UnitController.STOP_ATTACK();
+                yield return new WaitForSeconds(1f);
             }
             else
             {
-                gameObject.GetComponent<UnitController>().Send_AttackStopMessage();
-                yield return new WaitForSeconds(1f);
+                if (Vector3.Distance(beforeTargetPosion, m_TargetObject.transform.position) > 1)
+                {
+                    float distanceToTarget = Vector3.Distance(transform.position, m_TargetObject.transform.position);
+                    distanceToTarget -= m_TargetObject.GetComponent<Unit>().m_radius + m_UnitController.Unit.m_radius;
+                    if (distanceToTarget > m_AttackDistance)
+                    {
+                        //m_UnitController.TRACE(m_TargetObject);
+                        //yield return new WaitForSeconds(1f);
+                        m_UnitController.STOP_ATTACK();
+                        yield return new WaitForSeconds(1f);
+                    }
+                    else
+                    {
+                        gameObject.transform.forward = (m_TargetObject.transform.position - gameObject.transform.position).normalized;
+                    }
+                }
             }
-            //yield return new WaitForSeconds((1f / m_AttackRate) - m_AttackDelay);   // attack delay는 (1f / m_AttackRate) 보다 작아야 함.
+
             yield return null;
         }
-
-        yield break;
-    }
-
-    private void Start()
-    {
-        //gameObject.GetComponent<SphereCollider>().radius = gameObject.GetComponent<UnitController>().Unit.m_AttackDistance * 1.5f / gameObject.transform.localScale.x;
-        gameObject.GetComponent<SphereCollider>().radius = 50f / gameObject.transform.localScale.x; // 모든 유닛 추적 범위 동일
-        m_UnitController = gameObject.GetComponent<UnitController>();
-        m_UnitMovement = gameObject.GetComponent<UnitMovement>();       
     }
 
     private void OnTriggerEnter(Collider other)
@@ -199,7 +231,7 @@ public class AttackController : MonoBehaviour
                 float minDistance = float.MaxValue;
                 foreach(var target in m_NearTargets)
                 {
-                    if(minDistance > Vector3.Distance(gameObject.transform.position, target.transform.position))
+                    if (target != null &&  minDistance > Vector3.Distance(gameObject.transform.position, target.transform.position))
                     {
                         minDistance = Vector3.Distance(gameObject.transform.position, target.transform.position);
                         m_TargetObject = target;
