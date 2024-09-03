@@ -1,3 +1,4 @@
+/*
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -42,7 +43,6 @@ public class GamePlayManager
             SetJpsObstacle(msg);
         }
     }
-
     public int MakeCrtMessage(MSG_UNIT_S_CREATE_UNIT crtMsg, enUnitType unitType)
     {
         int crtCode = CrtCode++;
@@ -75,7 +75,7 @@ public class GamePlayManager
         crtMsg.unitType = (int)unitType;
 
         Vector3 crtPos = Vector3.zero;
-        crtPos = BattleField.GetRandomCreatePosition((enUnitType)crtMsg.unitType);
+        //crtPos = BattleField.GetRandomCreatePosition((enUnitType)crtMsg.unitType);
         crtMsg.posX = crtPos.x;
         crtMsg.posZ = crtPos.z;
 
@@ -157,3 +157,4 @@ public class GamePlayManager
         }
     }
 }
+*/

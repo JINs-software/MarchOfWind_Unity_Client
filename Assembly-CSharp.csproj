@@ -75,6 +75,7 @@
     <Compile Include="Assets\Unity UI Samples\Scripts\ApplicationManager.cs" />
     <Compile Include="Assets\Script\Unity_Util\Managers\ResourceManager.cs" />
     <Compile Include="Assets\Script\State\State_IDLE.cs" />
+    <Compile Include="Assets\Script\Unit\UnitAnimEventHandler.cs" />
     <Compile Include="Assets\Script\UI\LobbyUI.cs" />
     <Compile Include="Assets\Script\SelectorUnit.cs" />
     <Compile Include="Assets\Script\Unity_Util\Managers\Manager_Sample.cs" />
@@ -85,7 +86,7 @@
     <Compile Include="Assets\Script\FaceCamera.cs" />
     <Compile Include="Assets\Script\EnemyTest.cs" />
     <Compile Include="Assets\Script\Debug\SimplePatrol.cs" />
-    <Compile Include="Assets\Script\Manager\SceneTransfer.cs" />
+    <Compile Include="Assets\Script\Manager\GameManager.cs" />
     <Compile Include="Assets\Script\HealthController.cs" />
     <Compile Include="Assets\Script\Unity_Util\UI\Sample\UI_BtnsCanvas.cs" />
     <Compile Include="Assets\Teleport\Scripts\teleport\PortTrigger.cs" />
@@ -112,7 +113,6 @@
     <Compile Include="Assets\Script\Controller\AttackController.cs" />
     <Compile Include="Assets\Script\UI\MatchRoomBtn.cs" />
     <Compile Include="Assets\Teleport\Scripts\player\PlayerMovement.cs" />
-    <Compile Include="Assets\Script\Controller\UnitController.cs" />
     <Compile Include="Assets\Script\Unity_Util\Utils\Util.cs" />
     <Compile Include="Assets\Unity UI Samples\Scripts\ShowSliderValue.cs" />
     <Compile Include="Assets\Script\State\State_INIT.cs" />
@@ -134,6 +134,7 @@
     <Compile Include="Assets\Script\RPC\MOW_PRE_BATTLE_FIELD.cs" />
     <Compile Include="Assets\Script\Manager\Manager.cs" />
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\CFX_Demo_Translate.cs" />
+    <Compile Include="Assets\Script\Unit\UnitMovement.cs" />
     <Compile Include="Assets\Script\Unity_Util\Managers\NetworkManager.cs" />
     <Compile Include="Assets\WarFX\WarFX\Spawn System\CFX_SpawnSystem.cs" />
     <Compile Include="Assets\WarFX\WarFX\Scripts\WFX_BulletHoleDecal.cs" />
@@ -152,7 +153,6 @@
     <Compile Include="Assets\Tarantula\CrabMonster\LB3DGameManager.cs" />
     <Compile Include="Assets\Script\MuzzleEffect.cs" />
     <Compile Include="Assets\Unity UI Samples\Scripts\DropMe.cs" />
-    <Compile Include="Assets\Script\UnitMovement.cs" />
     <Compile Include="Assets\Script\Unity_Util\Managers\InputManager.cs" />
     <Compile Include="Assets\Script\RPC\MOW_HUB.cs" />
     <Compile Include="Assets\Unity UI Samples\Scripts\ActiveStateToggler.cs" />
@@ -169,6 +169,7 @@
     <Compile Include="Assets\Script\Unity_Util\Utils\Define.cs" />
     <Compile Include="Assets\Script\State\UnitAttackState.cs" />
     <Compile Include="Assets\Script\RPC\RPC.cs" />
+    <Compile Include="Assets\Script\Unit\UnitController.cs" />
     <Compile Include="Assets\WarFX\WarFX\Demo\Assets\CFX_Demo_RandomDir.cs" />
     <Compile Include="Assets\Script\Scene\Teleportable.cs" />
     <Compile Include="Assets\Script\State\UnitIdleState.cs" />

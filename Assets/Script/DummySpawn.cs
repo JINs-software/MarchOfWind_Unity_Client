@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+/*
 public class DummySpawn : MonoBehaviour
 {
     [SerializeField]
@@ -28,3 +28,4 @@ public class DummySpawn : MonoBehaviour
         gameObject.SetActive(false);
     }
 }
+*/

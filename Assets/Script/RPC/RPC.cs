@@ -9,12 +9,15 @@ public class RPC : MonoBehaviour
     static RPC s_Instance;
     public static RPC Instance { get { Init(); return s_Instance; } }
     public static Proxy proxy = new Proxy();
-    public static byte ValidCode = 0;
+    public static byte ValidCode = 119;
     public static bool EnDecodeFlag = true;
     private Dictionary<UInt16, Action<byte[]>> StubMethods = new Dictionary<UInt16, Action<byte[]>>();
 
     NetworkManager m_NetworkManager = new NetworkManager();
     public static NetworkManager Network { get { return Instance.m_NetworkManager; } }
+
+    private string ServerIP;
+    private UInt16 ServerPort;
 
     private void Start()
     {
@@ -36,6 +39,9 @@ public class RPC : MonoBehaviour
 
     public bool Initiate(string serverIP, UInt16 serverPort)
     {
+        ServerIP = serverIP;
+        ServerPort = serverPort;   
+
         if (!Network.Connected)
         {
             return Network.Connect(serverIP, serverPort);
@@ -48,8 +54,37 @@ public class RPC : MonoBehaviour
     {
         foreach (var method in stub.methods)
         {
+            if (StubMethods.ContainsKey(method.Key))
+            {
+                StubMethods.Remove(method.Key);
+            }
             StubMethods.Add(method.Key, method.Value);
         }
+    }
+
+    public void DetachStub(Stub stub)
+    {
+        foreach(var method in stub.methods)
+        {
+            if (StubMethods.ContainsKey(method.Key))
+            {
+                StubMethods.Remove(method.Key);
+            }
+        }
+    }
+
+    public NetworkManager AllocNewClientSession()
+    {
+        NetworkManager newSession = new NetworkManager();
+        if(newSession != null)
+        {
+            if(newSession.Connect(ServerIP, ServerPort))
+            {
+                return newSession;
+            }
+        }
+
+        return null;
     }
 
     private void Update()

@@ -61,19 +61,19 @@ public class CameraController : MonoBehaviour
     {
         instance = this;       
 
-        if(Manager.GamePlayer.m_Team == (int)enPlayerTeamInBattleField.Team_A)
+        if(GamaManager.Instance.Team == (byte)enPlayerTeamInBattleField.Team_A)
         {
             transform.position = TeamViewA;
         }
-        else if (Manager.GamePlayer.m_Team == (int)enPlayerTeamInBattleField.Team_B)
+        else if (GamaManager.Instance.Team == (byte)enPlayerTeamInBattleField.Team_B)
         {
             transform.position = TeamViewB;
         }
-        else if (Manager.GamePlayer.m_Team == (int)enPlayerTeamInBattleField.Team_C)
+        else if (GamaManager.Instance.Team == (byte)enPlayerTeamInBattleField.Team_C)
         {
             transform.position = TeamViewC;
         }
-        else if (Manager.GamePlayer.m_Team == (int)enPlayerTeamInBattleField.Team_D)
+        else if (GamaManager.Instance.Team == (byte)enPlayerTeamInBattleField.Team_D)
         {
             transform.position = TeamViewD;
         }

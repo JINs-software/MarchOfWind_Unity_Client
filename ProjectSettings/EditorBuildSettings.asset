@@ -12,12 +12,15 @@ EditorBuildSettings:
     path: Assets/Scenes/HubScene.unity
     guid: efbc655faff6d7941941cd83e40b7c8e
   - enabled: 1
-    path: Assets/Scenes/BattleField.unity
-    guid: 8c971cc907cf7f74ab6ee10941900d1b
+    path: Assets/Scenes/LoadScene.unity
+    guid: bcd72e0e5246b8845973e44194de916e
   - enabled: 1
     path: Assets/Scenes/SelectField.unity
     guid: 4d68d351f9643454dba234dea7a1d3d3
   - enabled: 1
+    path: Assets/Scenes/BattleField.unity
+    guid: 8c971cc907cf7f74ab6ee10941900d1b
+  - enabled: 0
     path: Assets/Scenes/LoadingScene.unity
     guid: 60c40aa145f419c4d954f7f1016c05bb
   m_configObjects: {}

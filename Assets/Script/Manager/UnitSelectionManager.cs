@@ -31,15 +31,25 @@ public class UnitSelectionManager
 
     public float UnitSelectedCircumscriber = 0;
 
+    public bool Start = false;
+
     public void Init()
     {
         m_Clickable = LayerMask.GetMask("Clickable");
         m_Ground = LayerMask.GetMask("GroundLayer");
         m_Attackable = LayerMask.GetMask("Attackable");
 
-        
-        m_GroundMarker = GameObject.Find("GroundMarker");
-        m_GroundMarker.SetActive(false);
+
+        //m_GroundMarker = GameObject.Find("GroundMarker");
+        //m_GroundMarker.SetActive(false);
+        // => 프리팹 화
+        m_GroundMarker = Manager.Resource.Instantiate("GroundMarker");
+
+        // (+) 커서 매니저 인스턴스 설정
+        if (CursorManager.Instance == null)
+        {
+            CursorManager.Instance = new CursorManager();
+        }
 
         m_Camera = Camera.main;
 
@@ -50,6 +60,11 @@ public class UnitSelectionManager
 
     public void Update()
     {
+        if (!Start)
+        {
+            return;
+        }
+
         // 마우스 좌클릭 유닛 선택
         if (Input.GetMouseButtonDown(0))
         {

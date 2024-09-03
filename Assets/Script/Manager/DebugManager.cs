@@ -34,8 +34,7 @@ public class DebugManager
                 Ray ray = m_Camera.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out hit, Mathf.Infinity, LClickLayerMask))
                 {
-                    CreateDummySample(hit.point, enUnitType.Terran_Marine);
-                    //Debug.Log("DummyToggleOn & L Button Click!");
+                    //CreateDummySample(hit.point, enUnitType.Terran_Marine);
                 }
             }
         }
@@ -63,7 +62,7 @@ public class DebugManager
         }
 
         DummyToggleOn = true;
-        Manager.UnitSelection.DeSelectAll();    
+        GamaManager.UnitSelection.DeSelectAll();    
         return true;
     }
     public bool OnEnemyToggle()
@@ -74,7 +73,7 @@ public class DebugManager
         }
 
         EnemyToggleOn = true;
-        Manager.UnitSelection.DeSelectAll();
+        GamaManager.UnitSelection.DeSelectAll();
         return true;
     }
 
@@ -87,14 +86,14 @@ public class DebugManager
         EnemyToggleOn = false;
     }
 
-    private void CreateDummySample(Vector3 position, enUnitType unitType)
+    /*private void CreateDummySample(Vector3 position, enUnitType unitType)
     {
         NetworkManager dummySession = new NetworkManager();
-        dummySession.Connect(Manager.GamePlayer.GameServerIP);
+        dummySession.Connect(GamaManager.Instance.ServerIP);
 
         MSG_UNIT_S_CONN_BATTLE_FIELD connMsg = new MSG_UNIT_S_CONN_BATTLE_FIELD();
         connMsg.type = (ushort)enPacketType.UNIT_S_CONN_BATTLE_FIELD;
-        connMsg.fieldID = Manager.GamePlayer.BattleFieldID; 
+        connMsg.fieldID = GamaManager.Instance.BattleFieldID; 
         dummySession.SendPacket<MSG_UNIT_S_CONN_BATTLE_FIELD>(connMsg);
 
         MSG_UNIT_S_CREATE_UNIT crtMsg = new MSG_UNIT_S_CREATE_UNIT();
@@ -108,29 +107,13 @@ public class DebugManager
         Manager.GamePlayer.NewUnitSessionsDummy.Add(crtCode, dummySession);
 
         dummySession.SendPacket<MSG_UNIT_S_CREATE_UNIT>(crtMsg);
-    }
+    }*/
 
     private void CreateEnemySample(Vector3 position)
     {
-        NetworkManager network = new NetworkManager();
-        network.Connect(Manager.GamePlayer.GameServerIP);
+        NetworkManager session = RPC.Instance.AllocNewClientSession();
+        RPC.proxy.UNIT_CONN_TO_BATTLE_FIELD(GamaManager.Instance.BattleFieldID, session);
 
-        // BattleField ID ÁöÁ¤
-        MSG_UNIT_S_CONN_BATTLE_FIELD connMsg = new MSG_UNIT_S_CONN_BATTLE_FIELD();
-        connMsg.type = (ushort)enPacketType.UNIT_S_CONN_BATTLE_FIELD;
-        connMsg.fieldID = Manager.GamePlayer.BattleFieldID;
-        network.SendPacket<MSG_UNIT_S_CONN_BATTLE_FIELD>(connMsg);
-
-        MSG_UNIT_S_CREATE_UNIT crtMsg = new MSG_UNIT_S_CREATE_UNIT();
-        crtMsg.type = (ushort)enPacketType.UNIT_S_CREATE_UNIT;
-        crtMsg.crtCode = 9999;
-        crtMsg.unitType = (int)enUnitType.Terran_Marine;
-        crtMsg.team = (int)enPlayerTeamInBattleField.Team_Test;
-        crtMsg.posX = position.x;
-        crtMsg.posZ = position.z;
-        crtMsg.normX = 0;
-        crtMsg.normZ = -1;
-
-        network.SendPacket<MSG_UNIT_S_CREATE_UNIT>(crtMsg);
+        RPC.proxy.UNIT_S_CREATE(-1, (byte)enUnitType.Terran_Marine, (byte)enPlayerTeamInBattleField.Team_Test, position.x, position.z, 0, -1, session);
     }
 }

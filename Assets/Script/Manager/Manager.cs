@@ -13,16 +13,18 @@ public class Manager : MonoBehaviour
 
     ResourceManager         m_ResourceMgr = new ResourceManager();
     NetworkManager          m_NetworkMgr = new NetworkManager();
-    UnitSelectionManager    m_UnitSelectionMgr = new UnitSelectionManager();
-    GamePlayManager         m_GamePlayMgr = new GamePlayManager();  
-    SceneTransfer           m_SceneTransfer = new SceneTransfer();  
+    //UnitSelectionManager    m_UnitSelectionMgr = new UnitSelectionManager();
+    //GamePlayManager         m_GamePlayMgr = new GamePlayManager();  
+    //SceneTransfer           m_SceneTransfer = new SceneTransfer();  
+    SceneManagerEx          m_SceneMgr = new SceneManagerEx();
     DebugManager            m_DebugManager = new DebugManager();
 
     public static ResourceManager Resource { get { return Instance.m_ResourceMgr; } }
     public static NetworkManager Network { get { return Instance.m_NetworkMgr; } }
-    public static UnitSelectionManager UnitSelection { get { return Instance.m_UnitSelectionMgr; } }    
-    public static GamePlayManager GamePlayer { get { return Instance.m_GamePlayMgr; } } 
-    public static SceneTransfer SceneTransfer { get { return Instance.m_SceneTransfer; } }
+    //public static UnitSelectionManager UnitSelection { get { return Instance.m_UnitSelectionMgr; } }    
+    //public static GamePlayManager GamePlayer { get { return Instance.m_GamePlayMgr; } }
+    //public static SceneTransfer SceneTransfer { get { return Instance.m_SceneTransfer; } }
+    public static SceneManagerEx Scene { get {return Instance.m_SceneMgr; } }    
 
     public static DebugManager DebugManager { get { return Instance.m_DebugManager; } }
 

@@ -16,7 +16,7 @@ public class Dummy : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Manager.UnitSelection.UnitList.Add(gameObject);
+        GamaManager.UnitSelection.UnitList.Add(gameObject);
         Position = gameObject.transform.position;       
     }
 

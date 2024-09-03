@@ -1,5 +1,11 @@
 
 
+public enum enPLAYER_QUIT_TYPE_FROM_MATCH_ROOM
+{
+    CANCEL,
+    DISCONNECTION,
+};
+
 public enum enCONNECTION_REPLY_CODE
 {
     SUCCESS,
@@ -29,4 +35,33 @@ public enum enMATCH_START_REPLY_CODE
     NOT_FOUND_IN_MATCH_ROOM,
     NO_HOST_PRIVILEGES,
     UNREADY_PLAYER_PRESENT,
+};
+
+public enum enMATCH_ROOM_CLOSE_CODE
+{
+    EMPTY_PLAYER,
+};
+
+public enum enUNIT_TYPE
+{
+    Terran_Marine,
+    Terran_Firebat,
+    Terran_Tank,
+    Terran_Robocop,
+    Zerg_Zergling,
+    Zerg_Hydra,
+    Zerg_Golem,
+    Zerg_Tarantula,
+    None,
+};
+
+public enum enMOVE_TYPE
+{
+    MOVE_START,
+    MOVE_STOP,
+};
+
+public enum enATTACK_TYPE
+{
+    BASE,
 };

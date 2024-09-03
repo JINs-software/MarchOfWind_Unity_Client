@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
 
 public class EnemyTest : MonoBehaviour
 {
@@ -15,13 +16,13 @@ public class EnemyTest : MonoBehaviour
     private void OnEnable()
     {
         NetworkManager network = new NetworkManager();
-        network.Connect(Manager.GamePlayer.GameServerIP);
+        network.Connect(GamaManager.Instance.ServerIP);
 
 
         // BattleField ID ÁöÁ¤
         MSG_UNIT_S_CONN_BATTLE_FIELD connMsg = new MSG_UNIT_S_CONN_BATTLE_FIELD();
         connMsg.type = (ushort)enPacketType.UNIT_S_CONN_BATTLE_FIELD;
-        connMsg.fieldID = Manager.GamePlayer.BattleFieldID;
+        connMsg.fieldID = GamaManager.Instance.BattleFieldID;
         network.SendPacket<MSG_UNIT_S_CONN_BATTLE_FIELD>(connMsg);
 
         MSG_UNIT_S_CREATE_UNIT crtMsg = new MSG_UNIT_S_CREATE_UNIT();
