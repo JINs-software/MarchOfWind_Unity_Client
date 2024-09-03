@@ -39,7 +39,7 @@ public class UnitSelectionBox : MonoBehaviour
             if (boxVisual.rect.width > 0 || boxVisual.rect.height > 0)
             {
                 //UnitSelectionManager.Instance.DeSelectAll();
-                Manager.UnitSelection.DeSelectAll();
+                GamaManager.UnitSelection.DeSelectAll();
                 SelectUnits();
             }
 
@@ -114,11 +114,11 @@ public class UnitSelectionBox : MonoBehaviour
         //    }
         //}
 
-        foreach (var unit in Manager.UnitSelection.UnitList)
+        foreach (var unit in GamaManager.UnitSelection.UnitList)
         {
             if (selectionBox.Contains(myCam.WorldToScreenPoint(unit.transform.position)))
             {
-                Manager.UnitSelection.DragSelect(unit);
+                GamaManager.UnitSelection.DragSelect(unit);
             }
         }
     }

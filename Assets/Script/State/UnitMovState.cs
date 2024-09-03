@@ -44,7 +44,7 @@ public class UnitMovState : StateMachineBehaviour
 
             unitAttackDistance = animator.gameObject.GetComponent<UnitController>().Unit.m_AttackDistance;
 
-            animator.gameObject.GetComponent<UnitController>().State = enUnitState.MOVE;
+            animator.gameObject.GetComponent<UnitController>().State = enUNIT_STATUS.MOVE;
         }
     }
 
@@ -143,7 +143,7 @@ public class UnitMovState : StateMachineBehaviour
         Vector3 dirVec = (atkController.m_TargetObject.transform.position - animator.transform.position).normalized;
         atkMsg.normX = dirVec.x;
         atkMsg.normZ = dirVec.z;
-        atkMsg.targetID = atkController.m_TargetObject.GetComponent<Enemy>().m_Unit.m_id;
+        atkMsg.targetID = atkController.m_TargetObject.GetComponent<Enemy>().ID;
         atkMsg.attackType = (int)enUnitAttackType.ATTACK_NORMAL;
 
         animator.gameObject.GetComponent<UnitController>().UnitSession.SendPacket<MSG_UNIT_S_ATTACK>(atkMsg);

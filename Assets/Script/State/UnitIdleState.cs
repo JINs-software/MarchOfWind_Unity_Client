@@ -23,7 +23,7 @@ public class UnitIdleState : StateMachineBehaviour
             
             unitAttackDistance = animator.gameObject.GetComponent<UnitController>().Unit.m_AttackDistance;
 
-            animator.gameObject.GetComponent<UnitController>().State = enUnitState.IDLE;
+            animator.gameObject.GetComponent<UnitController>().State = enUNIT_STATUS.IDLE;
         }
     }
 
@@ -83,7 +83,7 @@ public class UnitIdleState : StateMachineBehaviour
         Vector3 dirVec = (atkController.m_TargetObject.transform.position - animator.transform.position).normalized;
         atkMsg.normX = dirVec.x;
         atkMsg.normZ = dirVec.z;
-        atkMsg.targetID = atkController.m_TargetObject.GetComponent<Enemy>().m_Unit.m_id;
+        atkMsg.targetID = atkController.m_TargetObject.GetComponent<Enemy>().ID;
         atkMsg.attackType = (int)enUnitAttackType.ATTACK_NORMAL;
 
         animator.SetTrigger("trWait");

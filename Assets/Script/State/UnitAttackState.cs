@@ -51,7 +51,7 @@ public class UnitAttackState : StateMachineBehaviour
 
             //animator.gameObject.GetComponent<UnitController>().OnAttacking = true;
 
-            animator.gameObject.GetComponent<UnitController>().State = enUnitState.ATTACK;
+            animator.gameObject.GetComponent<UnitController>().State = enUNIT_STATUS.ATTACK;
         }
     }
 
@@ -168,7 +168,7 @@ public class UnitAttackState : StateMachineBehaviour
         Vector3 dirVec = (atkController.m_TargetObject.transform.position - navMeshAgent.transform.position).normalized;
         atkMsg.normX = dirVec.x;
         atkMsg.normZ = dirVec.z;
-        atkMsg.targetID = atkController.m_TargetObject.GetComponent<Enemy>().m_Unit.m_id;
+        atkMsg.targetID = atkController.m_TargetObject.GetComponent<Enemy>().ID;
         atkMsg.attackType = (int)enUnitAttackType.ATTACK_NORMAL;
 
         animator.gameObject.GetComponent<UnitController>().UnitSession.SendPacket<MSG_UNIT_S_ATTACK>(atkMsg);

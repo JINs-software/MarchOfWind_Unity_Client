@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst.CompilerServices;
@@ -8,15 +9,13 @@ public class UnitMovement : MonoBehaviour
 {
     Camera m_Camera;
     NavMeshAgent m_NavMeshAgent;
-    UnitController m_UnitController;    
-
-    [SerializeField]
+    UnitController m_UnitController;   
     LayerMask m_LayerMask;
 
+    public Action<Vector3, float> MoveCmdHandler;
+
     public bool isCommandedToMove;
-
     public float DistanceFromCenter;
-
     public bool TargetOnEnemy = false;
 
     // Start is called before the first frame update
@@ -26,8 +25,7 @@ public class UnitMovement : MonoBehaviour
         m_NavMeshAgent = GetComponent<NavMeshAgent>();
         m_NavMeshAgent.isStopped = true;
         m_LayerMask = LayerMask.GetMask("GroundLayer");
-
-        m_UnitController = gameObject.GetComponent<UnitController>();
+        enabled = false;
     }
 
     // Update is called once per frame
@@ -54,11 +52,14 @@ public class UnitMovement : MonoBehaviour
                 }
                 else
                 {
-                    //m_UnitController.State = enUnitState.CTR_WAIT;
+                    DistanceFromCenter = GamaManager.UnitSelection.UnitSelectedCircumscriber * 2;
+                    //gameObject.GetComponent<UnitController>().Send_MoveStartMessage(hit.point);
+                    // => unitcontroller에서 수행 (아래 Invoke)
 
-                    //DistanceFromCenter = (Manager.UnitSelection.CenterOfUnitSelected - transform.position).magnitude;
-                    DistanceFromCenter = Manager.UnitSelection.UnitSelectedCircumscriber * 2;
-                    gameObject.GetComponent<UnitController>().Send_MoveStartMessage(hit.point);
+                    if (MoveCmdHandler != null)
+                    {
+                        MoveCmdHandler.Invoke(hit.point, DistanceFromCenter);
+                    }
                 }
             }
         }

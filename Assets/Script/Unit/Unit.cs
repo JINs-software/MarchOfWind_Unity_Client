@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.UIElements;
 
 public class Unit : MonoBehaviour
 {
     public int m_id;
-    public int m_type;
-    public int m_team;
+    public byte m_type;
+    public byte m_team;
     public float m_speed;
     public int m_initHP;
     public int m_maxHP;
@@ -20,32 +16,39 @@ public class Unit : MonoBehaviour
     Vector3 m_InitPostion;
     Vector3 m_InitDirection;
 
-    public float m_RotationSpeed = 5f;      // 임시 
-
     Animator m_Animator;
     NavMeshAgent m_NavMeshAgent;
     HealthController m_HearthController;
 
-    public GameObject m_UIObject = null;
-    public bool isMoving = false;
-    Vector2 m_UiNorm = Vector2.zero;
-
     private void Awake()
     {
         m_Animator = GetComponent<Animator>();  
+        if(m_Animator == null)
+        {
+            m_Animator = gameObject.AddComponent<Animator>();   
+        }
         m_NavMeshAgent = GetComponent<NavMeshAgent>();
+        if(m_NavMeshAgent == null)
+        {
+            m_NavMeshAgent = gameObject.AddComponent<NavMeshAgent>();
+        }
         m_HearthController = GetComponent<HealthController>();
+        if(m_HearthController == null)
+        {
+            m_HearthController = gameObject.AddComponent<HealthController>();       
+        }
     }
 
     private void Start()
     {
-        m_NavMeshAgent.speed = m_speed;
         m_NavMeshAgent.Warp(m_InitPostion);
-        m_HearthController.InitHealth(m_initHP, m_maxHP);
+        m_NavMeshAgent.avoidancePriority = 0;
         gameObject.transform.rotation = Quaternion.LookRotation(m_InitDirection.normalized);
+        m_NavMeshAgent.speed = m_speed;
+        m_HearthController.InitHealth(m_initHP, m_maxHP);
     }
 
-    public void Init(int id, int type, int team, Vector3 position, Vector3 direction, float speed, int nowHP, int maxHP, float radius, float attackDist, float attackRate)
+    public void Init(int id, byte type, byte team, Vector3 position, Vector3 direction, float speed, int nowHP, int maxHP, float radius, float attackDist, float attackRate)
     {
         m_id = id;
         m_type = type;
@@ -58,6 +61,11 @@ public class Unit : MonoBehaviour
         m_AttackRate = attackRate;
         m_InitPostion = position;
         m_InitDirection = direction;
+
+        if(gameObject.GetComponent<MuzzleEffect>() == null)
+        {
+            gameObject.AddComponent<MuzzleEffect>().MuzzleRate = m_AttackRate;
+        }
     }
 
 
@@ -71,22 +79,17 @@ public class Unit : MonoBehaviour
         //Debug.Log("Recv Move_Start---------------------");
 
         m_NavMeshAgent.isStopped = false;
-        m_NavMeshAgent.avoidancePriority = 99;       
+        m_NavMeshAgent.avoidancePriority = 99;
+        //m_NavMeshAgent.avoidancePriority = Random.Range(20, 99);
         if (!m_NavMeshAgent.SetDestination(destPosition))
         {
             //Debug.Log("Move_Start, SetDestination returns Fail..");
         }
 
+        // 애니메이터 변경
         m_Animator.ResetTrigger("trIdle");
         m_Animator.ResetTrigger("trAttack");
-        m_Animator.SetTrigger("trMove");
-        //m_NavMeshAgent.avoidancePriority = 99;       // 우선순위 변경?
-        //m_NavMeshAgent.avoidancePriority = Random.Range(20, 99);
-
-        if (gameObject.GetComponent<UnitController>() != null)
-        {
-            gameObject.GetComponent<UnitController>().OnMoving = true;
-        }
+        m_Animator.SetTrigger("trMove");        
     }
     public void Move_Stop(Vector3 position)
     {
@@ -98,24 +101,35 @@ public class Unit : MonoBehaviour
         }
         m_NavMeshAgent.isStopped = true;
         m_NavMeshAgent.avoidancePriority = 0;
-        //m_NavMeshController.MoveStop();
-
-
+        
         m_Animator.ResetTrigger("trMove");
         m_Animator.ResetTrigger("trAttack");
         m_Animator.SetTrigger("trIdle");
-        //m_NavMeshAgent.avoidancePriority = 0;       // 우선순위 변경?
-
-        if (gameObject.GetComponent<UnitController>() != null)
-        {
-            gameObject.GetComponent<UnitController>().ServerPathFinding = false;
-            gameObject.GetComponent<UnitController>().OnMoving = false;
-        }
     }
 
-    public void DIR_CHANGE(Vector3 norm)
+    //public void DIR_CHANGE(Vector3 norm)
+    //{
+    //    gameObject.transform.rotation = Quaternion.LookRotation(norm);
+    //}
+
+    public void LauchAttack()
     {
-        gameObject.transform.rotation = Quaternion.LookRotation(norm);
+        // 공격 시작 시 정지!
+        m_NavMeshAgent.isStopped = true;
+        m_NavMeshAgent.avoidancePriority = 10;
+
+        m_Animator.ResetTrigger("trIdle");
+        m_Animator.ResetTrigger("trMove");
+        m_Animator.SetTrigger("trAttack");
+    }
+
+    public void StopAttack()
+    {
+        //Debug.Log("Recv Atack Stop---------------------");
+        m_Animator.ResetTrigger("trMove");
+        m_Animator.ResetTrigger("trAttack");
+        m_Animator.SetTrigger("trIdle");
+        m_NavMeshAgent.avoidancePriority = 0;       // 우선순위 변경?
     }
 
     public void Attack(Vector3 position, Vector3 dir, int attkType)
@@ -140,55 +154,32 @@ public class Unit : MonoBehaviour
         m_Animator.ResetTrigger("trIdle");
         m_Animator.ResetTrigger("trMove");
         m_Animator.SetTrigger("trAttack");
-        //m_NavMeshAgent.avoidancePriority = 10;       // 우선순위 변경?
-        //m_NavMeshAgent.qual
-
-        if (gameObject.GetComponent<UnitController>() != null)
-        {
-            gameObject.GetComponent<UnitController>().ServerPathFinding = false;    
-            gameObject.GetComponent<UnitController>().OnMoving = false;
-        }
-    }
-    public void Attack_Invalid(Vector3 position, Vector3 dir)
-    {
-        //Debug.Log("Recv Atack Invalid---------------------");
-
-        gameObject.transform.forward = dir;
-
-        if (!m_NavMeshAgent.Warp(position))
-        {
-            //Debug.Log("Move_Stop, Warp returns Fail..");
-        }
-        m_NavMeshAgent.isStopped = true;
-        m_NavMeshAgent.avoidancePriority = 10;
-
-        m_Animator.ResetTrigger("trIdle");
-        m_Animator.ResetTrigger("trMove");
-        m_Animator.SetTrigger("trAttack");
-        //m_NavMeshAgent.avoidancePriority = 0;       // 우선순위 변경?
-
-        if (gameObject.GetComponent<UnitController>() != null)
-        {
-            gameObject.GetComponent<UnitController>().OnMoving = false;
-        }
     }
 
+    //public void Attack_Invalid(Vector3 position, Vector3 dir)
+    //{
+    //    //Debug.Log("Recv Atack Invalid---------------------");
+    //
+    //    gameObject.transform.forward = dir;
+    //
+    //    if (!m_NavMeshAgent.Warp(position))
+    //    {
+    //        //Debug.Log("Move_Stop, Warp returns Fail..");
+    //    }
+    //    m_NavMeshAgent.isStopped = true;
+    //    m_NavMeshAgent.avoidancePriority = 10;
+    //
+    //    m_Animator.ResetTrigger("trIdle");
+    //    m_Animator.ResetTrigger("trMove");
+    //    m_Animator.SetTrigger("trAttack");
+    //    //m_NavMeshAgent.avoidancePriority = 0;       // 우선순위 변경?
+    //
+    //    if (gameObject.GetComponent<UnitController>() != null)
+    //    {
+    //        gameObject.GetComponent<UnitController>().OnMoving = false;
+    //    }
+    //}
 
-    public void AttackStop(Vector3 position)
-    {
-        //Debug.Log("Recv Atack Stop---------------------");
-
-        if (!m_NavMeshAgent.Warp(position))
-        {
-            //Debug.Log("Move_Stop, Warp returns Fail..");
-        }
-
-        //m_Animator.SetBool("bAttack", false);
-        m_Animator.ResetTrigger("trMove");
-        m_Animator.ResetTrigger("trAttack");
-        m_Animator.SetTrigger("trIdle");
-        //m_NavMeshAgent.avoidancePriority = 10;       // 우선순위 변경?
-    }
 
     //private void LookAtTarget(Vector3 dir)
     //{
@@ -207,65 +198,56 @@ public class Unit : MonoBehaviour
     public void Die()
     {
         m_Animator.SetTrigger("trDie");
-        m_UIObject.SetActive(false);
+        //m_UIObject.SetActive(false);
         Destroy(gameObject); 
     }
 
-    // �������� �̵� ����ȭ �׽�Ʈ �� UI �̵�
-    public void Move_Start_UI(Vector3 position, float Speed, float normX, float normZ)
-    {
-        Vector2 uiPosition = new Vector3(position.x - 100f, position.z - 100f);
-        m_UIObject.GetComponent<RectTransform>().anchoredPosition = uiPosition;
+    //public void Move_Start_UI(Vector3 position, float Speed, float normX, float normZ)
+    //{
+    //    Vector2 uiPosition = new Vector3(position.x - 100f, position.z - 100f);
+    //    m_UIObject.GetComponent<RectTransform>().anchoredPosition = uiPosition;
+    //
+    //    m_UiNorm.x = normX;
+    //    m_UiNorm.y = normZ;
+    //    m_UiNorm = m_UiNorm.normalized;
+    //
+    //    isMoving = true;
+    //}
+    //public void Move_Stop_UI(Vector3 position)
+    //{
+    //    isMoving = false;
+    //
+    //    Vector2 uiPosition = new Vector2(position.x - 100f, position.z - 100f);
+    //    m_UIObject.GetComponent<RectTransform>().anchoredPosition = uiPosition;
+    //}
+    //public void Update_UI(float deltaTime)
+    //{
+    //    if (isMoving)
+    //    {
+    //        Vector2 move = m_UiNorm * m_speed * deltaTime;
+    //        m_UIObject.GetComponent<RectTransform>().anchoredPosition += move;
+    //    }
+    //}
 
-        m_UiNorm.x = normX;
-        m_UiNorm.y = normZ;
-        m_UiNorm = m_UiNorm.normalized;
+    //public void RecvJpsReqReply()
+    //{
+    //    m_NavMeshAgent.isStopped = true;
+    //    m_Animator.ResetTrigger("trIdle");
+    //    m_Animator.ResetTrigger("trAttack");
+    //    m_Animator.SetTrigger("trMove");
+    //}
 
-        isMoving = true;
-    }
-    public void Move_Stop_UI(Vector3 position)
-    {
-        isMoving = false;
-
-        Vector2 uiPosition = new Vector2(position.x - 100f, position.z - 100f);
-        m_UIObject.GetComponent<RectTransform>().anchoredPosition = uiPosition;
-    }
-    public void Update_UI(float deltaTime)
-    {
-        if (isMoving)
-        {
-            Vector2 move = m_UiNorm * m_speed * deltaTime;
-            m_UIObject.GetComponent<RectTransform>().anchoredPosition += move;
-        }
-    }
-
-    public void RecvJpsReqReply()
-    {
-        m_NavMeshAgent.isStopped = true;
-        m_Animator.ResetTrigger("trIdle");
-        m_Animator.ResetTrigger("trAttack");
-        m_Animator.SetTrigger("trMove");
-
-        UnitController unitController = gameObject.GetComponent<UnitController>();
-
-        if (unitController != null)
-        {
-            unitController.ServerPathFinding = true;
-        }
-    }
-
-    public void RecvSPath(MSG_S_MGR_TRACE_SPATH msg)
+    /*public void RecvSPath(int spathID, byte spathOpt, Vector3 position)
     {
         UnitController unitController = gameObject.GetComponent<UnitController>();
         if (unitController != null && unitController.ServerPathFindingReq)
         {
-            if (msg.spathID == unitController.SpathID)
+            if (spathID == unitController.SpathID)
             {
-                enSPathStateType spathType = (enSPathStateType)msg.spathState;
+                enSPathStateType spathType = (enSPathStateType)spathOpt;
                 if (spathType != enSPathStateType.END_OF_PATH)
                 {
-                    Vector3 position = new Vector3(msg.posX, 0, msg.posZ);
-                    Tuple<int, Vector3> spath = new Tuple<int, Vector3>(msg.spathID, position);
+                    Tuple<int, Vector3> spath = new Tuple<int, Vector3>(spathID, position);
                     unitController.ServerSPathQueue.Enqueue(spath);
 
                     GameObject prefab = Resources.Load<GameObject>("prefab/SPath");
@@ -277,5 +259,5 @@ public class Unit : MonoBehaviour
                 }
             }
         }
-    }
+    }*/
 }

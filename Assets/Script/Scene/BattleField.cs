@@ -1,138 +1,42 @@
+using System;
 using System.Collections.Generic;
-
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class BattleField : MonoBehaviour
+public class BattleField : BaseScene
 {
-    private static Vector3 SpawnPointA = new Vector3(150f, 0, 150f);
-    private static Vector3 SpawnPointB = new Vector3(250f, 0, 150f);
-    private static Vector3 SpawnPointC = new Vector3(250f, 0, 250f);
-    private static Vector3 SpawnPointD = new Vector3(150f, 0, 250f);
+    MOW_BATTLE_FIELD stub_MOW_BATTLE_FIELD;
+    Dictionary<int, Unit> Units = new Dictionary<int, Unit>();
+    Dictionary<int, UnitController> UnitControllers = new Dictionary<int, UnitController>();    
 
-    Dictionary<int, Unit> m_Units = new Dictionary<int, Unit>();
-    //Dictionary<int, GameObject> m_Units  = new Dictionary<int, GameObject>();
+    protected override void Init()
+    {
+        base.Init();
 
-    static bool InitPosFlag = true;
-    static Vector3 InitPos = Vector3.zero;
-    static float PosAngle;
-    static float PosRadius;
-
-    public static void InitCreatePostion(){
-        InitPosFlag = true;
-        if(Manager.GamePlayer.m_Team == (int)enPlayerTeamInBattleField.Team_A)
+        stub_MOW_BATTLE_FIELD = GetComponent<MOW_BATTLE_FIELD>();   
+        if(stub_MOW_BATTLE_FIELD == null)
         {
-            InitPos = SpawnPointA;
-        }
-        else if (Manager.GamePlayer.m_Team == (int)enPlayerTeamInBattleField.Team_B)
-        {
-            InitPos = SpawnPointB;
-        }
-        else if (Manager.GamePlayer.m_Team == (int)enPlayerTeamInBattleField.Team_C)
-        {
-            InitPos = SpawnPointC;
-        }
-        else if (Manager.GamePlayer.m_Team == (int)enPlayerTeamInBattleField.Team_D)
-        {
-            InitPos = SpawnPointD;
-        }
-        else
-        {
-            InitPos = Vector3.zero;
+            stub_MOW_BATTLE_FIELD = gameObject.AddComponent<MOW_BATTLE_FIELD>();    
         }
     }
-    public static Vector3 GetRandomCreatePosition(enUnitType unitType)
+
+    public override void Clear()
     {
-        Vector3 position = Vector3.zero;
-
-        if(InitPosFlag) 
-        {
-            InitPosFlag = false;
-            PosAngle = 0f;
-            PosRadius = GetUnitRadius(unitType);
-            position = InitPos;
-        }
-        else{
-            position = InitPos + new Vector3(
-                Mathf.Cos(PosAngle) * (PosRadius + GetUnitRadius(unitType)), 
-                0.0f, 
-                Mathf.Sin(PosAngle) * (PosRadius + GetUnitRadius(unitType))
-            );
-
-            PosAngle += 45f;
-            PosRadius += GetUnitRadius(unitType);   
-        }
-
-        return position;
-    }
-    public static float GetUnitRadius(enUnitType unitType) 
-    {
-        //Terran_Marine,
-	    //Terran_Firebat,
-	    //Terran_Tank,
-	    //Terran_Robocop,
-	    //Zerg_Zergling,
-	    //Zerg_Hydra,
-	    //Zerg_Golem,
-	    //Zerg_Tarantula,
-        float radius = 0f; 
-        if (unitType == enUnitType.Terran_Marine)
-        {
-            radius = 1.5f;
-        }
-        else if (unitType == enUnitType.Terran_Firebat)
-        {
-            radius = 1.5f;
-        }
-        else if (unitType == enUnitType.Terran_Tank)
-        {
-            //
-        }
-        else if (unitType == enUnitType.Terran_Robocop)
-        {
-            //
-        }
-        else if (unitType == enUnitType.Zerg_Zergling)
-        {
-            radius = 4f;
-        }
-        else if (unitType == enUnitType.Zerg_Hydra)
-        {
-            radius = 4.5f;
-        }
-        else if (unitType == enUnitType.Zerg_Golem)
-        {
-            radius = 7.5f;
-        }
-        else if (unitType == enUnitType.Zerg_Tarantula)
-        {
-            radius = 10f;
-        }
-
-        return radius;
+        throw new System.NotImplementedException();
     }
 
     private void Start()
     {
-        Manager.UnitSelection.Init();   
-
-        MSG_COM_REQUEST req = new MSG_COM_REQUEST();
-        //Manager.Network.SetRequstMessage(req, enProtocolComRequest.REQ_MOVE_SELECT_FIELD_TO_BATTLE_FIELD);
-        req.type = (ushort)enPacketType.COM_REQUSET;
-        req.requestCode = (ushort)enProtocolComRequest.REQ_MOVE_SELECT_FIELD_TO_BATTLE_FIELD;
-        Manager.Network.SendPacket<MSG_COM_REQUEST>(req);
-
-        foreach (var crt in Manager.GamePlayer.CrtMessageList)
-        {
-            NetworkManager session = crt.Item1;
-            MSG_UNIT_S_CREATE_UNIT msg = crt.Item2;
-            session.SendPacket<MSG_UNIT_S_CREATE_UNIT>(msg);
-        }
-        Manager.GamePlayer.CrtMessageList.Clear();
+        GamaManager.UnitSelection.Init();
+        GamaManager.UnitSelection.Start = true;
+        RPC.proxy.ENTER_TO_BATTLE_FIELD();
     }
 
     private void OnDestroy()
     {
+        GamaManager.UnitSelection.Start = false;
+
         MSG_COM_REQUEST req = new MSG_COM_REQUEST();
         //Manager.Network.SetRequstMessage(req, enProtocolComRequest.REQ_MOVE_BATTLE_FIELD_TO_SELECT_FIELD);
         req.type = (ushort)enPacketType.COM_REQUSET;
@@ -169,6 +73,195 @@ public class BattleField : MonoBehaviour
         }
     }
 
+
+    public void S_PLAYER_CREATE(Int32 CRT_CODE, Int32 UNIT_ID, byte UNIT_TYPE, byte TEAM, float POS_X, float POS_Z, float NORM_X, float NORM_Z, float SPEED, Int32 MAX_HP, Int32 HP, float RADIUS, float ATTACK_DISTANCE, float ATTACK_RATE, float ATTACK_DELAY)
+    {
+        GameObject newUnitObj = CreateUnitObjectInScene(UNIT_ID, UNIT_TYPE, TEAM, POS_X, POS_Z, NORM_X, NORM_Z, SPEED, MAX_HP, HP, RADIUS, ATTACK_DISTANCE, ATTACK_RATE);
+        Unit newUnit = newUnitObj.GetComponent<Unit>();
+        Units.Add(newUnit.m_id, newUnit);
+
+        if (GamaManager.Instance.Team == TEAM)
+        {
+            newUnitObj.tag = GamaManager.TEAM_TAG;
+            newUnitObj.layer = LayerMask.NameToLayer(GamaManager.CLICKABLE_LAYER);
+
+            // add 'UnitMovement' component
+            UnitMovement unitMovement = newUnitObj.AddComponent<UnitMovement>();
+
+            // add 'UnitController' component
+            UnitController unitController = newUnitObj.AddComponent<UnitController>();
+            unitController.Unit = newUnitObj.GetComponent<Unit>();
+            unitController.UnitSession = GamaManager.Instance.GetUnitSession(CRT_CODE);
+
+            unitMovement.MoveCmdHandler += unitController.OnMoveCmd;
+
+            // add 'AttackController' component
+            AttackController attackController = newUnitObj.AddComponent<AttackController>();
+            attackController.Init(newUnit);
+
+            UnitControllers.Add(newUnit.m_id, unitController);
+        }
+        else
+        {
+            newUnitObj.tag = GamaManager.ENEMY_TAG;
+            newUnitObj.layer = LayerMask.NameToLayer(GamaManager.ATTACKABLE_LAYER);
+
+            newUnit.AddComponent<Enemy>().ID = newUnit.m_id;
+            newUnit.AddComponent<Rigidbody>();
+        }
+
+        newUnitObj.SetActive(true);
+    }
+
+    public void S_PLAYER_MOVE(Int32 UNIT_ID, byte TEAM, byte MOVE_TYPE, float POS_X, float POS_Z, float NORM_X, float NORM_Z, float SPEED, float DEST_X, float DEST_Z)
+    {
+        if (!Units.ContainsKey(UNIT_ID)) return;
+
+        Unit unit = Units[UNIT_ID];
+        if (MOVE_TYPE == (byte)enMOVE_TYPE.MOVE_START)
+        {
+            unit.Move_Start(new Vector3(POS_X, 0, POS_Z), new Vector3(DEST_X, 0, DEST_Z), SPEED);
+            //if(TEAM == GamaManager.Instance.Team)
+            //{
+            //    UnitController unitController = UnitControllers[UNIT_ID];
+            //    unitController.OnMoving = true;
+            //    if(unitController.State == enUNIT_STATUS.IDLE || unitController.State == enUNIT_STATUS.ATTACK)
+            //    {
+            //        unitController.State = enUNIT_STATUS.MOVE;
+            //    }
+            //}
+        }
+        else //if (MOVE_TYPE == (byte)enMOVE_TYPE.MOVE_STOP)
+        {
+            unit.Move_Stop(new Vector3(POS_X, 0, POS_Z));
+            //if (TEAM == GamaManager.Instance.Team) {
+            //    UnitController unitController = UnitControllers[UNIT_ID];
+            //    unitController.OnMoving = false;
+            //    unitController.State = enUNIT_STATUS.IDLE;
+            //    UnitControllers[UNIT_ID].ServerPathFinding = false; 
+            //}
+        }
+    }
+
+    public void S_PLAYER_TRACE_PATH_FINDING_REPLY(Int32 UNIT_ID, Int32 SPATH_ID)
+    {
+        if (!Units.ContainsKey(UNIT_ID)) return;
+        Unit unit = Units[UNIT_ID];
+        if(unit.m_team == GamaManager.Instance.Team)
+        {
+            //unit.RecvJpsReqReply(); // <- 필수?
+            UnitController unitController = UnitControllers[unit.m_id];
+            unitController.SPATH_REPLY(SPATH_ID);
+        }
+    }
+    public void S_PLAYER_TRACE_PATH(Int32 UNIT_ID, Int32 SPATH_ID, float POS_X, float POS_Z, byte SPATH_OPT)
+    {
+        if (!Units.ContainsKey(UNIT_ID)) return;
+        Unit unit = Units[UNIT_ID];
+        if (unit.m_team == GamaManager.Instance.Team)
+        {
+            UnitController unitController = UnitControllers[UNIT_ID];
+            unitController.SPATH(SPATH_ID, POS_X, POS_Z, SPATH_OPT);
+        }
+    }
+
+    public void S_PLAYER_LAUNCH_ATTACK(Int32 UNIT_ID, byte TEAM)
+    {
+        if (!Units.ContainsKey(UNIT_ID)) return;
+        Unit unit = Units[UNIT_ID];
+        unit.LauchAttack();
+    }
+
+    public void S_PLAYER_STOP_ATTACK(Int32 UNIT_ID, byte TEAM)
+    {
+        if (!Units.ContainsKey(UNIT_ID)) return;
+        Unit unit = Units[UNIT_ID];
+        unit.StopAttack();
+    }
+
+    public void S_PLAYER_ATTACK(Int32 UNIT_ID, byte TEAM, float POS_X, float POS_Z, float NORM_X, float NORM_Z, Int32 TARGET_ID, byte ATTACK_TYPE)
+    {
+        if (!Units.ContainsKey(UNIT_ID)) return;
+        Unit unit = Units[UNIT_ID];
+        unit.Attack(new Vector3(POS_X, 0, POS_Z), new Vector3(NORM_X, 0, NORM_Z), ATTACK_TYPE);
+        //if (TEAM == GamaManager.Instance.Team)
+        //{
+        //    UnitControllers[UNIT_ID].OnMoving = false;
+        //    UnitControllers[UNIT_ID].State = enUNIT_STATUS.ATTACK;
+        //    UnitControllers[UNIT_ID].ServerPathFinding = false;
+        //}
+    }
+
+    public void S_PLAYER_DAMAGE(Int32 UNIT_ID, Int32 HP)
+    {
+        if (!Units.ContainsKey(UNIT_ID)) return;
+        Unit unit = Units[UNIT_ID];
+        unit.RenewHP(HP);
+    }
+
+    public void S_PLAYER_DIE(Int32 UNIT_ID)
+    {
+        if (!Units.ContainsKey(UNIT_ID)) return;
+        Unit unit = Units[UNIT_ID];
+        unit.Die();
+        Units.Remove(unit.m_id);
+
+        if (unit.m_team == GamaManager.Instance.Team)
+        {
+            UnitControllers.Remove(UNIT_ID);
+
+            // 선택된 유닛이라면 제거
+            GamaManager.UnitSelection.SelectableUnitDestroyed(unit.gameObject);
+
+            GamaManager.Instance.AliveUnitCnt--;
+            if(GamaManager.Instance.AliveUnitCnt == 0)
+            {
+                // Select 씬으로 이동!
+                Manager.Scene.LoadScene(Define.Scene.SelectField);
+            }
+        }
+    }
+
+    private GameObject CreateUnitObjectInScene(Int32 UNIT_ID, byte UNIT_TYPE, byte TEAM, float POS_X, float POS_Z, float NORM_X, float NORM_Z, float SPEED, Int32 MAX_HP, Int32 HP, float RADIUS, float ATTACK_DISTANCE, float ATTACK_RATE)
+    {
+        string prefabName = string.Empty;
+        enUNIT_TYPE unitType = (enUNIT_TYPE)UNIT_TYPE;
+        switch (unitType)
+        {
+            //case enUNIT_TYPE.Terran_Marine: prefabName = "Marine_new"; break;
+            //case enUNIT_TYPE.Terran_Firebat: prefabName = "Firebat_new"; break;
+            //case enUNIT_TYPE.Zerg_Zergling: prefabName = "Zergling_new"; break;
+            //case enUNIT_TYPE.Zerg_Hydra: prefabName = "Hydra_new"; break;
+            case enUNIT_TYPE.Terran_Marine: prefabName = "Marine_new"; break;
+            case enUNIT_TYPE.Terran_Firebat: prefabName = "Firebat_new"; break;
+            case enUNIT_TYPE.Zerg_Zergling: prefabName = "Zergling_new"; break;
+            case enUNIT_TYPE.Zerg_Hydra: prefabName = "Hydra_new"; break;
+
+
+            //case enUNIT_TYPE.Terran_Tank: prefabName = "Tank"; break;
+            //case enUNIT_TYPE.Terran_Robocop:  prefabName = "Robocop"; break;
+            //case enUNIT_TYPE.Zerg_Golem: prefabName = "Golem"; break;
+            //case enUNIT_TYPE.Zerg_Tarantula: prefabName = "Tarantula"; break;
+            default: break;
+        }
+
+        GameObject unitObj = Manager.Resource.Instantiate($"Unit/{prefabName}");
+        if (unitObj != null)
+        {
+            unitObj.transform.position = new Vector3(POS_X, 0, POS_Z);
+            unitObj.transform.forward = new Vector3(NORM_X, 0, NORM_Z);
+
+            Unit unit = unitObj.GetComponent<Unit>();
+            if (unit == null)
+            {
+                unit.AddComponent<Unit>();
+            }
+            unit.Init(UNIT_ID, UNIT_TYPE, TEAM, new Vector3(POS_X, 0, POS_Z), new Vector3(NORM_X, 0, NORM_Z), SPEED, HP, MAX_HP, RADIUS, ATTACK_DISTANCE, ATTACK_RATE);
+        }
+        return unitObj;
+    }
+
+    /*
     // Update is called once per frame
     void Update()
     {
@@ -194,7 +287,7 @@ public class BattleField : MonoBehaviour
                 }
             }
             Manager.GamePlayer.MyTeamUnitCnt = 0;
-            Manager.SceneTransfer.TransferToSelectField();
+            //Manager.SceneTransfer.TransferToSelectField();
         }
        
         //if (Manager.Network.ReceiveDataAvailable())
@@ -513,7 +606,7 @@ public class BattleField : MonoBehaviour
             Manager.GamePlayer.MyTeamUnitCnt -= 1;
             if(Manager.GamePlayer.MyTeamUnitCnt == 0) 
             {
-                Manager.SceneTransfer.TransferToSelectField();
+                //Manager.SceneTransfer.TransferToSelectField();
             }    
         }
     }
@@ -555,129 +648,5 @@ public class BattleField : MonoBehaviour
 
         return gameObj; 
     }
-
-    private GameObject CreateUnitObjectInScene(MSG_S_MGR_CREATE_UNIT crtMsg)
-    {
-        GameObject gameObj = null;
-        string prefabName = string.Empty;
-
-        if(crtMsg.team == (int)enPlayerTeamInBattleField.Team_Dummy)
-        {
-            enUnitType unitType = (enUnitType)crtMsg.unitType;
-            switch (unitType)
-            {
-                case enUnitType.Terran_Marine:
-                    {
-                        prefabName = "Marine_Dummy";
-                    }
-                    break;
-                case enUnitType.Terran_Firebat:
-                    {
-                        prefabName = "Firebat_Dummy";
-                    }
-                    break;
-                case enUnitType.Terran_Tank:
-                    {
-                        prefabName = "Tank_Dummy";
-                    }
-                    break;
-                case enUnitType.Terran_Robocop:
-                    {
-                        prefabName = "Robocop_Dummy";
-                    }
-                    break;
-                case enUnitType.Zerg_Zergling:
-                    {
-                        prefabName = "Zergling_Dummy";
-                    }
-                    break;
-                case enUnitType.Zerg_Hydra:
-                    {
-                        prefabName = "Hydra_Dummy";
-                    }
-                    break;
-                case enUnitType.Zerg_Golem:
-                    {
-                        prefabName = "Golem_Dummy";
-                    }
-                    break;
-                case enUnitType.Zerg_Tarantula:
-                    {
-                        prefabName = "Tarantula_Dummy";
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-        else
-        {
-            enUnitType unitType = (enUnitType)crtMsg.unitType;
-            switch (unitType)
-            {
-                case enUnitType.Terran_Marine:
-                    {
-                        prefabName = "Marine";
-                    }
-                    break;
-                case enUnitType.Terran_Firebat:
-                    {
-                        prefabName = "Firebat";
-                    }
-                    break;
-                case enUnitType.Terran_Tank:
-                    {
-                        prefabName = "Tank";
-                    }
-                    break;
-                case enUnitType.Terran_Robocop:
-                    {
-                        prefabName = "Robocop";
-                    }
-                    break;
-                case enUnitType.Zerg_Zergling:
-                    {
-                        prefabName = "Zergling";
-                    }
-                    break;
-                case enUnitType.Zerg_Hydra:
-                    {
-                        prefabName = "Hydra";
-                    }
-                    break;
-                case enUnitType.Zerg_Golem:
-                    {
-                        prefabName = "Golem";
-                    }
-                    break;
-                case enUnitType.Zerg_Tarantula:
-                    {
-                        prefabName = "Tarantula";
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        Vector3 position = new Vector3(crtMsg.posX, 0, crtMsg.posZ);
-        Vector3 dir = new Vector3(crtMsg.normX, 0, crtMsg.normZ);
-
-        if (prefabName != string.Empty)
-        {
-            GameObject prefab = Resources.Load<GameObject>("Prefab/" + prefabName);
-            gameObj = Instantiate(prefab, position, Quaternion.LookRotation(dir));
-        }
-
-        if (gameObj == null)
-        {
-            return null;
-        }
-
-
-        //Unit newUnit = new Unit(gameObj, crtMsg.unitID, crtMsg.unitType, crtMsg.team, position, dir, crtMsg.speed, crtMsg.maxHP, crtMsg.attackDistance, crtMsg.attackRate);
-
-        gameObj.GetComponent<Unit>().Init(crtMsg.unitID, crtMsg.type, crtMsg.team, position, dir, crtMsg.speed, crtMsg.nowHP, crtMsg.maxHP, crtMsg.radius, crtMsg.attackDistance, crtMsg.attackRate);
-        return gameObj;
-    }
+    */
 }

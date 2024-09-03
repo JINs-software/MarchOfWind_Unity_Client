@@ -15,7 +15,7 @@ public class State_DIE : StateMachineBehaviour
         {
             //Debug.Log("State_DIE.OnStateEnter@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
-            unitController.State = enUnitState.DIE;
+            unitController.State = enUNIT_STATUS.DIE;
         }
     }
 
