@@ -74,13 +74,12 @@ public class Unit : MonoBehaviour
         m_NavMeshAgent.Warp(position);
     }
 
-    public void Move_Start(Vector3 position, Vector3 destPosition, float Speed)
+    public void Move_Start(Vector3 position, Vector3 destPosition, Vector3 norm, float Speed)
     {
-        //Debug.Log("Recv Move_Start---------------------");
-
         m_NavMeshAgent.isStopped = false;
         m_NavMeshAgent.avoidancePriority = 99;
-        //m_NavMeshAgent.avoidancePriority = Random.Range(20, 99);
+        m_NavMeshAgent.Warp(position);
+        gameObject.transform.forward = norm;
         if (!m_NavMeshAgent.SetDestination(destPosition))
         {
             //Debug.Log("Move_Start, SetDestination returns Fail..");
@@ -91,10 +90,9 @@ public class Unit : MonoBehaviour
         m_Animator.ResetTrigger("trAttack");
         m_Animator.SetTrigger("trMove");        
     }
-    public void Move_Stop(Vector3 position)
+    public void Move_Stop(Vector3 position, Vector3 norm)
     {
-        //Debug.Log("Recv Move_Stop---------------------");
-
+        gameObject.transform.forward = norm;
         if (!m_NavMeshAgent.Warp(position))
         {
             //Debug.Log("Move_Stop, Warp returns Fail..");
@@ -112,11 +110,14 @@ public class Unit : MonoBehaviour
     //    gameObject.transform.rotation = Quaternion.LookRotation(norm);
     //}
 
-    public void LauchAttack()
+    public void LauchAttack(float POS_X, float POS_Z, float NORM_X, float NORM_Z)
     {
         // 공격 시작 시 정지!
         m_NavMeshAgent.isStopped = true;
         m_NavMeshAgent.avoidancePriority = 10;
+
+        m_NavMeshAgent.Warp(new Vector3(POS_X, 0, POS_Z));
+        gameObject.transform.forward = new Vector3(NORM_X, 0, NORM_Z);
 
         m_Animator.ResetTrigger("trIdle");
         m_Animator.ResetTrigger("trMove");

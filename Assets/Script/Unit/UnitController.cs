@@ -115,11 +115,11 @@ public class UnitController : MonoBehaviour
         RecvSPath(SPATH_ID, SPATH_OPT, new Vector3(POS_X, 0, POS_Z));
     }
 
-    public void LAUNCH_ATTACK()
+    public void LAUNCH_ATTACK(Vector3 TargetPosition)
     {
         State = enUNIT_STATUS.ATTACK;
         //SendAttackLaunch();
-        SEND_LAUNCH_ATTACK();
+        SEND_LAUNCH_ATTACK(TargetPosition);
     }
 
     public void STOP_ATTACK()
@@ -247,7 +247,7 @@ public class UnitController : MonoBehaviour
         {
             MoveStateCoroutine = StartCoroutine(MoveStateByTracingCoroutine());
         }
-        else if (State == enUNIT_STATUS.MOVE_SPATH)
+        else if (State == enUNIT_STATUS.MOVE_SPATH || State == enUNIT_STATUS.MOVE_SPATH_PENDING)
         {
             MoveStateCoroutine = StartCoroutine(MoveStateByServerPathFindingCoroutine());
         }
@@ -284,7 +284,7 @@ public class UnitController : MonoBehaviour
         while(true)
         {
             if(State == enUNIT_STATUS.MOVE_TRACING || State == enUNIT_STATUS.MOVE_SPATH_PENDING || State == enUNIT_STATUS.MOVE_SPATH) ResetMoveStateCoroutine();
-            else if(State != enUNIT_STATUS.MOVE_COMMAND) { yield return new WaitForSeconds(0.1f); continue; }
+            //else if(State != enUNIT_STATUS.MOVE_COMMAND) { yield return new WaitForSeconds(0.1f); continue; }
             
             if(!m_NavMeshAgent.pathPending)
             {
@@ -306,15 +306,15 @@ public class UnitController : MonoBehaviour
                         {
                             m_UnitMovement.isCommandedToMove = false;
                             MOVE_STOP();
-                            yield return new WaitForSeconds(0.1f);
+                            //yield return new WaitForSeconds(0.1f);
                         }
                         else
                         {
                             if (m_AttackController.GetDistanceFromTarget() <= m_AttackController.m_AttackDistance)
                             {
                                 m_UnitMovement.isCommandedToMove = false;
-                                LAUNCH_ATTACK();
-                                yield return new WaitForSeconds(1f);
+                                LAUNCH_ATTACK(m_AttackController.m_TargetObject.transform.position);
+                                //yield return new WaitForSeconds(1f);
                             }
                             else
                             {
@@ -322,14 +322,14 @@ public class UnitController : MonoBehaviour
                                 if (Vector3.Distance(beforeTargetPosition, m_AttackController.m_TargetObject.transform.position) > 1)
                                 {
                                     MOVE_START(m_AttackController.m_TargetObject.transform.position, enUNIT_STATUS.MOVE_COMMAND);
-                                    yield return new WaitForSeconds(0.1f);
+                                    //yield return new WaitForSeconds(0.1f);
                                 }
                                 // 목적지 도착
                                 else if (m_NavMeshAgent.remainingDistance <= m_NavMeshAgent.stoppingDistance)
                                 {
                                     m_UnitMovement.isCommandedToMove = false;
                                     MOVE_STOP();
-                                    yield return new WaitForSeconds(1f);
+                                    //yield return new WaitForSeconds(1f);
                                 }
                                 // 제자리 걸음
                                 else if (Vector3.Distance(beforePosition, gameObject.transform.position) < 1f)
@@ -339,7 +339,7 @@ public class UnitController : MonoBehaviour
                                     {
                                         // 제자리 걸음 반복 -> spath 요청
                                         SPATH_REQ();
-                                        yield return new WaitForSeconds(1f);
+                                        //yield return new WaitForSeconds(1f);
                                     }
                                 }
                             }
@@ -349,7 +349,7 @@ public class UnitController : MonoBehaviour
                     {
                         m_UnitMovement.isCommandedToMove = false;
                         MOVE_STOP();
-                        yield return new WaitForSeconds(1f);
+                        //yield return new WaitForSeconds(1f);
                     }
                 }
                 else
@@ -368,7 +368,7 @@ public class UnitController : MonoBehaviour
                     {
                         m_UnitMovement.isCommandedToMove = false;
                         MOVE_STOP();
-                        yield return new WaitForSeconds(1f);
+                        //yield return new WaitForSeconds(1f);
                     }
                     // 제자리 걸음
                     else if (Vector3.Distance(beforePosition, gameObject.transform.position) < 1f)
@@ -378,7 +378,7 @@ public class UnitController : MonoBehaviour
                             // 허용되는 정지 범위 내 -> 정지
                             m_UnitMovement.isCommandedToMove = false;
                             MOVE_STOP();
-                            yield return new WaitForSeconds(1f);
+                            //yield return new WaitForSeconds(1f);
                         }
                         else
                         {
@@ -401,7 +401,7 @@ public class UnitController : MonoBehaviour
                             {
                                 stoppedUnitsCenter /= unitCnt;
                                 MOVE_START(stoppedUnitsCenter, enUNIT_STATUS.MOVE_COMMAND);
-                                yield return new WaitForSeconds(0.1f);
+                                //yield return new WaitForSeconds(0.1f);
                             }
                         }
                     }
@@ -425,7 +425,7 @@ public class UnitController : MonoBehaviour
         while (true)
         {
             if (State == enUNIT_STATUS.MOVE_COMMAND || State == enUNIT_STATUS.MOVE_SPATH_PENDING || State == enUNIT_STATUS.MOVE_SPATH) ResetMoveStateCoroutine();
-            else if (State != enUNIT_STATUS.MOVE_TRACING) { yield return new WaitForSeconds(0.1f); continue; }
+            //else if (State != enUNIT_STATUS.MOVE_TRACING) { yield return new WaitForSeconds(0.1f); continue; }
 
             if (!m_NavMeshAgent.pathPending)
             {
@@ -444,30 +444,30 @@ public class UnitController : MonoBehaviour
                     {
                         m_UnitMovement.isCommandedToMove = false;
                         MOVE_STOP();
-                        yield return new WaitForSeconds(0.1f);
+                        //yield return new WaitForSeconds(0.1f);
                     }
                     else
                     {
                         if (m_AttackController.GetDistanceFromTarget() <= m_AttackController.m_AttackDistance)
                         {
                             m_UnitMovement.isCommandedToMove = false;
-                            LAUNCH_ATTACK();
-                            yield return new WaitForSeconds(1f);
+                            LAUNCH_ATTACK(m_AttackController.m_TargetObject.transform.position);
+                            //yield return new WaitForSeconds(1f);
                         }
                         else
                         {
                             // 타겟 위치 변경
                             if (Vector3.Distance(beforeTargetPosition, m_AttackController.m_TargetObject.transform.position) > 1)
                             {
-                                MOVE_START(m_AttackController.m_TargetObject.transform.position, enUNIT_STATUS.MOVE_TRACING);
-                                yield return new WaitForSeconds(0.1f);
+                                //MOVE_START(m_AttackController.m_TargetObject.transform.position, enUNIT_STATUS.MOVE_TRACING);
+                                //yield return new WaitForSeconds(0.1f);
                             }
                             // 목적지 도착
                             else if (m_NavMeshAgent.remainingDistance <= m_NavMeshAgent.stoppingDistance)
                             {
                                 m_UnitMovement.isCommandedToMove = false;
                                 MOVE_STOP();
-                                yield return new WaitForSeconds(1f);
+                                //yield return new WaitForSeconds(1f);
                             }
                             // 제자리 걸음
                             else if (Vector3.Distance(beforePosition, gameObject.transform.position) < 1f)
@@ -477,7 +477,7 @@ public class UnitController : MonoBehaviour
                                 {
                                     // 제자리 걸음 반복 -> spath 요청
                                     SPATH_REQ();
-                                    yield return new WaitForSeconds(1f);
+                                    //yield return new WaitForSeconds(1f);
                                 }
                             }
                         }
@@ -486,7 +486,7 @@ public class UnitController : MonoBehaviour
                 else
                 {
                     MOVE_STOP();
-                    yield return new WaitForSeconds(1f);
+                    //yield return new WaitForSeconds(1f);
                 }
             }
             else
@@ -512,7 +512,7 @@ public class UnitController : MonoBehaviour
         while (true)
         {
             if (State == enUNIT_STATUS.MOVE_COMMAND || State == enUNIT_STATUS.MOVE_TRACING) ResetMoveStateCoroutine();
-            else if (/*State != enUNIT_STATUS.MOVE_SPATH_PENDING && */ State != enUNIT_STATUS.MOVE_SPATH) { yield return new WaitForSeconds(0.1f); continue; }
+            // if (/*State != enUNIT_STATUS.MOVE_SPATH_PENDING && */ State != enUNIT_STATUS.MOVE_SPATH) { yield return new WaitForSeconds(0.1f); continue; }
 
             if (!m_NavMeshAgent.pathPending)
             {
@@ -522,8 +522,8 @@ public class UnitController : MonoBehaviour
                     if (m_AttackController.GetDistanceFromTarget() <= m_AttackController.m_AttackDistance)
                     {
                         // 공격 가능
-                        LAUNCH_ATTACK();
-                        yield return new WaitForSeconds(1f);
+                        LAUNCH_ATTACK(m_AttackController.m_TargetObject.transform.position);
+                        //yield return new WaitForSeconds(1f);
                     }
                     else
                     {
@@ -532,7 +532,7 @@ public class UnitController : MonoBehaviour
                         {
                             // PathPending == false, 즉 이전의 jps 추적을 통해 결과를 받은 상태에서 타겟의 위치가 변경되면 idle 상태로 복귀할 것
                             MOVE_STOP();
-                            yield return new WaitForSeconds(1f);
+                            //yield return new WaitForSeconds(1f);
                         }
                         else
                         {
@@ -558,7 +558,7 @@ public class UnitController : MonoBehaviour
                                 if (newPosition == Vector3.zero)
                                 {
                                     MOVE_STOP();
-                                    yield return new WaitForSeconds(1f);
+                                    //yield return new WaitForSeconds(1f);
                                 }
                             }
                             else
@@ -574,7 +574,7 @@ public class UnitController : MonoBehaviour
                                         // 타겟 변경...
                                         m_AttackController.m_TargetObject = otherTarget;
                                         MOVE_START(otherTarget.transform.position, enUNIT_STATUS.MOVE_TRACING);
-                                        yield return new WaitForSeconds(0.1f);
+                                       // yield return new WaitForSeconds(0.1f);
                                     }
                                     else
                                     {
@@ -590,13 +590,13 @@ public class UnitController : MonoBehaviour
 
                                         // => idle 상태 복귀
                                         MOVE_STOP();
-                                        yield return new WaitForSeconds(1f);
+                                        //yield return new WaitForSeconds(1f);
                                     }
                                 }
                                 else
                                 {
                                     beforePosition = gameObject.transform.position;
-                                    yield return new WaitForSeconds(0.1f);
+                                   // yield return new WaitForSeconds(0.1f);
                                 }
                             }
                         }
@@ -606,7 +606,7 @@ public class UnitController : MonoBehaviour
                 {
                     // 타겟 없음 -> 중지
                     MOVE_STOP();
-                    yield return new WaitForSeconds(1f);
+                    //yield return new WaitForSeconds(1f);
                 }
             }
 
@@ -640,9 +640,10 @@ public class UnitController : MonoBehaviour
         RPC.proxy.UNIT_S_TRACE_PATH_FINDING_REQ(spathID, transform.position.x, transform.position.z, transform.forward.x, transform.forward.z, destination.x, destination.z, UnitSession);
     }
 
-    public void SEND_LAUNCH_ATTACK()
+    public void SEND_LAUNCH_ATTACK(Vector3 TargetPosition)
     {
-        RPC.proxy.UNIT_S_LAUNCH_ATTACK(UnitSession);
+        Vector3 dirToTarget = (TargetPosition - gameObject.transform.position).normalized;
+        RPC.proxy.UNIT_S_LAUNCH_ATTACK(gameObject.transform.position.x, gameObject.transform.position.z, dirToTarget.x, dirToTarget.z, UnitSession);
     }
 
     public void SEND_STOP_ATTACK()
@@ -652,7 +653,13 @@ public class UnitController : MonoBehaviour
 
     public void SEND_ATTACK(int targetID, byte attackType)
     {
-        RPC.proxy.UNIT_S_ATTACK(transform.position.x, transform.position.z, transform.forward.x, transform.forward.z, targetID, attackType, UnitSession);
+        if(m_AttackController.m_TargetObject == null)
+        {
+            return;
+        }
+
+        Vector3 dirToTarget = (m_AttackController.m_TargetObject.transform.position - gameObject.transform.position).normalized;
+        RPC.proxy.UNIT_S_ATTACK(transform.position.x, transform.position.z, dirToTarget.x, dirToTarget.z, targetID, attackType, UnitSession);
     }
 
     /*****************************************************************************

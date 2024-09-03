@@ -52,13 +52,13 @@ public class MOW_BATTLE_FIELD : Stub_MOW_BATTLE_FIELD
         battleField.S_PLAYER_TRACE_PATH(UNIT_ID, SPATH_ID, POS_X, POS_Z, SPATH_OPT);
     }
 
-    protected override void S_PLAYER_LAUNCH_ATTACK(Int32 UNIT_ID, byte TEAM) 
+    protected override void S_PLAYER_LAUNCH_ATTACK(Int32 UNIT_ID, byte TEAM, float POS_X, float POS_Z, float NORM_X, float NORM_Z) 
     {
         if (battleField == null)
         {
             battleField = gameObject.GetComponent<BattleField>();
         }
-        battleField.S_PLAYER_LAUNCH_ATTACK(UNIT_ID, TEAM);
+        battleField.S_PLAYER_LAUNCH_ATTACK(UNIT_ID, TEAM, POS_X, POS_Z, NORM_X, NORM_Z);
     }
 
     protected override void S_PLAYER_STOP_ATTACK(Int32 UNIT_ID, byte TEAM) 

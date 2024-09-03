@@ -120,7 +120,7 @@ public class BattleField : BaseScene
         Unit unit = Units[UNIT_ID];
         if (MOVE_TYPE == (byte)enMOVE_TYPE.MOVE_START)
         {
-            unit.Move_Start(new Vector3(POS_X, 0, POS_Z), new Vector3(DEST_X, 0, DEST_Z), SPEED);
+            unit.Move_Start(new Vector3(POS_X, 0, POS_Z), new Vector3(DEST_X, 0, DEST_Z), new Vector3(NORM_X, 0 , NORM_Z) ,SPEED);
             //if(TEAM == GamaManager.Instance.Team)
             //{
             //    UnitController unitController = UnitControllers[UNIT_ID];
@@ -133,7 +133,7 @@ public class BattleField : BaseScene
         }
         else //if (MOVE_TYPE == (byte)enMOVE_TYPE.MOVE_STOP)
         {
-            unit.Move_Stop(new Vector3(POS_X, 0, POS_Z));
+            unit.Move_Stop(new Vector3(POS_X, 0, POS_Z), new Vector3(NORM_X, 0, NORM_Z));
             //if (TEAM == GamaManager.Instance.Team) {
             //    UnitController unitController = UnitControllers[UNIT_ID];
             //    unitController.OnMoving = false;
@@ -165,11 +165,11 @@ public class BattleField : BaseScene
         }
     }
 
-    public void S_PLAYER_LAUNCH_ATTACK(Int32 UNIT_ID, byte TEAM)
+    public void S_PLAYER_LAUNCH_ATTACK(Int32 UNIT_ID, byte TEAM, float POS_X, float POS_Z, float NORM_X, float NORM_Z)
     {
         if (!Units.ContainsKey(UNIT_ID)) return;
         Unit unit = Units[UNIT_ID];
-        unit.LauchAttack();
+        unit.LauchAttack(POS_X, POS_Z, NORM_X, NORM_Z);
     }
 
     public void S_PLAYER_STOP_ATTACK(Int32 UNIT_ID, byte TEAM)

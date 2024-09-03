@@ -292,7 +292,11 @@ public abstract class Stub_MOW_BATTLE_FIELD : Stub
         int offset = 0;
         Int32 UNIT_ID = BitConverter.ToInt32(payload, offset); offset += sizeof(Int32);
         byte TEAM = payload[offset++];
-        S_PLAYER_LAUNCH_ATTACK(UNIT_ID, TEAM);
+        float POS_X = BitConverter.ToSingle(payload, offset); offset += sizeof(float);
+        float POS_Z = BitConverter.ToSingle(payload, offset); offset += sizeof(float);
+        float NORM_X = BitConverter.ToSingle(payload, offset); offset += sizeof(float);
+        float NORM_Z = BitConverter.ToSingle(payload, offset); offset += sizeof(float);
+        S_PLAYER_LAUNCH_ATTACK(UNIT_ID, TEAM, POS_X, POS_Z, NORM_X, NORM_Z);
     }
 
     public void S_PLAYER_STOP_ATTACK(byte[] payload)
@@ -340,7 +344,7 @@ public abstract class Stub_MOW_BATTLE_FIELD : Stub
 
     protected abstract void S_PLAYER_TRACE_PATH(Int32 UNIT_ID, Int32 SPATH_ID, float POS_X, float POS_Z, byte SPATH_OPT);
 
-    protected abstract void S_PLAYER_LAUNCH_ATTACK(Int32 UNIT_ID, byte TEAM);
+    protected abstract void S_PLAYER_LAUNCH_ATTACK(Int32 UNIT_ID, byte TEAM, float POS_X, float POS_Z, float NORM_X, float NORM_Z);
 
     protected abstract void S_PLAYER_STOP_ATTACK(Int32 UNIT_ID, byte TEAM);
 

@@ -112,7 +112,7 @@ public class AttackController : MonoBehaviour
                 {
                     // 공격 
                     //gameObject.GetComponent<UnitController>().Send_AttackMessage(m_TargetObject);
-                    m_UnitController.LAUNCH_ATTACK();
+                    m_UnitController.LAUNCH_ATTACK(m_TargetObject.transform.position);
                 }
                 else
                 {
@@ -166,7 +166,7 @@ public class AttackController : MonoBehaviour
             if(m_TargetObject == null)
             {
                 m_UnitController.STOP_ATTACK();
-                yield return new WaitForSeconds(1f);
+                //yield return new WaitForSeconds(1f);
             }
             else
             {
@@ -179,11 +179,12 @@ public class AttackController : MonoBehaviour
                         //m_UnitController.TRACE(m_TargetObject);
                         //yield return new WaitForSeconds(1f);
                         m_UnitController.STOP_ATTACK();
-                        yield return new WaitForSeconds(1f);
+                        //yield return new WaitForSeconds(1f);
                     }
                     else
                     {
                         gameObject.transform.forward = (m_TargetObject.transform.position - gameObject.transform.position).normalized;
+                        m_UnitController.SEND_SYNC();
                     }
                 }
             }

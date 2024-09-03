@@ -235,12 +235,16 @@ public class Proxy
         else { sesion.SendPacketBytes(payload, RPC.EnDecodeFlag); }
     }
 
-    public void UNIT_S_LAUNCH_ATTACK( NetworkManager sesion = null)
+    public void UNIT_S_LAUNCH_ATTACK(float POS_X, float POS_Z, float NORM_X, float NORM_Z, NetworkManager sesion = null)
     {
         UInt16 type = MessageIDs["UNIT_S_LAUNCH_ATTACK"];
-        byte[] payload = new byte[sizeof(UInt16)];
+        byte[] payload = new byte[sizeof(UInt16) + sizeof(float) + sizeof(float) + sizeof(float) + sizeof(float)];
         int offset = 0;
         Buffer.BlockCopy(BitConverter.GetBytes(type), 0, payload, offset, sizeof(UInt16)); offset += sizeof(UInt16);
+        Buffer.BlockCopy(BitConverter.GetBytes(POS_X), 0, payload, offset, sizeof(float)); offset += sizeof(float);
+        Buffer.BlockCopy(BitConverter.GetBytes(POS_Z), 0, payload, offset, sizeof(float)); offset += sizeof(float);
+        Buffer.BlockCopy(BitConverter.GetBytes(NORM_X), 0, payload, offset, sizeof(float)); offset += sizeof(float);
+        Buffer.BlockCopy(BitConverter.GetBytes(NORM_Z), 0, payload, offset, sizeof(float)); offset += sizeof(float);
         if (sesion == null) { RPC.Network.SendPacketBytes(payload, RPC.EnDecodeFlag); }
         else { sesion.SendPacketBytes(payload, RPC.EnDecodeFlag); }
     }

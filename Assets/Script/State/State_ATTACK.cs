@@ -38,6 +38,7 @@ public class State_ATTACK : StateMachineBehaviour
             // AttackController의 타겟 추적 및 공격 체크 코루틴 수행 
             //Debug.Log("State_IDLE.OnStateEnter*********************************************");
             unitController.gameObject.GetComponent<AttackController>().StopAttackJudgmentCoroutine();
+            animator.gameObject.GetComponent<UnitAnimEventHandler>().OnAnimAttackEndEvent();
         }
     }
 }
