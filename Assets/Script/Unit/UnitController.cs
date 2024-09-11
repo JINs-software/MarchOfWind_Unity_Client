@@ -300,7 +300,7 @@ public class UnitController : MonoBehaviour
                         else yield return new WaitForSeconds(expectedTime);
 
                         // some time passe.. check movin
-                        if (gameObject == null || m_AttackController == null || m_NavMeshAgent == null || m_UnitMovement == null) yield break;
+                        if (gameObject == null || m_AttackController == null || m_NavMeshAgent == null || !m_NavMeshAgent.isActiveAndEnabled || !m_NavMeshAgent.isOnNavMesh || m_UnitMovement == null) yield break;
 
                         if (!m_AttackController.HasTarget())
                         {
@@ -361,7 +361,7 @@ public class UnitController : MonoBehaviour
 
                     // some time passe.. check moving
 
-                    if (gameObject == null || m_AttackController == null || m_NavMeshAgent == null || m_UnitMovement == null) yield break;
+                    if (gameObject == null || m_AttackController == null || m_NavMeshAgent == null || !m_NavMeshAgent.isActiveAndEnabled || !m_NavMeshAgent.isOnNavMesh || m_UnitMovement == null) yield break;
 
                     // 목적지 도착
                     if (m_NavMeshAgent.remainingDistance <= m_NavMeshAgent.stoppingDistance)
@@ -438,7 +438,7 @@ public class UnitController : MonoBehaviour
                     else yield return new WaitForSeconds(expectedTime);
 
                     // some time passe.. check moving
-                    if (gameObject == null || m_AttackController == null || m_NavMeshAgent == null || m_UnitMovement == null) yield break;
+                    if (gameObject == null || m_AttackController == null || m_NavMeshAgent == null || !m_NavMeshAgent.isActiveAndEnabled || !m_NavMeshAgent.isOnNavMesh || m_UnitMovement == null) yield break;
 
                     if (!m_AttackController.HasTarget())
                     {

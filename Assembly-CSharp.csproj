@@ -67,12 +67,10 @@
     <Compile Include="Assets\UI\Unity UI Samples\Scripts\ActiveStateToggler.cs" />
     <Compile Include="Assets\Script\Controller\ToggleController.cs" />
     <Compile Include="Assets\VFX\WarFX\WarFX\Demo\Assets\WFX_Demo_RandomDir.cs" />
-    <Compile Include="Assets\RTS\DirectionIndicator.cs" />
     <Compile Include="Assets\Script\RPC\JPD_ENUM.cs" />
     <Compile Include="Assets\Script\UI\PlayerBtn.cs" />
     <Compile Include="Assets\Unit\old\Tarantula\CrabMonster\Scripts\Rikayon.cs" />
     <Compile Include="Assets\Script\State\State_MOVE.cs" />
-    <Compile Include="Assets\RTS\CursorManager.cs" />
     <Compile Include="Assets\UI\Unity UI Samples\Scripts\DropMe.cs" />
     <Compile Include="Assets\Script\Unity_Util\Managers\ResourceManager.cs" />
     <Compile Include="Assets\Environment\Teleport\Scripts\teleport\PortTrigger.cs" />
@@ -140,6 +138,7 @@
     <Compile Include="Assets\Script\RPC\MOW_PRE_BATTLE_FIELD.cs" />
     <Compile Include="Assets\Script\Manager\Manager.cs" />
     <Compile Include="Assets\Unit\old\Tarantula\CrabMonster\LB3DGameManager.cs" />
+    <Compile Include="Assets\Script\Unit\DummyController.cs" />
     <Compile Include="Assets\Environment\Teleport\Scripts\player\PlayerCamera.cs" />
     <Compile Include="Assets\Script\Unit\UnitMovement.cs" />
     <Compile Include="Assets\Environment\Teleport\Scripts\player\PlayerManager.cs" />

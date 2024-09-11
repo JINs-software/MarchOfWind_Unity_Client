@@ -195,7 +195,7 @@ public class AttackController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.CompareTag("Enemy"))
+        if(other.CompareTag("Enemy") && ((other is CapsuleCollider) || (other is BoxCollider)))
         {
             m_NearTargets.Add(other.gameObject);
             if(m_TargetObject == null)

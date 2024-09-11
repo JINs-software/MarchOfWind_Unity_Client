@@ -28,6 +28,7 @@ public class MOW_HUB_TEST : MOW_HUB
 
     protected override void JOIN_TO_MATCH_ROOM_REPLY(byte REPLY_CODE)
     {
+        TestManager.Instance.PROC_JOIN_TO_MATCH_ROOM_REPLY(REPLY_CODE);
     }
 
     protected override void MATCH_PLAYER_LIST(UInt16 PLAYER_ID, byte[] MATCH_PLAYER_NAME, byte LENGTH, byte MATCH_PLAYER_INDEX, byte TOTAL_MATCH_PLAYER)

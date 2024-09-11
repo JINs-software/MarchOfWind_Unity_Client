@@ -1,18 +1,14 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.Rendering.HighDefinition;
-using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 public class TestManager : MonoBehaviour
 {
     static TestManager s_Instance;
     public static TestManager Instance { get { Init(); return s_Instance; } }
-
+    public static bool TestMode = false;
+    
     bool OnDebug = false;
     TestUI testUI;
     MOW_HUB_TEST HubStub;
@@ -20,10 +16,14 @@ public class TestManager : MonoBehaviour
 
     UInt16 playerID = 7777;
     UInt16 matchRoomID = 7777;
-    NetworkManager otherSession = null; 
+    byte team;
+
+    NetworkManager otherSession = null;
+    UInt16 otherPlayerID;
+    byte otherTeam;
+
 
     UInt16 battleFieldID;
-    byte team;
     int CrtCode = 0;
 
     MOW_HUB_TEST hubStub = null;
@@ -45,6 +45,8 @@ public class TestManager : MonoBehaviour
 
     static void Init()
     {
+        TestMode = true;
+
         if (s_Instance == null)
         {
             GameObject go = GameObject.Find("@TestManager");
@@ -101,6 +103,7 @@ public class TestManager : MonoBehaviour
     {
         if (OnDebug)
         {
+
             if(Input.GetKey(KeyCode.Escape))
             {
                 Instance.OnDebug = false;
@@ -118,20 +121,20 @@ public class TestManager : MonoBehaviour
                         NetworkManager unitSession = RPC.Instance.AllocNewClientSession();
                         RPC.proxy.UNIT_CONN_TO_BATTLE_FIELD(battleFieldID, unitSession);
                         int crtCode = CrtCode++;
+                        byte unitType = (byte)enUnitType.Terran_Marine;
+                        if (toggle == Toggles.MarineToggle || toggle == Toggles.MarineEnemyToggle) unitType = (byte)enUnitType.Terran_Marine;
+                        else if (toggle == Toggles.FirebatToggle || toggle == Toggles.FirebatEnemyToggle) unitType = (byte)enUnitType.Terran_Firebat;
+                        else if (toggle == Toggles.ZerglingToggle || toggle == Toggles.ZerglingEnemyToggle) unitType = (byte)enUnitType.Zerg_Zergling;
+                        else if (toggle == Toggles.HydraToggle || toggle == Toggles.HydraEnemyToggle) unitType = (byte)enUnitType.Zerg_Hydra;
                         if(toggle == Toggles.MarineToggle || toggle == Toggles.ZerglingToggle || toggle == Toggles.FirebatToggle || toggle == Toggles.HydraToggle)
                         {
-                            byte unitType = (byte)enUnitType.Terran_Marine;
-                            if (toggle == Toggles.MarineToggle) unitType = (byte)enUnitType.Terran_Marine;
-                            else if (toggle == Toggles.FirebatToggle) unitType = (byte)enUnitType.Terran_Firebat;
-                            else if (toggle == Toggles.ZerglingToggle) unitType = (byte)enUnitType.Zerg_Zergling;
-                            else if (toggle == Toggles.HydraToggle) unitType = (byte)enUnitType.Zerg_Hydra;
-
                             RPC.proxy.UNIT_S_CREATE(crtCode, unitType, team, hit.point.x, hit.point.z, 0, 0, unitSession);
                             GamaManager.Instance.SetUnitSession(crtCode, unitSession);
                         }
                         else
                         {
-
+                            RPC.proxy.UNIT_S_CREATE(crtCode, unitType, otherTeam, hit.point.x, hit.point.z, 0, 0, unitSession);
+                            GamaManager.Instance.SetUnitSession(crtCode, unitSession);
                         }
                     }
                 }
@@ -142,28 +145,40 @@ public class TestManager : MonoBehaviour
     void DebugBtnHandler()
     {
         OnDebug = true;
+        //testUI.TogglesOn();
+        testUI.DebugOn();
     }
     void ConnectBtnHandler() {
-        RPC.Instance.Initiate("192.168.123.53", 7777);
+        RPC.Instance.Initiate("127.0.0.1", 7777);
         string playerNameStr = "JIN";
         byte[] playerName = Encoding.ASCII.GetBytes(playerNameStr);
         RPC.proxy.CONNECTION(playerName, (byte)playerName.Length);
 
 
         otherSession = RPC.Instance.AllocNewClientSession();
-        RPC.Instance.AttachClientSession(otherSession);
+        HashSet<UInt16> blockMessages = new HashSet<UInt16>();
+        blockMessages.Add(3003);
+        blockMessages.Add(3005);
+        blockMessages.Add(3008);
+        blockMessages.Add(3009);    
+        blockMessages.Add(3011);
+        blockMessages.Add(3013);
+        blockMessages.Add(3015);
+        blockMessages.Add(3016);
+        blockMessages.Add(3017);
+        RPC.Instance.AttachClientSession(otherSession, blockMessages);
         playerNameStr = "OTHER";
         playerName = Encoding.ASCII.GetBytes(playerNameStr);
         RPC.proxy.CONNECTION(playerName, (byte)playerName.Length, otherSession);
     }
-    void MarineToggleHandler() { }
-    void FirebatToggleHandler() { }
-    void ZerglingToggleHandler() { }
-    void HydraToggleHandler() { }
-    void MarineEnemyToggleHandler() { }
-    void FirebatEnemyToggleHandler() { }
-    void ZerglingEnemyToggleHandler() { }
-    void HydraEnemyToggleHandler() { }
+    void MarineToggleHandler() { toggle = Toggles.MarineToggle; }
+    void FirebatToggleHandler() { toggle = Toggles.FirebatToggle; }
+    void ZerglingToggleHandler() { toggle = Toggles.ZerglingToggle; }
+    void HydraToggleHandler() { toggle = Toggles.HydraToggle; }
+    void MarineEnemyToggleHandler() { toggle = Toggles.MarineEnemyToggle; }
+    void FirebatEnemyToggleHandler() { toggle = Toggles.FirebatEnemyToggle; }
+    void ZerglingEnemyToggleHandler() { toggle = Toggles.ZerglingEnemyToggle; }
+    void HydraEnemyToggleHandler() { toggle = Toggles.HydraEnemyToggle; }
 
 
 
@@ -175,6 +190,10 @@ public class TestManager : MonoBehaviour
             string roomNameStr = "my_room";
             byte[] roomName = Encoding.ASCII.GetBytes(roomNameStr);
             RPC.proxy.CREATE_MATCH_ROOM(roomName, (Byte)roomName.Length, 2);
+        }
+        else
+        {
+            otherPlayerID = PLAYER_ID;
         }
     }
     public void PROC_CREATE_MATCH_ROOM_REPLY(byte REPLY_CODE, UInt16 MATCH_ROOM_ID)
@@ -211,8 +230,12 @@ public class TestManager : MonoBehaviour
         if(!readyToBattleFlag)
         {
             readyToBattleFlag = true;
-            battleFieldID = (byte)battleFieldID;
+            battleFieldID = BATTLE_FIELD_ID;
             team = TEAM;
+        }
+        else
+        {
+            otherTeam = TEAM;
         }
     }
 
@@ -238,6 +261,12 @@ public class TestManager : MonoBehaviour
             enterToSelectFieldFlag = true;      
             Instance.readyToTest = true;
             Instance.testUI.TogglesOn();
+
+            RPC.proxy.ENTER_TO_BATTLE_FIELD();  
+        }
+        else
+        {
+            RPC.proxy.ENTER_TO_BATTLE_FIELD(otherSession);
         }
     }
 }

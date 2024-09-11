@@ -103,11 +103,35 @@ public class BattleField : BaseScene
         }
         else
         {
-            newUnitObj.tag = GamaManager.ENEMY_TAG;
-            newUnitObj.layer = LayerMask.NameToLayer(GamaManager.ATTACKABLE_LAYER);
+            if (TestManager.TestMode)
+            {
+                newUnitObj.tag = GamaManager.ENEMY_TAG;
+                newUnitObj.layer = LayerMask.NameToLayer(GamaManager.ATTACKABLE_LAYER);
 
-            newUnit.AddComponent<Enemy>().ID = newUnit.m_id;
-            newUnit.AddComponent<Rigidbody>();
+                // add 'UnitMovement' component
+                UnitMovement unitMovement = newUnitObj.AddComponent<UnitMovement>();
+
+                // add 'UnitController' component
+                UnitController unitController = newUnitObj.AddComponent<UnitController>();
+                unitController.Unit = newUnitObj.GetComponent<Unit>();
+                unitController.UnitSession = GamaManager.Instance.GetUnitSession(CRT_CODE);
+
+                unitMovement.MoveCmdHandler += unitController.OnMoveCmd;
+
+                // add 'AttackController' component
+                AttackController attackController = newUnitObj.AddComponent<AttackController>();
+                attackController.Init(newUnit);
+
+                //UnitControllers.Add(newUnit.m_id, unitController);
+            }
+            else
+            {
+                newUnitObj.tag = GamaManager.ENEMY_TAG;
+                newUnitObj.layer = LayerMask.NameToLayer(GamaManager.ATTACKABLE_LAYER);
+
+                newUnit.AddComponent<Enemy>().ID = newUnit.m_id;
+                newUnit.AddComponent<Rigidbody>();
+            }
         }
 
         newUnitObj.SetActive(true);
@@ -206,18 +230,43 @@ public class BattleField : BaseScene
         unit.Die();
         Units.Remove(unit.m_id);
 
-        if (unit.m_team == GamaManager.Instance.Team)
+        if (TestManager.TestMode)
         {
-            UnitControllers.Remove(UNIT_ID);
-
-            // 선택된 유닛이라면 제거
-            GamaManager.UnitSelection.SelectableUnitDestroyed(unit.gameObject);
-
-            GamaManager.Instance.AliveUnitCnt--;
-            if(GamaManager.Instance.AliveUnitCnt == 0)
+            if (unit.m_team == GamaManager.Instance.Team)
             {
-                // Select 씬으로 이동!
-                Manager.Scene.LoadScene(Define.Scene.SelectField);
+                UnitControllers.Remove(UNIT_ID);
+
+                // 선택된 유닛이라면 제거
+                GamaManager.UnitSelection.SelectableUnitDestroyed(unit.gameObject);
+
+                GamaManager.Instance.AliveUnitCnt--;
+                if (GamaManager.Instance.AliveUnitCnt == 0)
+                {
+                    // Select 씬으로 이동!
+                    Manager.Scene.LoadScene(Define.Scene.SelectField);
+                }
+            }
+            else
+            {
+                // 선택된 유닛이라면 제거
+                GamaManager.UnitSelection.SelectableUnitDestroyed(unit.gameObject);
+            }
+        }
+        else
+        {
+            if (unit.m_team == GamaManager.Instance.Team)
+            {
+                UnitControllers.Remove(UNIT_ID);
+
+                // 선택된 유닛이라면 제거
+                GamaManager.UnitSelection.SelectableUnitDestroyed(unit.gameObject);
+
+                GamaManager.Instance.AliveUnitCnt--;
+                if (GamaManager.Instance.AliveUnitCnt == 0)
+                {
+                    // Select 씬으로 이동!
+                    Manager.Scene.LoadScene(Define.Scene.SelectField);
+                }
             }
         }
     }

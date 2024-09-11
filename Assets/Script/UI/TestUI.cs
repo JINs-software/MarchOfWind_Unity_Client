@@ -96,6 +96,15 @@ public class TestUI : UI_Base
 
     public void TogglesOn()
     {
+        MarineToggle.isOn = false;
+        FirebatToggle.isOn = false;
+        ZerglingToggle.isOn = false;
+        HydraToggle.isOn = false;
+        MarineEnemyToggle.isOn = false;
+        FirebatEnemyToggle.isOn = false;
+        ZerglingEnemyToggle.isOn = false;
+        HydraEnemyToggle.isOn = false;
+
         MarineToggle.interactable = true;  
         FirebatToggle.interactable = true;
         ZerglingToggle.interactable = true;
@@ -107,6 +116,15 @@ public class TestUI : UI_Base
     }
     public void TogglesOff()
     {
+        MarineToggle.isOn = false;
+        FirebatToggle.isOn = false;
+        ZerglingToggle.isOn = false;
+        HydraToggle.isOn = false;
+        MarineEnemyToggle.isOn = false;
+        FirebatEnemyToggle.isOn = false;
+        ZerglingEnemyToggle.isOn = false;
+        HydraEnemyToggle.isOn = false;
+
         MarineToggle.interactable = false;
         FirebatToggle.interactable = false;
         ZerglingToggle.interactable = false;
@@ -121,12 +139,12 @@ public class TestUI : UI_Base
         DebugBtnHandler.Invoke(); 
     }
     void OnConnectBtnClick(PointerEventData evtdata) { ConnectBtnHandler.Invoke(); }
-    void OnMarineToggleClick(PointerEventData evtdata) { MarineToggleHandler.Invoke(); }
-    void OnFirebatToggleClick(PointerEventData evtdata) { FirebatToggleHandler.Invoke(); }
-    void OnZerglingToggleClick(PointerEventData evtdata) { ZerglingToggleHandler.Invoke(); }
-    void OnHydraToggleClick(PointerEventData evtdata) { HydraToggleHandler.Invoke(); }
-    void OnMarineEnemyToggleClick(PointerEventData evtdata) { MarineEnemyToggleHandler.Invoke(); }
-    void OnFirebatEnemyToggleClick(PointerEventData evtdata) { FirebatEnemyToggleHandler.Invoke(); }
-    void OnZerglingEnemyToggleClick(PointerEventData evtdata) { ZerglingEnemyToggleHandler.Invoke(); }
-    void OnHydraEnemyToggleClick(PointerEventData evtdata) { HydraEnemyToggleHandler.Invoke(); }
+    void OnMarineToggleClick(PointerEventData evtdata) { if (MarineToggle.isOn) MarineToggleHandler.Invoke(); }
+    void OnFirebatToggleClick(PointerEventData evtdata) { if (FirebatToggle.isOn) FirebatToggleHandler.Invoke(); }
+    void OnZerglingToggleClick(PointerEventData evtdata) { if (ZerglingToggle.isOn) ZerglingToggleHandler.Invoke(); }
+    void OnHydraToggleClick(PointerEventData evtdata) { if (HydraToggle.isOn) HydraToggleHandler.Invoke(); }
+    void OnMarineEnemyToggleClick(PointerEventData evtdata) { if (MarineEnemyToggle.isOn) MarineEnemyToggleHandler.Invoke(); }
+    void OnFirebatEnemyToggleClick(PointerEventData evtdata) { if (FirebatEnemyToggle.isOn) FirebatEnemyToggleHandler.Invoke(); }
+    void OnZerglingEnemyToggleClick(PointerEventData evtdata) { if (ZerglingEnemyToggle.isOn) ZerglingEnemyToggleHandler.Invoke(); }
+    void OnHydraEnemyToggleClick(PointerEventData evtdata) { if (HydraEnemyToggle.isOn) HydraEnemyToggleHandler.Invoke(); }
 }

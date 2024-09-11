@@ -2,14 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using UnityEditor.TestTools.CodeCoverage;
 using UnityEngine;
 
 public class RPC : MonoBehaviour
 {
     static RPC s_Instance;
+    static Proxy s_Proxy = new Proxy();
     public static RPC Instance { get { Init(); return s_Instance; } }
-    public static Proxy proxy = new Proxy();
+    public static Proxy proxy { get { Init(); return s_Proxy; } }       
     public static byte ValidCode = 119;
     public static bool EnDecodeFlag = true;
     private Dictionary<UInt16, Action<byte[]>> StubMethods = new Dictionary<UInt16, Action<byte[]>>();
@@ -20,7 +20,12 @@ public class RPC : MonoBehaviour
     private string ServerIP;
     private UInt16 ServerPort;
 
-    List<NetworkManager> ExtraSessions = new List<NetworkManager>();
+    struct ExtraSession
+    {
+        public NetworkManager session;
+        public HashSet<UInt16> blockMessages;
+    }
+    List<ExtraSession> ExtraSessions = new List<ExtraSession>();
 
     private void Start()
     {
@@ -89,11 +94,14 @@ public class RPC : MonoBehaviour
 
         return null;
     }
-    public void AttachClientSession(NetworkManager newSession)
+    public void AttachClientSession(NetworkManager newSession, HashSet<UInt16> blockMessages)
     {
         if(newSession != null)
         {
-            ExtraSessions.Add(newSession);      
+            ExtraSession extraSession = new ExtraSession();
+            extraSession.session = newSession;
+            extraSession.blockMessages = blockMessages; 
+            ExtraSessions.Add(extraSession);      
         }
     }
 
@@ -136,15 +144,15 @@ public class RPC : MonoBehaviour
             }
         }
 
-        foreach(NetworkManager session in ExtraSessions)
+        foreach(ExtraSession extraSession in ExtraSessions)
         {
-            while (session.ReceivedDataSize() >= Marshal.SizeOf<JNET_PROTOCOL.MSG_HDR>())
+            while (extraSession.session.ReceivedDataSize() >= Marshal.SizeOf<JNET_PROTOCOL.MSG_HDR>())
             {
                 byte[] payload;
-                if (session.ReceivePacketBytes(out payload, EnDecodeFlag))
+                if (extraSession.session.ReceivePacketBytes(out payload, EnDecodeFlag))
                 {
                     UInt16 msgType = BitConverter.ToUInt16(payload, 0);
-                    if (StubMethods.ContainsKey(msgType))
+                    if (StubMethods.ContainsKey(msgType) && !extraSession.blockMessages.Contains(msgType))
                     {
                         StubMethods[msgType].Invoke(new ArraySegment<byte>(payload, sizeof(UInt16), payload.Length - sizeof(UInt16)).ToArray());
                     }

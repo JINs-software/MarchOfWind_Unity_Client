@@ -40,5 +40,13 @@ public class State_ATTACK : StateMachineBehaviour
             unitController.gameObject.GetComponent<AttackController>().StopAttackJudgmentCoroutine();
             animator.gameObject.GetComponent<UnitAnimEventHandler>().OnAnimAttackEndEvent();
         }
+
+        // 공격 Muzzle이 이벤트 함수를 받지 못하여 계속 유지되는 현상 발생(특히 Enemy)
+        // UnitAnimEventHandler를 통해 직접적으로 SetActive(False)
+        UnitAnimEventHandler eventHandler = animator.gameObject.GetComponent<UnitAnimEventHandler>();
+        if (eventHandler != null)
+        {
+             eventHandler.muzzleObject.SetActive(false);    
+        }
     }
 }
