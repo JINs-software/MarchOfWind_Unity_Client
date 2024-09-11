@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using UnityEditor.TestTools.CodeCoverage;
 using UnityEngine;
 
 public class RPC : MonoBehaviour
@@ -18,6 +19,8 @@ public class RPC : MonoBehaviour
 
     private string ServerIP;
     private UInt16 ServerPort;
+
+    List<NetworkManager> ExtraSessions = new List<NetworkManager>();
 
     private void Start()
     {
@@ -86,6 +89,13 @@ public class RPC : MonoBehaviour
 
         return null;
     }
+    public void AttachClientSession(NetworkManager newSession)
+    {
+        if(newSession != null)
+        {
+            ExtraSessions.Add(newSession);      
+        }
+    }
 
     private void Update()
     {
@@ -123,6 +133,26 @@ public class RPC : MonoBehaviour
             else
             {
                 break;
+            }
+        }
+
+        foreach(NetworkManager session in ExtraSessions)
+        {
+            while (session.ReceivedDataSize() >= Marshal.SizeOf<JNET_PROTOCOL.MSG_HDR>())
+            {
+                byte[] payload;
+                if (session.ReceivePacketBytes(out payload, EnDecodeFlag))
+                {
+                    UInt16 msgType = BitConverter.ToUInt16(payload, 0);
+                    if (StubMethods.ContainsKey(msgType))
+                    {
+                        StubMethods[msgType].Invoke(new ArraySegment<byte>(payload, sizeof(UInt16), payload.Length - sizeof(UInt16)).ToArray());
+                    }
+                }
+                else
+                {
+                    break;
+                }
             }
         }
 #endif

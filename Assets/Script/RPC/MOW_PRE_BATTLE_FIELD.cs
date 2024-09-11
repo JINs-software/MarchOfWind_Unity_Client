@@ -3,12 +3,12 @@ using System;
 
 public class MOW_PRE_BATTLE_FIELD : Stub_MOW_PRE_BATTLE_FIELD
 {
-    private void Start() 
+    protected void Start() 
     {
         base.Init();
     }
 
-    private void OnDestroy()
+    protected void OnDestroy()
     {
         base.Clear();  
     }

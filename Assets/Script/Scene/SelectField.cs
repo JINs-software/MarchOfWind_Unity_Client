@@ -33,7 +33,7 @@ public class SelectField : BaseScene
     {
         for(byte i=0; i < GamaManager.Instance.SelectorCnt; i++)
         {
-            GameObject selector = Manager.Resource.Instantiate($"SelectField/Selector{GamaManager.Instance.Team}");
+            GameObject selector = Manager.Resource.Instantiate($"SelectField/Selector_old");
             Vector3 initPosition = GetRandomPositionOnCylinder(InitPoint);
             selector.transform.position = initPosition;
             selector.SetActive(true);   

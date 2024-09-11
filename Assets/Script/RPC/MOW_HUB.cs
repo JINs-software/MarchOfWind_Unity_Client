@@ -4,12 +4,12 @@ using System.Text;
 
 public class MOW_HUB : Stub_MOW_HUB
 {
-    private void Start() 
+    protected void Start() 
     {
         base.Init();
     }
 
-    private void OnDestroy()
+    protected void OnDestroy()
     {
         base.Clear();  
     }
