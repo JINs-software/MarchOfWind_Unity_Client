@@ -38,6 +38,10 @@ public class TestManager : MonoBehaviour
         FirebatEnemyToggle,
         ZerglingEnemyToggle,
         HydraEnemyToggle,
+        MarineDummyToggle,
+        FirebatDummyToggle,
+        ZerglingDummyToggle,
+        HydraDummyToggle,
         NONE,
     }
 
@@ -76,6 +80,10 @@ public class TestManager : MonoBehaviour
                     s_Instance.testUI.FirebatEnemyToggleHandler += s_Instance.FirebatEnemyToggleHandler;
                     s_Instance.testUI.ZerglingEnemyToggleHandler += s_Instance.ZerglingEnemyToggleHandler;
                     s_Instance.testUI.HydraEnemyToggleHandler += s_Instance.HydraEnemyToggleHandler;
+                    s_Instance.testUI.MarineDummyToggleHandler += s_Instance.MarineDummyToggleHandler;
+                    s_Instance.testUI.FirebatDummyToggleHandler += s_Instance.FirebatDummyToggleHandler;
+                    s_Instance.testUI.ZerglingDummyToggleHandler += s_Instance.ZerglingDummyToggleHandler;
+                    s_Instance.testUI.HydraDummyToggleHandler += s_Instance.HydraDummyToggleHandler;
 
 
                 }
@@ -131,9 +139,14 @@ public class TestManager : MonoBehaviour
                             RPC.proxy.UNIT_S_CREATE(crtCode, unitType, team, hit.point.x, hit.point.z, 0, 0, unitSession);
                             GamaManager.Instance.SetUnitSession(crtCode, unitSession);
                         }
-                        else
+                        else if (toggle == Toggles.MarineEnemyToggle || toggle == Toggles.ZerglingEnemyToggle || toggle == Toggles.FirebatEnemyToggle || toggle == Toggles.HydraEnemyToggle)
                         {
                             RPC.proxy.UNIT_S_CREATE(crtCode, unitType, otherTeam, hit.point.x, hit.point.z, 0, 0, unitSession);
+                            GamaManager.Instance.SetUnitSession(crtCode, unitSession);
+                        }
+                        else
+                        {
+                            RPC.proxy.UNIT_S_CREATE(crtCode, unitType, (byte)enPlayerTeamInBattleField.Team_Dummy, hit.point.x, hit.point.z, 0, 0, unitSession);
                             GamaManager.Instance.SetUnitSession(crtCode, unitSession);
                         }
                     }
@@ -179,6 +192,10 @@ public class TestManager : MonoBehaviour
     void FirebatEnemyToggleHandler() { toggle = Toggles.FirebatEnemyToggle; }
     void ZerglingEnemyToggleHandler() { toggle = Toggles.ZerglingEnemyToggle; }
     void HydraEnemyToggleHandler() { toggle = Toggles.HydraEnemyToggle; }
+    void MarineDummyToggleHandler() { toggle = Toggles.MarineDummyToggle; }
+    void FirebatDummyToggleHandler() { toggle = Toggles.FirebatDummyToggle; }
+    void ZerglingDummyToggleHandler() { toggle = Toggles.ZerglingDummyToggle; }
+    void HydraDummyToggleHandler() { toggle = Toggles.HydraDummyToggle; }
 
 
 

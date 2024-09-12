@@ -45,6 +45,7 @@ public class GamaManager : MonoBehaviour
     //------------------------------------------------------
     public const string TEAM_TAG = "TeamUnit";
     public const string ENEMY_TAG = "Enemy";
+    public const string DUMMY_TAG = "Dummy";
 
     public const string CLICKABLE_LAYER = "Clickable";
     public const string ATTACKABLE_LAYER = "Attackable";

@@ -101,6 +101,11 @@ public class AttackController : MonoBehaviour
     }
     private IEnumerator CheckTarget()
     {
+        if (gameObject.tag != GamaManager.TEAM_TAG)
+        {
+            yield break;
+        }
+
         while (m_UnitController.State == enUNIT_STATUS.IDLE && m_UnitMovement.isCommandedToMove == false)
         {
             if (m_TargetObject != null)
@@ -150,6 +155,11 @@ public class AttackController : MonoBehaviour
 
     private IEnumerator AttackJudgment_new()
     {
+        if (gameObject.tag != GamaManager.TEAM_TAG)
+        {
+            yield break;
+        }
+
         Vector3 beforeTargetPosion = Vector3.zero;
         if (m_TargetObject.transform.position != null)
         {
@@ -207,7 +217,7 @@ public class AttackController : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("Enemy") && m_TargetObject == null)
+        if (other.CompareTag("Enemy") && ((other is CapsuleCollider) || (other is BoxCollider)) && m_TargetObject == null)
         {
             GameObject nearestEnemy = GetNearestTarget();
             if (nearestEnemy == other.gameObject)
@@ -219,7 +229,7 @@ public class AttackController : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Enemy"))
+        if (other.CompareTag("Enemy") && ((other is CapsuleCollider) || (other is BoxCollider)))
         {
             if (m_NearTargets.Contains(other.gameObject))
             {
@@ -301,6 +311,10 @@ public class AttackController : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        if(gameObject.tag == GamaManager.DUMMY_TAG)
+        {
+            return;
+        }
         // follow distance / area
         Gizmos.color = Color.yellow;
         //Gizmos.DrawWireSphere(transform.position, 10f * 0.2f);    // spere collider's radius * unit scale)

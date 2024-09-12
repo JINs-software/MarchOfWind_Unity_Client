@@ -45,11 +45,11 @@ public class UnitMovement : MonoBehaviour
                     m_NavMeshAgent.isStopped = false;
                     m_NavMeshAgent.SetDestination(hit.point);
                 }
-                else if (gameObject.tag == "Dummy")
-                {
-                    gameObject.GetComponent<Dummy>().OnMoveCmd = true;
-                    gameObject.GetComponent<Dummy>().Destination = hit.point;       
-                }
+                //else if (gameObject.tag == "Dummy")
+                //{
+                //    gameObject.GetComponent<Dummy>().OnMoveCmd = true;
+                //    gameObject.GetComponent<Dummy>().Destination = hit.point;       
+                //}
                 else
                 {
                     DistanceFromCenter = GamaManager.UnitSelection.UnitSelectedCircumscriber * 2;

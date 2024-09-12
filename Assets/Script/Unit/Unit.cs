@@ -105,6 +105,11 @@ public class Unit : MonoBehaviour
         m_Animator.SetTrigger("trIdle");
     }
 
+    public void SPATH_REQ_Reply()
+    {
+        m_NavMeshAgent.isStopped = true;
+    }
+
     //public void DIR_CHANGE(Vector3 norm)
     //{
     //    gameObject.transform.rotation = Quaternion.LookRotation(norm);

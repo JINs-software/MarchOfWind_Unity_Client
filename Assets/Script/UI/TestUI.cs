@@ -21,6 +21,11 @@ public class TestUI : UI_Base
         FirebatEnemyToggle,
         ZerglingEnemyToggle,
         HydraEnemyToggle,
+
+        MarineDummyToggle,
+        FirebatDummyToggle,
+        ZerglingDummyToggle,
+        HydraDummyToggle
     }
 
     Button debugBtn;
@@ -33,6 +38,10 @@ public class TestUI : UI_Base
     Toggle FirebatEnemyToggle;
     Toggle ZerglingEnemyToggle;
     Toggle HydraEnemyToggle;
+    Toggle MarineDummyToggle;
+    Toggle FirebatDummyToggle;
+    Toggle ZerglingDummyToggle;
+    Toggle HydraDummyToggle;
 
     public Action DebugBtnHandler;
     public Action ConnectBtnHandler;
@@ -44,6 +53,10 @@ public class TestUI : UI_Base
     public Action FirebatEnemyToggleHandler;
     public Action ZerglingEnemyToggleHandler;
     public Action HydraEnemyToggleHandler;
+    public Action MarineDummyToggleHandler;
+    public Action FirebatDummyToggleHandler;
+    public Action ZerglingDummyToggleHandler;
+    public Action HydraDummyToggleHandler;
 
     public override void Init()
     {
@@ -60,6 +73,10 @@ public class TestUI : UI_Base
         FirebatEnemyToggle = Get<Toggle>((int)Toggles.FirebatEnemyToggle);
         ZerglingEnemyToggle = Get<Toggle>((int)Toggles.ZerglingEnemyToggle);
         HydraEnemyToggle = Get<Toggle>((int)Toggles.HydraEnemyToggle);
+        MarineDummyToggle = Get<Toggle>((int)Toggles.MarineDummyToggle);
+        FirebatDummyToggle = Get<Toggle>((int)Toggles.FirebatDummyToggle);
+        ZerglingDummyToggle = Get<Toggle>((int)Toggles.ZerglingDummyToggle);
+        HydraDummyToggle = Get<Toggle>((int)Toggles.HydraDummyToggle);
 
         BindEvent(debugBtn.gameObject, OnDebugBtnClick);
         BindEvent(connectBtn.gameObject, OnConnectBtnClick);
@@ -71,6 +88,10 @@ public class TestUI : UI_Base
         BindEvent(FirebatEnemyToggle.gameObject, OnFirebatEnemyToggleClick);
         BindEvent(ZerglingEnemyToggle.gameObject, OnZerglingEnemyToggleClick);
         BindEvent(HydraEnemyToggle.gameObject, OnHydraEnemyToggleClick);
+        BindEvent(MarineDummyToggle.gameObject, OnMarineDummyToggleClick);
+        BindEvent(FirebatDummyToggle.gameObject, OnFirebatDummyToggleClick);
+        BindEvent(ZerglingDummyToggle.gameObject, OnZerglingDummyToggleClick);
+        BindEvent(HydraDummyToggle.gameObject, OnHydraDummyToggleClick);
 
         TogglesOff();
     }
@@ -104,6 +125,10 @@ public class TestUI : UI_Base
         FirebatEnemyToggle.isOn = false;
         ZerglingEnemyToggle.isOn = false;
         HydraEnemyToggle.isOn = false;
+        MarineDummyToggle.isOn = false;
+        FirebatDummyToggle.isOn = false;
+        ZerglingDummyToggle.isOn = false;
+        HydraDummyToggle.isOn = false;
 
         MarineToggle.interactable = true;  
         FirebatToggle.interactable = true;
@@ -113,6 +138,10 @@ public class TestUI : UI_Base
         FirebatEnemyToggle.interactable = true;
         ZerglingEnemyToggle.interactable = true;
         HydraEnemyToggle.interactable = true;
+        MarineDummyToggle.interactable = true;
+        FirebatDummyToggle.interactable = true;
+        ZerglingDummyToggle.interactable = true;
+        HydraDummyToggle.interactable = true;
     }
     public void TogglesOff()
     {
@@ -124,6 +153,10 @@ public class TestUI : UI_Base
         FirebatEnemyToggle.isOn = false;
         ZerglingEnemyToggle.isOn = false;
         HydraEnemyToggle.isOn = false;
+        MarineDummyToggle.isOn = false;
+        FirebatDummyToggle.isOn = false;
+        ZerglingDummyToggle.isOn = false;
+        HydraDummyToggle.isOn = false;
 
         MarineToggle.interactable = false;
         FirebatToggle.interactable = false;
@@ -133,6 +166,10 @@ public class TestUI : UI_Base
         FirebatEnemyToggle.interactable = false;
         ZerglingEnemyToggle.interactable = false;
         HydraEnemyToggle.interactable = false;
+        MarineDummyToggle.interactable = false;
+        FirebatDummyToggle.interactable = false;
+        ZerglingDummyToggle.interactable = false;
+        HydraDummyToggle.interactable = false;
     }
 
     void OnDebugBtnClick(PointerEventData evtdata) { 
@@ -147,4 +184,8 @@ public class TestUI : UI_Base
     void OnFirebatEnemyToggleClick(PointerEventData evtdata) { if (FirebatEnemyToggle.isOn) FirebatEnemyToggleHandler.Invoke(); }
     void OnZerglingEnemyToggleClick(PointerEventData evtdata) { if (ZerglingEnemyToggle.isOn) ZerglingEnemyToggleHandler.Invoke(); }
     void OnHydraEnemyToggleClick(PointerEventData evtdata) { if (HydraEnemyToggle.isOn) HydraEnemyToggleHandler.Invoke(); }
+    void OnMarineDummyToggleClick(PointerEventData evtdata) { if (MarineDummyToggle.isOn) MarineDummyToggleHandler.Invoke(); }
+    void OnFirebatDummyToggleClick(PointerEventData evtdata) { if (FirebatDummyToggle.isOn) FirebatDummyToggleHandler.Invoke(); }
+    void OnZerglingDummyToggleClick(PointerEventData evtdata) { if (ZerglingDummyToggle.isOn) ZerglingDummyToggleHandler.Invoke(); }
+    void OnHydraDummyToggleClick(PointerEventData evtdata) { if (HydraDummyToggle.isOn) HydraDummyToggleHandler.Invoke(); }
 }

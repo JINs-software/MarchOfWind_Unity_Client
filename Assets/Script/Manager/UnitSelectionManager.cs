@@ -46,9 +46,9 @@ public class UnitSelectionManager
         m_GroundMarker = Manager.Resource.Instantiate("GroundMarker");
 
         // (+) 커서 매니저 인스턴스 설정
-        if (CursorManager.Instance == null)
+        if (CursorController.Instance == null)
         {
-            CursorManager.Instance = new CursorManager();
+            CursorController.Instance = new CursorController();
         }
 
         m_Camera = Camera.main;
@@ -101,7 +101,8 @@ public class UnitSelectionManager
             Ray ray = m_Camera.ScreenPointToRay(Input.mousePosition);
 
             // clickable 객체를 선택할 때 
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, m_Ground))
+            //if (Physics.Raycast(ray, out hit, Mathf.Infinity, m_Ground))
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, LayerMask.GetMask("GroundLayer")))
             {
                 m_GroundMarker.transform.position = hit.point;
                 m_GroundMarker.SetActive(true);
@@ -178,21 +179,21 @@ public class UnitSelectionManager
 
         if(Physics.Raycast(ray, out hit, Mathf.Infinity, m_Clickable))
         {
-            CursorManager.Instance.SetMarkerType(CursorManager.CursorType.Selectable);
+            CursorController.Instance.SetMarkerType(CursorController.CursorType.Selectable);
         } 
         else if (Physics.Raycast(ray, out hit, Mathf.Infinity, m_Attackable)
             && m_UnitsSelected.Count > 0 && AtLeastOneOffensiveUnit(m_UnitsSelected))
         {
-            CursorManager.Instance.SetMarkerType(CursorManager.CursorType.Attackable);
+            CursorController.Instance.SetMarkerType(CursorController.CursorType.Attackable);
         }
         else if (Physics.Raycast(ray, out hit, Mathf.Infinity, m_Ground) 
             && m_UnitsSelected.Count > 0)
         {
-            CursorManager.Instance.SetMarkerType(CursorManager.CursorType.Walkable);
+            CursorController.Instance.SetMarkerType(CursorController.CursorType.Walkable);
         }
         else 
         {
-            CursorManager.Instance.SetMarkerType(CursorManager.CursorType.None);
+            CursorController.Instance.SetMarkerType(CursorController.CursorType.None);
         }
     }
 

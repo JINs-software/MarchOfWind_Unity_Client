@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using static System.Collections.Specialized.BitVector32;
@@ -255,17 +256,8 @@ public class UnitController : MonoBehaviour
 
     private IEnumerator MoveStateSyncCoroutineFunc()
     {
-        while (State == enUNIT_STATUS.MOVE_COMMAND || State == enUNIT_STATUS.MOVE_TRACING || State == enUNIT_STATUS.MOVE_SPATH)
+        while (State == enUNIT_STATUS.MOVE_COMMAND || State == enUNIT_STATUS.MOVE_TRACING || State == enUNIT_STATUS.MOVE_SPATH || State == enUNIT_STATUS.MOVE_SPATH_PENDING)
         {
-            //if (CheckChangeDirection())
-            //{
-            //    Send_SyncDirectionMessage();
-            //}
-            //else if (CheckFowardByRadius())
-            //{
-            //    Send_SyncPosMessage();
-            //}
-
             if(CheckChangeDirection() || CheckFowardByRadius())
             {
                 SEND_SYNC();
@@ -284,7 +276,8 @@ public class UnitController : MonoBehaviour
         while(true)
         {
             if(State == enUNIT_STATUS.MOVE_TRACING || State == enUNIT_STATUS.MOVE_SPATH_PENDING || State == enUNIT_STATUS.MOVE_SPATH) ResetMoveStateCoroutine();
-            //else if(State != enUNIT_STATUS.MOVE_COMMAND) { yield return new WaitForSeconds(0.1f); continue; }
+            else if(State == enUNIT_STATUS.IDLE) { MOVE_STOP(); yield return new WaitForSeconds(1f); }
+            else if(State != enUNIT_STATUS.MOVE_COMMAND) { yield return new WaitForSeconds(0.1f); continue; }
             
             if(!m_NavMeshAgent.pathPending)
             {
@@ -425,7 +418,7 @@ public class UnitController : MonoBehaviour
         while (true)
         {
             if (State == enUNIT_STATUS.MOVE_COMMAND || State == enUNIT_STATUS.MOVE_SPATH_PENDING || State == enUNIT_STATUS.MOVE_SPATH) ResetMoveStateCoroutine();
-            //else if (State != enUNIT_STATUS.MOVE_TRACING) { yield return new WaitForSeconds(0.1f); continue; }
+            else if (State != enUNIT_STATUS.MOVE_TRACING) { yield return new WaitForSeconds(0.1f); continue; }
 
             if (!m_NavMeshAgent.pathPending)
             {
@@ -512,14 +505,21 @@ public class UnitController : MonoBehaviour
         while (true)
         {
             if (State == enUNIT_STATUS.MOVE_COMMAND || State == enUNIT_STATUS.MOVE_TRACING) ResetMoveStateCoroutine();
-            // if (/*State != enUNIT_STATUS.MOVE_SPATH_PENDING && */ State != enUNIT_STATUS.MOVE_SPATH) { yield return new WaitForSeconds(0.1f); continue; }
+            else if (/*State != enUNIT_STATUS.MOVE_SPATH_PENDING && */ State != enUNIT_STATUS.MOVE_SPATH) { yield return new WaitForSeconds(0.1f); continue; }
 
             if (!m_NavMeshAgent.pathPending)
             {
                 // 타겟이 유효하고, 공격 범위 내 존재
-                if (m_AttackController.HasTarget())
-                {
-                    if (m_AttackController.GetDistanceFromTarget() <= m_AttackController.m_AttackDistance)
+                //if (m_AttackController.HasTarget())
+                //{
+                // => SPATH 경로 중 타겟을 잃을 수 있다.
+
+                    beforePosition = gameObject.transform.position;
+                    float expectedTime = m_NavMeshAgent.remainingDistance / m_NavMeshAgent.speed;
+                    if (expectedTime > 0.1f) yield return new WaitForSeconds(0.1f);
+                    else yield return new WaitForSeconds(expectedTime);
+
+                    if (m_AttackController.HasTarget() && (m_AttackController.GetDistanceFromTarget() <= m_AttackController.m_AttackDistance))
                     {
                         // 공격 가능
                         LAUNCH_ATTACK(m_AttackController.m_TargetObject.transform.position);
@@ -528,86 +528,64 @@ public class UnitController : MonoBehaviour
                     else
                     {
                         // 타겟 위치 변경
-                        if (Vector3.Distance(targetOrgnPosition, m_AttackController.m_TargetObject.transform.position) > 1)
+                        if (m_AttackController.HasTarget() && Vector3.Distance(targetOrgnPosition, m_AttackController.m_TargetObject.transform.position) > 1)
                         {
                             // PathPending == false, 즉 이전의 jps 추적을 통해 결과를 받은 상태에서 타겟의 위치가 변경되면 idle 상태로 복귀할 것
                             MOVE_STOP();
                             //yield return new WaitForSeconds(1f);
                         }
-                        else
+                        // 경로상 중간 목적지 도착
+                        else if(Vector3.Distance(nextPostion, gameObject.transform.position) < 1)
                         {
-                            float distance = Vector3.Distance(nextPostion, gameObject.transform.position);
-                            if (distance < m_NavMeshAgent.stoppingDistance)
+                            Vector3 newPosition = Vector3.zero;
+                            while (ServerSPathQueue.Count > 0)
                             {
-                                Vector3 newPosition = Vector3.zero;
-                                while (ServerSPathQueue.Count > 0)
+                                Tuple<int, Vector3> spath = ServerSPathQueue.Dequeue();
+                                if (spath.Item1 == SpathID)
                                 {
-                                    Tuple<int, Vector3> spath = ServerSPathQueue.Dequeue();
-                                    if (spath.Item1 == SpathID)
-                                    {
-                                        // 방향성을 보고 방향이 
-                                        //Send_MoveStartMessage(spath.Item2);
-                                        MOVE_START(spath.Item2, enUNIT_STATUS.MOVE_SPATH);
-                                        nextPostion = spath.Item2;
-                                        newPosition = spath.Item2;
-                                        beforePosition = gameObject.transform.position;
-                                        break;
-                                    }
+                                    // 방향성을 보고 방향이 
+                                    //Send_MoveStartMessage(spath.Item2);
+                                    MOVE_START(spath.Item2, enUNIT_STATUS.MOVE_SPATH);
+                                    nextPostion = spath.Item2;
+                                    newPosition = spath.Item2;
+                                    beforePosition = gameObject.transform.position;
+                                    break;
                                 }
+                            }
 
-                                if (newPosition == Vector3.zero)
-                                {
-                                    MOVE_STOP();
-                                    //yield return new WaitForSeconds(1f);
-                                }
+                            if (newPosition == Vector3.zero)
+                            {
+                                MOVE_STOP();
+                                //yield return new WaitForSeconds(1f);
+                            }
+                        }
+                        // 제자리 걸음
+                        else if(Vector3.Distance(beforePosition, gameObject.transform.position) < 1f)
+                        {
+                            // 1) 타겟 변경 시도
+                            GameObject otherTarget = m_AttackController.GetOtherTarget();
+                            if (otherTarget != null && otherTarget != m_AttackController.m_TargetObject)
+                            {
+                                // 타겟 변경...
+                                m_AttackController.m_TargetObject = otherTarget;
+                                MOVE_START(otherTarget.transform.position, enUNIT_STATUS.MOVE_TRACING);
+                                // yield return new WaitForSeconds(0.1f);
                             }
                             else
                             {
-                                // 이동 유지..
-                                // 그러나 여기서도 제자리 걸음이 유지된다면?
-                                if (Vector3.Distance(beforePosition, gameObject.transform.position) < 1f)
-                                {
-                                    // 1) 타겟 변경 시도
-                                    GameObject otherTarget = m_AttackController.GetOtherTarget();
-                                    if (otherTarget != null && otherTarget != m_AttackController.m_TargetObject)
-                                    {
-                                        // 타겟 변경...
-                                        m_AttackController.m_TargetObject = otherTarget;
-                                        MOVE_START(otherTarget.transform.position, enUNIT_STATUS.MOVE_TRACING);
-                                       // yield return new WaitForSeconds(0.1f);
-                                    }
-                                    else
-                                    {
-                                        //// 타겟 유지, 경로 재계산
-                                        //yield return new WaitForSeconds(1f);    // 1초 대기
-                                        //Send_SyncPosMessage();
-                                        //ServerSPathQueue.Clear();
-                                        //ServerPathFindingReq = true;
-                                        //ServerPathFinding = false;
-                                        //ServerPathPending = true;
-                                        //Send_PathFindingReqMessage(m_NavMeshAgent.destination, ++SpathID);
-                                        //yield return new WaitForSeconds(1f);    // 1초 대기
-
-                                        // => idle 상태 복귀
-                                        MOVE_STOP();
-                                        //yield return new WaitForSeconds(1f);
-                                    }
-                                }
-                                else
-                                {
-                                    beforePosition = gameObject.transform.position;
-                                   // yield return new WaitForSeconds(0.1f);
-                                }
+                                // => idle 상태 복귀
+                                MOVE_STOP();
+                                //yield return new WaitForSeconds(1f);
                             }
                         }
                     }
-                }
-                else
-                {
-                    // 타겟 없음 -> 중지
-                    MOVE_STOP();
-                    //yield return new WaitForSeconds(1f);
-                }
+                //}
+                //else
+                //{
+                //    // 타겟 없음 -> 중지
+                //    MOVE_STOP();
+                //    //yield return new WaitForSeconds(1f);
+                //}
             }
 
             yield return null;

@@ -14,7 +14,7 @@ public class UnitAnimEventHandler : MonoBehaviour
 
     public void OnAnimAttackStartEvent()
     {
-        if(unitController != null)
+        if(unitController != null && gameObject.tag == GamaManager.TEAM_TAG)
         {
             unitController.ATTACK();
         }
@@ -24,5 +24,17 @@ public class UnitAnimEventHandler : MonoBehaviour
     public void OnAnimAttackEndEvent()
     {
         muzzleObject.SetActive(false);
+    }
+
+    public void OnAnimMuzzleStart()
+    {
+        muzzleObject.SetActive(true);
+    }
+    public void OnAnimAttackStart()
+    {
+        if (unitController != null && gameObject.tag == GamaManager.TEAM_TAG)
+        {
+            unitController.ATTACK();
+        }
     }
 }

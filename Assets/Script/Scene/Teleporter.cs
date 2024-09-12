@@ -9,10 +9,10 @@ public class Teleporter : MonoBehaviour {
     static private float PosAngle;
     static private float PosRadius;
 
-    const int Crt_Count_Marine = 1;
-    const int Crt_Count_Firebat = 1;
-    const int Crt_Count_Zergling = 1;
-    const int Crt_Count_Hydra = 1;
+    const int Crt_Count_Marine = 3;
+    const int Crt_Count_Firebat = 3;
+    const int Crt_Count_Zergling = 5;
+    const int Crt_Count_Hydra = 2;
 
     void OnTriggerEnter(Collider collider) {
         Teleportable teleportable = collider.transform.GetComponent<Teleportable>();
