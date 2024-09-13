@@ -8,7 +8,10 @@ public class BattleField : BaseScene
 {
     MOW_BATTLE_FIELD stub_MOW_BATTLE_FIELD;
     Dictionary<int, Unit> Units = new Dictionary<int, Unit>();
-    Dictionary<int, UnitController> UnitControllers = new Dictionary<int, UnitController>();    
+    Dictionary<int, UnitController> UnitControllers = new Dictionary<int, UnitController>();
+
+    [SerializeField]
+    Arc[] Arcs = new Arc[4];   
 
     protected override void Init()
     {
@@ -73,6 +76,19 @@ public class BattleField : BaseScene
         }
     }
 
+    public void S_PLAYER_ARC_INFO(byte TEAM, Int32 MAX_HP, Int32 HP)
+    {
+        Arcs[TEAM].Init(TEAM, MAX_HP, HP);
+        if(TEAM == GamaManager.Instance.Team)
+        {
+            Arcs[TEAM].gameObject.tag = GamaManager.TEAM_ARC_TAG;
+        }
+        else
+        {
+            Arcs[TEAM].gameObject.tag = GamaManager.ENEMY_ARC_TAG;
+            Arcs[TEAM].gameObject.layer = LayerMask.NameToLayer(GamaManager.ATTACKABLE_LAYER);
+        }
+    }
 
     public void S_PLAYER_CREATE(Int32 CRT_CODE, Int32 UNIT_ID, byte UNIT_TYPE, byte TEAM, float POS_X, float POS_Z, float NORM_X, float NORM_Z, float SPEED, Int32 MAX_HP, Int32 HP, float RADIUS, float ATTACK_DISTANCE, float ATTACK_RATE, float ATTACK_DELAY)
     {
@@ -232,12 +248,13 @@ public class BattleField : BaseScene
         if (!Units.ContainsKey(UNIT_ID)) return;
         Unit unit = Units[UNIT_ID];
         unit.Attack(new Vector3(POS_X, 0, POS_Z), new Vector3(NORM_X, 0, NORM_Z), ATTACK_TYPE);
-        //if (TEAM == GamaManager.Instance.Team)
-        //{
-        //    UnitControllers[UNIT_ID].OnMoving = false;
-        //    UnitControllers[UNIT_ID].State = enUNIT_STATUS.ATTACK;
-        //    UnitControllers[UNIT_ID].ServerPathFinding = false;
-        //}
+    }
+
+    public void S_PLAYER_ATTACK_ARC(Int32 UNIT_ID, byte TEAM, float POS_X, float POS_Z, float NORM_X, float NORM_Z, byte ARC_TEAM, byte ATTACK_TYPE)
+    {
+        if (!Units.ContainsKey(UNIT_ID)) return;
+        Unit unit = Units[UNIT_ID];
+        unit.Attack(new Vector3(POS_X, 0, POS_Z), new Vector3(NORM_X, 0, NORM_Z), ATTACK_TYPE);
     }
 
     public void S_PLAYER_DAMAGE(Int32 UNIT_ID, Int32 HP)
@@ -245,6 +262,11 @@ public class BattleField : BaseScene
         if (!Units.ContainsKey(UNIT_ID)) return;
         Unit unit = Units[UNIT_ID];
         unit.RenewHP(HP);
+    }
+
+    public void S_PLAYER_DAMAGE_ARC(byte ARC_TEAM, int HP)
+    {
+        Arcs[ARC_TEAM].UpdateHP(HP);
     }
 
     public void S_PLAYER_DIE(Int32 UNIT_ID)
@@ -259,40 +281,22 @@ public class BattleField : BaseScene
             if (unit.m_team == GamaManager.Instance.Team)
             {
                 UnitControllers.Remove(UNIT_ID);
-
-                // 선택된 유닛이라면 제거
-                GamaManager.UnitSelection.SelectableUnitDestroyed(unit.gameObject);
-
-                GamaManager.Instance.AliveUnitCnt--;
-                if (GamaManager.Instance.AliveUnitCnt == 0)
-                {
-                    // Select 씬으로 이동!
-                    Manager.Scene.LoadScene(Define.Scene.SelectField);
-                }
             }
-            else
-            {
-                // 선택된 유닛이라면 제거
-                GamaManager.UnitSelection.SelectableUnitDestroyed(unit.gameObject);
-            }
+            GamaManager.Instance.DecrementAliveUnitCnt(unit);
         }
         else
         {
             if (unit.m_team == GamaManager.Instance.Team)
             {
                 UnitControllers.Remove(UNIT_ID);
-
-                // 선택된 유닛이라면 제거
-                GamaManager.UnitSelection.SelectableUnitDestroyed(unit.gameObject);
-
-                GamaManager.Instance.AliveUnitCnt--;
-                if (GamaManager.Instance.AliveUnitCnt == 0)
-                {
-                    // Select 씬으로 이동!
-                    Manager.Scene.LoadScene(Define.Scene.SelectField);
-                }
             }
+            GamaManager.Instance.DecrementAliveUnitCnt(unit);
         }
+    }
+
+    public void S_PLAYER_ARC_DESTROY(byte ARC_TEAM)
+    {
+        Arcs[ARC_TEAM].Destroy();   
     }
 
     private GameObject CreateUnitObjectInScene(Int32 UNIT_ID, byte UNIT_TYPE, byte TEAM, float POS_X, float POS_Z, float NORM_X, float NORM_Z, float SPEED, Int32 MAX_HP, Int32 HP, float RADIUS, float ATTACK_DISTANCE, float ATTACK_RATE)
@@ -330,6 +334,27 @@ public class BattleField : BaseScene
                 unit.AddComponent<Unit>();
             }
             unit.Init(UNIT_ID, UNIT_TYPE, TEAM, new Vector3(POS_X, 0, POS_Z), new Vector3(NORM_X, 0, NORM_Z), SPEED, HP, MAX_HP, RADIUS, ATTACK_DISTANCE, ATTACK_RATE);
+
+
+            if(TEAM != GamaManager.Instance.Team)
+            {
+                if (TEAM == 0)
+                {
+                    unitObj.transform.Find("IndicatorA").gameObject.SetActive(true);
+                }
+                else if (TEAM == 1)
+                {
+                    unitObj.transform.Find("IndicatorB").gameObject.SetActive(true);
+                }
+                else if(TEAM == 2)
+                {
+                    unitObj.transform.Find("IndicatorC").gameObject.SetActive(true);
+                }
+                else
+                {
+                    unitObj.transform.Find("IndicatorD").gameObject.SetActive(true);
+                }
+            }
         }
         return unitObj;
     }

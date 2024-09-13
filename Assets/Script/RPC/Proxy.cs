@@ -21,13 +21,14 @@ public class Proxy
         {"SELECTOR_OPTION", 2005},
         {"ENTER_TO_BATTLE_FIELD", 3000},
         {"UNIT_CONN_TO_BATTLE_FIELD", 3001},
-        {"UNIT_S_CREATE", 3002},
-        {"UNIT_S_MOVE", 3004},
-        {"UNIT_S_SYNC_POSITION", 3006},
-        {"UNIT_S_TRACE_PATH_FINDING_REQ", 3007},
-        {"UNIT_S_LAUNCH_ATTACK", 3010},
-        {"UNIT_S_STOP_ATTACK", 3012},
-        {"UNIT_S_ATTACK", 3014},
+        {"UNIT_S_CREATE", 3003},
+        {"UNIT_S_MOVE", 3005},
+        {"UNIT_S_SYNC_POSITION", 3007},
+        {"UNIT_S_TRACE_PATH_FINDING_REQ", 3008},
+        {"UNIT_S_LAUNCH_ATTACK", 3011},
+        {"UNIT_S_STOP_ATTACK", 3013},
+        {"UNIT_S_ATTACK", 3015},
+        {"UNIT_S_ATTACK_ARC", 3017 },
     };
 
 
@@ -275,4 +276,19 @@ public class Proxy
         else { sesion.SendPacketBytes(payload, RPC.EnDecodeFlag); }
     }
 
+    public void UNIT_S_ATTACK_ARC(float POS_X, float POS_Z, float NORM_X, float NORM_Z, byte ARC_TEAM, byte ATTACK_TYPE, NetworkManager sesion = null)
+    {
+        UInt16 type = MessageIDs["UNIT_S_ATTACK_ARC"];
+        byte[] payload = new byte[sizeof(UInt16) + sizeof(float) + sizeof(float) + sizeof(float) + sizeof(float) + sizeof(byte) + sizeof(byte)];
+        int offset = 0;
+        Buffer.BlockCopy(BitConverter.GetBytes(type), 0, payload, offset, sizeof(UInt16)); offset += sizeof(UInt16);
+        Buffer.BlockCopy(BitConverter.GetBytes(POS_X), 0, payload, offset, sizeof(float)); offset += sizeof(float);
+        Buffer.BlockCopy(BitConverter.GetBytes(POS_Z), 0, payload, offset, sizeof(float)); offset += sizeof(float);
+        Buffer.BlockCopy(BitConverter.GetBytes(NORM_X), 0, payload, offset, sizeof(float)); offset += sizeof(float);
+        Buffer.BlockCopy(BitConverter.GetBytes(NORM_Z), 0, payload, offset, sizeof(float)); offset += sizeof(float);
+        payload[offset++] = ARC_TEAM;
+        payload[offset++] = ATTACK_TYPE;
+        if (sesion == null) { RPC.Network.SendPacketBytes(payload, RPC.EnDecodeFlag); }
+        else { sesion.SendPacketBytes(payload, RPC.EnDecodeFlag); }
+    }
 }

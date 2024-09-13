@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using static System.Collections.Specialized.BitVector32;
+using static UnityEngine.GraphicsBuffer;
 using Random = UnityEngine.Random;
 
 public enum enUNIT_STATUS
@@ -133,10 +134,23 @@ public class UnitController : MonoBehaviour
 
     public void ATTACK()
     {
-        if(m_AttackController.HasTarget())
+        if(m_AttackController.HasTarget() && m_AttackController.m_TargetObject.tag == GamaManager.ENEMY_TAG)
         {
             State = enUNIT_STATUS.ATTACK;
             SEND_ATTACK(m_AttackController.GetTargetID(), (byte)enATTACK_TYPE.BASE);    // 임시, 공격 타입 추가 시 변경
+        }
+    }
+    
+    public void ATTACK_ARC()
+    {
+        if(m_AttackController.HasTarget() && m_AttackController.m_TargetObject.tag == GamaManager.ENEMY_ARC_TAG)
+        {
+            Arc arc = m_AttackController.m_TargetObject.GetComponent<Arc>();    
+            if(arc != null)
+            {
+                State = enUNIT_STATUS.ATTACK;
+                SEND_ATTACK_ARC(arc.TEAM, (byte)enATTACK_TYPE.BASE);    
+            }
         }
     }
 
@@ -631,13 +645,24 @@ public class UnitController : MonoBehaviour
 
     public void SEND_ATTACK(int targetID, byte attackType)
     {
-        if(m_AttackController.m_TargetObject == null)
+        if(!m_AttackController.HasTarget())
         {
             return;
         }
 
         Vector3 dirToTarget = (m_AttackController.m_TargetObject.transform.position - gameObject.transform.position).normalized;
         RPC.proxy.UNIT_S_ATTACK(transform.position.x, transform.position.z, dirToTarget.x, dirToTarget.z, targetID, attackType, UnitSession);
+    }
+
+    public void SEND_ATTACK_ARC(byte ARC_TEAM, byte attackType)
+    {
+        if (!m_AttackController.HasTarget())
+        {
+            return;
+        }
+
+        Vector3 dirToTarget = (m_AttackController.m_TargetObject.transform.position - gameObject.transform.position).normalized;
+        RPC.proxy.UNIT_S_ATTACK_ARC(transform.position.x, transform.position.z, dirToTarget.x, dirToTarget.z, ARC_TEAM, attackType, UnitSession);
     }
 
     /*****************************************************************************

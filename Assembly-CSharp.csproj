@@ -93,6 +93,7 @@
     <Compile Include="Assets\Script\State\UnitWaitState.cs" />
     <Compile Include="Assets\Script\RPC\MOW_PRE_BATTLE_FIELD_TEST.cs" />
     <Compile Include="Assets\UI\Unity UI Samples\Scripts\ResizePanel.cs" />
+    <Compile Include="Assets\Script\Scene\Arc.cs" />
     <Compile Include="Assets\Script\FaceCamera.cs" />
     <Compile Include="Assets\UI\Unity UI Samples\Scripts\PanelManager.cs" />
     <Compile Include="Assets\Script\EnemyTest.cs" />

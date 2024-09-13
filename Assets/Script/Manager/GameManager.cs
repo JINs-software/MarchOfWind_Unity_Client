@@ -46,6 +46,8 @@ public class GamaManager : MonoBehaviour
     public const string TEAM_TAG = "TeamUnit";
     public const string ENEMY_TAG = "Enemy";
     public const string DUMMY_TAG = "Dummy";
+    public const string TEAM_ARC_TAG = "Arc";
+    public const string ENEMY_ARC_TAG = "EnemyArc";
 
     public const string CLICKABLE_LAYER = "Clickable";
     public const string ATTACKABLE_LAYER = "Attackable";
@@ -54,6 +56,10 @@ public class GamaManager : MonoBehaviour
     public UInt16 ServerPort;       
 
     public UInt16 BattleFieldID;
+
+    public Vector3 InitNorm;
+    public Vector3 InitPosition = Vector3.zero;
+
     Byte team;
     public Byte Team
     {
@@ -91,9 +97,30 @@ public class GamaManager : MonoBehaviour
     }
     public UInt16 AliveUnitCnt = 0;
     public Byte SelectorCnt;
-    public Vector3 InitNorm;
-    public Vector3 InitPosition = Vector3.zero;
     private Dictionary<int, NetworkManager> UnitSessionMap = new Dictionary<int, NetworkManager>();
+
+    public void IncrementAliveUnitCnt()
+    {
+        AliveUnitCnt++; 
+    }
+    public void DecrementAliveUnitCnt(Unit unit)
+    {
+        if(TestManager.TestMode || unit.m_team == Team)
+        {
+            UnitSelection.SelectableUnitDestroyed(unit.gameObject);
+        }
+        if (unit.m_team == Team)
+        {
+            AliveUnitCnt--;
+            if (AliveUnitCnt == 0)
+            {
+                // Select æ¿¿∏∑Œ ¿Ãµø!
+                Teleporter.InitPosFlag = true;
+                Manager.Scene.LoadScene(Define.Scene.SelectField);
+            }
+        }
+    }
+
     public void SetUnitSession(int crtCode, NetworkManager unitSession)
     {
         UnitSessionMap.Add(crtCode, unitSession);

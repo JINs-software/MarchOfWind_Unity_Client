@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class AttackController : MonoBehaviour
 {
@@ -24,22 +25,9 @@ public class AttackController : MonoBehaviour
 
     private void Awake()
     {
-        //if(gameObject.tag == GamaManager.TEAM_TAG){
-        //    gameObject.GetComponent<SphereCollider>().radius = 50f / gameObject.transform.localScale.x; // 모든 유닛 추적 범위 동일
-        //}
-        //else {
-        //    gameObject.GetComponent<SphereCollider>().radius = 0f;
-        //}
         m_UnitController = gameObject.GetComponent<UnitController>();
         m_UnitMovement = gameObject.GetComponent<UnitMovement>();
     }
-    //private void Start()
-    //{
-    //    //gameObject.GetComponent<SphereCollider>().radius = gameObject.GetComponent<UnitController>().Unit.m_AttackDistance * 1.5f / gameObject.transform.localScale.x;
-    //    gameObject.GetComponent<SphereCollider>().radius = 50f / gameObject.transform.localScale.x; // 모든 유닛 추적 범위 동일
-    //    m_UnitController = gameObject.GetComponent<UnitController>();
-    //    m_UnitMovement = gameObject.GetComponent<UnitMovement>();
-    //}
 
     public void Init(Unit unit)
     {
@@ -51,48 +39,48 @@ public class AttackController : MonoBehaviour
         m_TracingRange = unit.gameObject.transform.GetComponent<SphereCollider>().radius * unit.gameObject.transform.localScale.x;
     }
 
-    public bool HasTarget()
-    {
-        return (m_TargetObject != null) ? true : false;
-    }
+    public bool HasTarget() { return (m_TargetObject != null) ? true : false; }
 
     public int GetTargetID()
     {
-        if(m_TargetObject == null)
-        {
-            return -1;
-        }
-        else
-        {
-            return m_TargetObject.GetComponent<Unit>().m_id;
-        }
+        if(m_TargetObject == null) return -1;
+        else return m_TargetObject.GetComponent<Unit>().m_id;
     }
 
     public float GetDistanceFromTarget()
     {
-        if(m_TargetObject == null)
-        {
-            return -1f;
-        }
+        if(m_TargetObject == null) return -1f;
 
         float distanceToTarget = Vector3.Distance(transform.position, m_TargetObject.transform.position);
         float unitRadius = m_Radius;
-        float targetRadius = m_TargetObject.GetComponent<Unit>().m_radius;
+        float targetRadius = GetTargetRadius();
         distanceToTarget -= (targetRadius + unitRadius);
         return distanceToTarget;
     }
 
+    public float GetTargetRadius()
+    {
+        if (m_TargetObject == null) return -1f;
+
+        if(m_TargetObject.gameObject.tag == GamaManager.ENEMY_TAG)
+        {
+            return m_TargetObject.GetComponent<Unit>().m_radius;
+        }
+        else if(m_TargetObject.gameObject.tag == GamaManager.ENEMY_ARC_TAG)
+        {
+            return Arc.RADIUS;
+        }
+
+        return -1f;
+    }
+
     public void StartCheckTargetCoroutine()
     {
-        if (CheckTargetCoroutine == null)
-        {
-            CheckTargetCoroutine = StartCoroutine(CheckTarget());
-        }
+        if (CheckTargetCoroutine == null) CheckTargetCoroutine = StartCoroutine(CheckTarget());
     }
 
     public void StopCheckTargetCoroutine()
     {
-        //UnityEngine.Debug.Log("StopCheckTargetCoroutine");
         if (CheckTargetCoroutine != null)
         {
             StopCoroutine(CheckTargetCoroutine);
@@ -101,10 +89,7 @@ public class AttackController : MonoBehaviour
     }
     private IEnumerator CheckTarget()
     {
-        if (gameObject.tag != GamaManager.TEAM_TAG)
-        {
-            yield break;
-        }
+        if (gameObject.tag != GamaManager.TEAM_TAG) yield break;
 
         while (m_UnitController.State == enUNIT_STATUS.IDLE && m_UnitMovement.isCommandedToMove == false)
         {
@@ -112,17 +97,14 @@ public class AttackController : MonoBehaviour
             {
                 // 타겟 존재 확인
                 float distanceToTarget = Vector3.Distance(transform.position, m_TargetObject.transform.position);
-                distanceToTarget -= m_TargetObject.GetComponent<Unit>().m_radius + m_UnitController.Unit.m_radius;
+                //distanceToTarget -= m_TargetObject.GetComponent<Unit>().m_radius + m_UnitController.Unit.m_radius;
+                distanceToTarget -= GetTargetRadius() + m_UnitController.Unit.m_radius;
                 if (distanceToTarget <= m_AttackDistance)
                 {
-                    // 공격 
-                    //gameObject.GetComponent<UnitController>().Send_AttackMessage(m_TargetObject);
                     m_UnitController.LAUNCH_ATTACK(m_TargetObject.transform.position);
                 }
                 else
                 {
-                    // 추적
-                    //m_UnitController.Send_MoveStartMessage(m_TargetObject.transform.position);
                     m_UnitController.TRACE(m_TargetObject);
                 }
             }
@@ -183,13 +165,11 @@ public class AttackController : MonoBehaviour
                 if (Vector3.Distance(beforeTargetPosion, m_TargetObject.transform.position) > 1)
                 {
                     float distanceToTarget = Vector3.Distance(transform.position, m_TargetObject.transform.position);
-                    distanceToTarget -= m_TargetObject.GetComponent<Unit>().m_radius + m_UnitController.Unit.m_radius;
+                    //distanceToTarget -= m_TargetObject.GetComponent<Unit>().m_radius + m_UnitController.Unit.m_radius;
+                    distanceToTarget -= GetTargetRadius() + m_UnitController.Unit.m_radius;
                     if (distanceToTarget > m_AttackDistance)
                     {
-                        //m_UnitController.TRACE(m_TargetObject);
-                        //yield return new WaitForSeconds(1f);
                         m_UnitController.STOP_ATTACK();
-                        //yield return new WaitForSeconds(1f);
                     }
                     else
                     {
@@ -205,7 +185,7 @@ public class AttackController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.CompareTag("Enemy") && ((other is CapsuleCollider) || (other is BoxCollider)))
+        if((other.CompareTag(GamaManager.ENEMY_TAG) || other.CompareTag(GamaManager.ENEMY_ARC_TAG)) && ((other is CapsuleCollider) || (other is BoxCollider)))
         {
             m_NearTargets.Add(other.gameObject);
             if(m_TargetObject == null)
@@ -217,7 +197,7 @@ public class AttackController : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("Enemy") && ((other is CapsuleCollider) || (other is BoxCollider)) && m_TargetObject == null)
+        if ((other.CompareTag(GamaManager.ENEMY_TAG) || other.CompareTag(GamaManager.ENEMY_ARC_TAG)) && ((other is CapsuleCollider) || (other is BoxCollider)) && m_TargetObject == null)
         {
             GameObject nearestEnemy = GetNearestTarget();
             if (nearestEnemy == other.gameObject)
@@ -229,7 +209,7 @@ public class AttackController : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Enemy") && ((other is CapsuleCollider) || (other is BoxCollider)))
+        if ((other.CompareTag(GamaManager.ENEMY_TAG) || other.CompareTag(GamaManager.ENEMY_ARC_TAG)) && ((other is CapsuleCollider) || (other is BoxCollider)))
         {
             if (m_NearTargets.Contains(other.gameObject))
             {
@@ -255,10 +235,12 @@ public class AttackController : MonoBehaviour
     private void OnEnable() 
     {
         Enemy.OnEnemyDestroyed += OnEnemyDestroyed;
+        Arc.OnArcDestroyed += OnArcDestroyed;
     }
     private void OnDisable() 
     {
         Enemy.OnEnemyDestroyed -= OnEnemyDestroyed;
+        Arc.OnArcDestroyed -= OnArcDestroyed;
     }
 
     private void OnEnemyDestroyed(GameObject enemy) 
@@ -268,6 +250,18 @@ public class AttackController : MonoBehaviour
             m_NearTargets.Remove(enemy);    
         }
         if(m_TargetObject == enemy)
+        {
+            m_TargetObject = GetNearestTarget();
+        }
+    }
+
+    private void OnArcDestroyed(GameObject arc)
+    {
+        if (m_NearTargets.Contains(arc))
+        {
+            m_NearTargets.Remove(arc);
+        }
+        if (m_TargetObject == arc)
         {
             m_TargetObject = GetNearestTarget();
         }

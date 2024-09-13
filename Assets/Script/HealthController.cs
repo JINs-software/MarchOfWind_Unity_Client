@@ -10,14 +10,6 @@ public class HealthController : MonoBehaviour
     int MaxHP { get; set; }
     int NowHP { get; set; }
 
-    public void InitHealth(int maxHP) {
-        MaxHP = NowHP= maxHP;
-
-        if(healthTracker != null)
-        {
-            healthTracker.UpdateSliderValue(MaxHP, MaxHP);
-        }
-    }
     public void InitHealth(int initHP, int maxHP)
     {
         MaxHP = maxHP;

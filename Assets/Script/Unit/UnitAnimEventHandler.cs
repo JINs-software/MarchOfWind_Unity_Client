@@ -5,19 +5,18 @@ using UnityEngine;
 public class UnitAnimEventHandler : MonoBehaviour
 {
     UnitController unitController;
+    AttackController attackController;  
     public GameObject muzzleObject;
 
     private void Start()
     {
         unitController = gameObject.GetComponent<UnitController>(); 
+        attackController = gameObject.GetComponent<AttackController>();
     }
 
     public void OnAnimAttackStartEvent()
     {
-        if(unitController != null && gameObject.tag == GamaManager.TEAM_TAG)
-        {
-            unitController.ATTACK();
-        }
+        Attack();
         muzzleObject.SetActive(true);
     }
 
@@ -32,9 +31,21 @@ public class UnitAnimEventHandler : MonoBehaviour
     }
     public void OnAnimAttackStart()
     {
-        if (unitController != null && gameObject.tag == GamaManager.TEAM_TAG)
+        Attack();
+    }
+
+    private void Attack()
+    {
+        if (unitController != null && attackController != null && gameObject.tag == GamaManager.TEAM_TAG)
         {
-            unitController.ATTACK();
+            if(attackController.HasTarget() && attackController.m_TargetObject.tag == GamaManager.ENEMY_TAG)
+            {
+                unitController.ATTACK();
+            }
+            else
+            {
+                unitController.ATTACK_ARC();
+            }
         }
     }
 }

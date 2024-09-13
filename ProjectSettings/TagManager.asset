@@ -8,6 +8,8 @@ TagManager:
   - Enemy
   - TeamUnit
   - Dummy
+  - Arc
+  - EnemyArc
   layers:
   - Default
   - TransparentFX

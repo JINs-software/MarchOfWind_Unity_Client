@@ -22,15 +22,19 @@ public class Stub : MonoBehaviour
         {"ALL_PLAYER_READY", 2002},
         {"ENTER_TO_SELECT_FIELD_REPLY", 2004},
         {"SELECTOR_OPTION_REPLY", 2006},
-        {"S_PLAYER_CREATE", 3003},
-        {"S_PLAYER_MOVE", 3005},
-        {"S_PLAYER_TRACE_PATH_FINDING_REPLY", 3008},
-        {"S_PLAYER_TRACE_PATH", 3009},
-        {"S_PLAYER_LAUNCH_ATTACK", 3011},
-        {"S_PLAYER_STOP_ATTACK", 3013},
-        {"S_PLAYER_ATTACK", 3015},
-        {"S_PLAYER_DAMAGE", 3016},
-        {"S_PLAYER_DIE", 3017},
+        {"S_PLAYER_ARC_INFO", 3002 },
+        {"S_PLAYER_CREATE", 3004},
+        {"S_PLAYER_MOVE", 3006},
+        {"S_PLAYER_TRACE_PATH_FINDING_REPLY", 3009},
+        {"S_PLAYER_TRACE_PATH", 3010},
+        {"S_PLAYER_LAUNCH_ATTACK", 3012},
+        {"S_PLAYER_STOP_ATTACK", 3014},
+        {"S_PLAYER_ATTACK", 3016},
+        {"S_PLAYER_ATTACK_ARC", 3018},
+        {"S_PLAYER_DAMAGE", 3019},
+        {"S_PLAYER_DAMAGE_ARC", 3020},
+        {"S_PLAYER_DIE", 3021},
+        {"S_PLAYER_ARC_DESTROY", 3022},
     };
 }
 
@@ -214,6 +218,7 @@ public abstract class Stub_MOW_BATTLE_FIELD : Stub
 {
     public void Init() 
     {
+        methods.Add(MessageIDs["S_PLAYER_ARC_INFO"], S_PLAYER_ARC_INFO);
         methods.Add(MessageIDs["S_PLAYER_CREATE"], S_PLAYER_CREATE);
         methods.Add(MessageIDs["S_PLAYER_MOVE"], S_PLAYER_MOVE);
         methods.Add(MessageIDs["S_PLAYER_TRACE_PATH_FINDING_REPLY"], S_PLAYER_TRACE_PATH_FINDING_REPLY);
@@ -221,14 +226,26 @@ public abstract class Stub_MOW_BATTLE_FIELD : Stub
         methods.Add(MessageIDs["S_PLAYER_LAUNCH_ATTACK"], S_PLAYER_LAUNCH_ATTACK);
         methods.Add(MessageIDs["S_PLAYER_STOP_ATTACK"], S_PLAYER_STOP_ATTACK);
         methods.Add(MessageIDs["S_PLAYER_ATTACK"], S_PLAYER_ATTACK);
+        methods.Add(MessageIDs["S_PLAYER_ATTACK_ARC"], S_PLAYER_ATTACK_ARC);
         methods.Add(MessageIDs["S_PLAYER_DAMAGE"], S_PLAYER_DAMAGE);
+        methods.Add(MessageIDs["S_PLAYER_DAMAGE_ARC"], S_PLAYER_DAMAGE_ARC);
         methods.Add(MessageIDs["S_PLAYER_DIE"], S_PLAYER_DIE);
+        methods.Add(MessageIDs["S_PLAYER_ARC_DESTROY"], S_PLAYER_ARC_DESTROY);
         RPC.Instance.AttachStub(this);
     }
 
     public void Clear()
     {
         RPC.Instance.DetachStub(this);
+    }
+
+    public void S_PLAYER_ARC_INFO(byte[] payload)
+    {
+        int offset = 0;
+        byte TEAM = payload[offset++];
+        Int32 MAX_HP = BitConverter.ToInt32(payload, offset); offset += sizeof(Int32);
+        Int32 HP = BitConverter.ToInt32(payload, offset); offset += sizeof(Int32);
+        S_PLAYER_ARC_INFO(TEAM, MAX_HP, HP);
     }
 
     public void S_PLAYER_CREATE(byte[] payload)
@@ -321,6 +338,20 @@ public abstract class Stub_MOW_BATTLE_FIELD : Stub
         S_PLAYER_ATTACK(UNIT_ID, TEAM, POS_X, POS_Z, NORM_X, NORM_Z, TARGET_ID, ATTACK_TYPE);
     }
 
+    public void S_PLAYER_ATTACK_ARC(byte[] payload)
+    {
+        int offset = 0;
+        Int32 UNIT_ID = BitConverter.ToInt32(payload, offset); offset += sizeof(Int32);
+        byte TEAM = payload[offset++];
+        float POS_X = BitConverter.ToSingle(payload, offset); offset += sizeof(float);
+        float POS_Z = BitConverter.ToSingle(payload, offset); offset += sizeof(float);
+        float NORM_X = BitConverter.ToSingle(payload, offset); offset += sizeof(float);
+        float NORM_Z = BitConverter.ToSingle(payload, offset); offset += sizeof(float);
+        byte ARC_TEAM = payload[offset++];  
+        byte ATTACK_TYPE = payload[offset++];
+        S_PLAYER_ATTACK_ARC(UNIT_ID, TEAM, POS_X, POS_Z, NORM_X, NORM_Z, ARC_TEAM, ATTACK_TYPE);
+    }
+
     public void S_PLAYER_DAMAGE(byte[] payload)
     {
         int offset = 0;
@@ -329,12 +360,29 @@ public abstract class Stub_MOW_BATTLE_FIELD : Stub
         S_PLAYER_DAMAGE(UNIT_ID, HP);
     }
 
+    public void S_PLAYER_DAMAGE_ARC(byte[] payload)
+    {
+        int offset = 0;
+        byte ARC_TEAM = payload[offset++];
+        Int32 HP = BitConverter.ToInt32(payload, offset); offset += sizeof(Int32);
+        S_PLAYER_DAMAGE_ARC(ARC_TEAM, HP);
+    }
+
     public void S_PLAYER_DIE(byte[] payload)
     {
         int offset = 0;
         Int32 UNIT_ID = BitConverter.ToInt32(payload, offset); offset += sizeof(Int32);
         S_PLAYER_DIE(UNIT_ID);
     }
+
+    public void S_PLAYER_ARC_DESTROY(byte[] payload)
+    {
+        int offset = 0;
+        byte ARC_TEAM = payload[offset++];
+        S_PLAYER_ARC_DESTROY(ARC_TEAM); 
+    }
+
+    protected abstract void S_PLAYER_ARC_INFO(byte TEAM, Int32 MAX_HP, Int32 HP);
 
     protected abstract void S_PLAYER_CREATE(Int32 CRT_CODE, Int32 UNIT_ID, byte UNIT_TYPE, byte TEAM, float POS_X, float POS_Z, float NORM_X, float NORM_Z, float SPEED, Int32 MAX_HP, Int32 HP, float RADIUS, float ATTACK_DISTANCE, float ATTACK_RATE, float ATTACK_DELAY);
 
@@ -350,8 +398,13 @@ public abstract class Stub_MOW_BATTLE_FIELD : Stub
 
     protected abstract void S_PLAYER_ATTACK(Int32 UNIT_ID, byte TEAM, float POS_X, float POS_Z, float NORM_X, float NORM_Z, Int32 TARGET_ID, byte ATTACK_TYPE);
 
+    protected abstract void S_PLAYER_ATTACK_ARC(Int32 UNIT_ID, byte TEAM, float POS_X, float POS_Z, float NORM_X, float NORM_Z, byte ARC_TEAM, byte ATTACK_TYPE);
+
     protected abstract void S_PLAYER_DAMAGE(Int32 UNIT_ID, Int32 HP);
+
+    protected abstract void S_PLAYER_DAMAGE_ARC(byte ARC_TEAM, Int32 HP);
 
     protected abstract void S_PLAYER_DIE(Int32 UNIT_ID);
 
+    protected abstract void S_PLAYER_ARC_DESTROY(byte ARC_TEAM);
 }

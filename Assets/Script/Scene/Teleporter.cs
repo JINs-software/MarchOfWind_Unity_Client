@@ -3,8 +3,8 @@ using UnityEngine;
 using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 public class Teleporter : MonoBehaviour {
+    static public bool InitPosFlag = true;
     static private int CrtCode = 0;
-    static private bool InitPosFlag = true;
     static private Vector3 InitPostion;
     static private float PosAngle;
     static private float PosRadius;
@@ -58,7 +58,7 @@ public class Teleporter : MonoBehaviour {
 
         for (int i = 0; i < crtCnt; i++)
         {
-            GamaManager.Instance.AliveUnitCnt++;
+            GamaManager.Instance.IncrementAliveUnitCnt();
 
             NetworkManager unitSession = RPC.Instance.AllocNewClientSession();
             if (unitSession == null)
