@@ -8,6 +8,13 @@ MMO_Fighter(미니 격투 형식 mmo 게임)과 같이 RPC 코드를 통해 메�
 
 클라이언트의 RPC, Proxy, Stub 클래스에 대한 설명: https://github.com/JINs-software/MMO_Fighter_Client 참고
 
+### 간단 시연 영상
+
+<p align="center">
+<img src="https://github.com/user-attachments/assets/60b5345a-e0ec-4e63-a920-9549a03c3d97" width="800">
+https://www.youtube.com/watch?v=5YbUqW7MBsM
+</p>
+
 ### \[HubScene 씬\]
 
 1. 클라이언트에 접속하면 서버의 IP와 Port 번호, 그리고 사용할 플레이어 이름(닉네임)을 입력하고, 'Connect to Server' 버튼을 클릭하여 서버 연결을 요청.
