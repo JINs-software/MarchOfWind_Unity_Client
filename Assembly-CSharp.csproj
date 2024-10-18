@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="Assets\Script\State\State_WAIT.cs" />
     <Compile Include="Assets\Script\Unit\Unit.cs" />
+    <Compile Include="Assets\Script\Scene\LoginScene.cs" />
     <Compile Include="Assets\VFX\WarFX\WarFX\Demo\Assets\CFX_Demo_RandomDir.cs" />
     <Compile Include="Assets\Script\Unity_Util\Managers\SceneManagerEx.cs" />
     <Compile Include="Assets\UI\Unity UI Samples\Scripts\ActiveStateToggler.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="Assets\RTS\DirectionIndicator.cs" />
     <Compile Include="Assets\Script\RPC\JPD_ENUM.cs" />
     <Compile Include="Assets\Script\UI\PlayerBtn.cs" />
+    <Compile Include="Assets\Script\Scene\ChattingTest.cs" />
     <Compile Include="Assets\Script\Controller\CursorController.cs" />
     <Compile Include="Assets\Unit\old\Tarantula\CrabMonster\Scripts\Rikayon.cs" />
     <Compile Include="Assets\Script\State\State_MOVE.cs" />
@@ -88,6 +90,7 @@
     <Compile Include="Assets\VFX\WarFX\WarFX\Demo\Assets\WFX_Demo_Wall.cs" />
     <Compile Include="Assets\Script\Manager\DebugManager.cs" />
     <Compile Include="Assets\Script\UnitSelectionBox.cs" />
+    <Compile Include="Assets\Script\Data\Protocol_Chat.cs" />
     <Compile Include="Assets\Environment\Teleport\Scripts\teleport\SpawnPoint.cs" />
     <Compile Include="Assets\UI\Unity UI Samples\Scripts\ScrollDetailTexture.cs" />
     <Compile Include="Assets\Script\State\UnitWaitState.cs" />
@@ -158,8 +161,12 @@
     <Compile Include="Assets\Script\UI\TestUI.cs" />
     <Compile Include="Assets\Script\GroundMarker.cs" />
     <Compile Include="Assets\Script\RPC\MOW_BATTLE_FIELD.cs" />
+    <Compile Include="Assets\Script\Data\Protocol_Login.cs" />
     <Compile Include="Assets\Script\Data\Data.cs" />
+    <Compile Include="Assets\Script\SideServer\SimpleConnection.cs" />
     <Compile Include="Assets\Script\Unity_Util\Utils\Extension.cs" />
+    <Compile Include="Assets\Script\UI\ChattingUI.cs" />
+    <Compile Include="Assets\Script\UI\LoginUI.cs" />
     <Compile Include="Assets\Script\MuzzleEffect.cs" />
     <Compile Include="Assets\Script\Unity_Util\Managers\InputManager.cs" />
     <Compile Include="Assets\Script\RPC\MOW_HUB.cs" />

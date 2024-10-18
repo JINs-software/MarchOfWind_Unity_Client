@@ -11,6 +11,9 @@ public class GamaManager : MonoBehaviour
     UnitSelectionManager m_UnitSelectionMgr = new UnitSelectionManager();
     public static UnitSelectionManager UnitSelection { get { return Instance.m_UnitSelectionMgr; } }
 
+    SimpleConnection m_ChatSeverConn = new SimpleConnection();
+    public static SimpleConnection ChatServerConn { get { return Instance.m_ChatSeverConn;  } }
+
     private static void init()
     {
         if (s_Instance == null)
@@ -31,7 +34,17 @@ public class GamaManager : MonoBehaviour
             //}
             //s_Instance.m_UnitSelectionMgr.Init();
             // => UnitSelectionMgr은 SelectField와 BattleField 초반부에 별도 호출이 필요함.
+
+            if(s_Instance.m_ChatSeverConn == null)
+            {
+                s_Instance.m_ChatSeverConn = new SimpleConnection();
+            }
         }
+    }
+
+    private void OnApplicationQuit()
+    {
+        ChatServerConn.Clear();
     }
 
     private void Update()
@@ -39,6 +52,11 @@ public class GamaManager : MonoBehaviour
         if(s_Instance.m_UnitSelectionMgr != null)
         {
             s_Instance.m_UnitSelectionMgr.Update();
+        }
+
+        if(s_Instance.m_ChatSeverConn != null)
+        {
+            s_Instance.m_ChatSeverConn.Update();    
         }
     }
 
@@ -51,6 +69,11 @@ public class GamaManager : MonoBehaviour
 
     public const string CLICKABLE_LAYER = "Clickable";
     public const string ATTACKABLE_LAYER = "Attackable";
+
+    //------------------------------------------------------
+
+    public byte[] AccountToken;
+    public ushort AccountNo;
 
     public string ServerIP;
     public UInt16 ServerPort;       
