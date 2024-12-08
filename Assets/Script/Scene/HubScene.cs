@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HubScene : BaseScene
 {
@@ -18,6 +20,19 @@ public class HubScene : BaseScene
 
     protected override void Init()
     {
+        //////////////////////////////////////
+        // temp, 채팅 서버 입장
+        //if(!ChattingManager.Instance.Connect())
+        //{
+        //    Debug.Log("채팅 서버 접속 실패");
+        //    return;
+        //}
+        
+        //string tokenStr = "12345";
+        //byte[] token = Encoding.Unicode.GetBytes(tokenStr);
+        //ChattingManager.Instance.Login(GamaManager.Instance.AccountNo, token, token.Length, null);
+        //////////////////////////////////////
+
         base.Init();
 
         // 사용 Stub 컴포넌트 부착
@@ -51,7 +66,32 @@ public class HubScene : BaseScene
         //throw new System.NotImplementedException();
     }
 
-    public void OnReceiveCreateRoomSuccess()
+
+    // Hub Stub -> Connect Reply 
+    public void OnRecv_ConnectReply(Byte reply) 
+    {
+        switch ((enCONNECTION_REPLY_CODE)reply)
+        {
+            case enCONNECTION_REPLY_CODE.SUCCESS:
+                initUI.SetUI_ConnSuccess("Connetion Completed!");
+                break;
+            case enCONNECTION_REPLY_CODE.PLAYER_CAPACITY_EXCEEDED:
+                initUI.SetUI_ConnInvalid("SERVER: PLAYER_CAPACITY_EXCEEDED!");
+                break;
+            case enCONNECTION_REPLY_CODE.INVALID_MSG_FIELD_VALUE:
+                initUI.SetUI_ConnFail("SERVER: INVALID_MSG_FIELD_VALUE!");
+                break;
+            case enCONNECTION_REPLY_CODE.PLAYER_NAME_ALREADY_EXIXTS:
+                initUI.SetUI_ConnFail("SERVER: PLAYER_NAME_ALREADY_EXIXTS!");
+                break;
+            default:
+                initUI.SetUI_ConnInvalid("SERVER ERR: INVALID REPLY CODE!");
+                break;
+        }
+    }
+
+    // Hub Stub -> Create Room Success Reply 
+    public void OnRecv_CreateRoomSuccess(UInt16 matchID)
     {
         // 매치룸 입장
         if (createMatchUI != null)
@@ -69,9 +109,12 @@ public class HubScene : BaseScene
                 matchRoomUI.CancelBtnClickHandler += OnMatchRoomCancelBtnClicked;
             }
         }
+
+        // 채팅 서버
+        ChattingManager.Instance.EnterMatch(matchID);
     }
 
-    public void OnReceiveJoinRoomSuccess()
+    public void OnRecv_JoinRoomSuccess()
     {
         if (lobbyUI != null)
         {
@@ -90,7 +133,7 @@ public class HubScene : BaseScene
         }
     }
 
-    public void OnReceivePlayerReady(UInt16 playerID)
+    public void OnRecv_PlayerReady(UInt16 playerID)
     {
         if(matchRoomUI != null)
         {
@@ -98,7 +141,7 @@ public class HubScene : BaseScene
         }
     }
 
-    public void OnReceiveLaunchMatch()
+    public void OnRecv_LaunchMatch()
     {
         // => 로딩 씬 전환
         Manager.Scene.Clear();
@@ -121,7 +164,8 @@ public class HubScene : BaseScene
         }
     }
 
-    private void OnJoinBtnClicked() {
+    private void OnJoinBtnClicked()
+    {
         if (initUI != null)
         {
             // 로비 입장 메시지 전송
@@ -189,6 +233,9 @@ public class HubScene : BaseScene
     {
         lobbyUI.SetOnlyCancelBtn();
         RPC.proxy.JOIN_TO_MATCH_ROOM(matchRoomID);
+
+        // 채팅 서버
+        ChattingManager.Instance.EnterMatch(matchRoomID);
     }
 
     private void OnLobbyCancelBtnClick()

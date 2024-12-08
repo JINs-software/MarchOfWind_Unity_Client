@@ -101,11 +101,11 @@ public class AttackController : MonoBehaviour
                 distanceToTarget -= GetTargetRadius() + m_UnitController.Unit.m_radius;
                 if (distanceToTarget <= m_AttackDistance)
                 {
-                    m_UnitController.LAUNCH_ATTACK(m_TargetObject.transform.position);
+                    m_UnitController.CMD_LAUNCH_ATTACK(m_TargetObject.transform.position);
                 }
                 else
                 {
-                    m_UnitController.TRACE(m_TargetObject);
+                    m_UnitController.CMD_TRACE(m_TargetObject);
                 }
             }
 
@@ -157,7 +157,7 @@ public class AttackController : MonoBehaviour
 
             if(m_TargetObject == null)
             {
-                m_UnitController.STOP_ATTACK();
+                m_UnitController.CMD_STOP_ATTACK();
                 //yield return new WaitForSeconds(1f);
             }
             else
@@ -169,7 +169,7 @@ public class AttackController : MonoBehaviour
                     distanceToTarget -= GetTargetRadius() + m_UnitController.Unit.m_radius;
                     if (distanceToTarget > m_AttackDistance)
                     {
-                        m_UnitController.STOP_ATTACK();
+                        m_UnitController.CMD_STOP_ATTACK();
                     }
                     else
                     {

@@ -65,6 +65,33 @@ public class InitUI : UI_Base
         BindEvent(quitBtn.gameObject, OnQuitBtnClicked);
     }
 
+    // enCONNECTION_REPLY_CODE.SUCCESS:
+    // enCONNECTION_REPLY_CODE.PLAYER_CAPACITY_EXCEEDED:
+    // enCONNECTION_REPLY_CODE.INVALID_MSG_FIELD_VALUE:
+    // enCONNECTION_REPLY_CODE.PLAYER_NAME_ALREADY_EXIXTS:
+    public void SetUI_ConnSuccess(string msg)
+    {
+        Get<Text>((int)Texts.StatusText).text = msg;
+        Get<InputField>((int)InputFields.ServerIpInput).interactable = false;
+        Get<InputField>((int)InputFields.ServerPortInput).interactable = false;
+        Get<InputField>((int)InputFields.PlayerNameInput).interactable = false;
+        GetButton((int)Buttons.ConnectBtn).interactable = false;
+        GetButton((int)Buttons.CreateBtn).interactable = true;
+        GetButton((int)Buttons.JoinBtn).interactable = true;
+    }
+    public void SetUI_ConnFail(string failMsg)
+    {
+        Get<Text>((int)Texts.StatusText).text = failMsg;
+        GetButton((int)Buttons.ConnectBtn).interactable = true;
+        Get<InputField>((int)InputFields.PlayerNameInput).interactable = true;
+    }
+    public void SetUI_ConnInvalid(string invalidMsg)
+    {
+        Get<Text>((int)Texts.StatusText).text = invalidMsg;
+        GetButton((int)Buttons.QuitBtn).interactable = true;
+    }
+
+
     public void OnReceiveConnectReply(Byte reply)
     {
        switch ((enCONNECTION_REPLY_CODE)reply)
@@ -76,7 +103,6 @@ public class InitUI : UI_Base
                     Get<InputField>((int)InputFields.ServerPortInput).interactable = false;
                     Get<InputField>((int)InputFields.PlayerNameInput).interactable = false;
                     GetButton((int)Buttons.ConnectBtn).interactable = false;    
-
                     GetButton((int)Buttons.CreateBtn).interactable = true;
                     GetButton((int)Buttons.JoinBtn).interactable = true;
                 }
@@ -85,7 +111,7 @@ public class InitUI : UI_Base
                 {
                     // Quit 버튼만 활성화 
                     Get<Text>((int)Texts.StatusText).text = "SERVER: PLAYER_CAPACITY_EXCEEDED!";
-                    GetButton((int)Buttons.SettingBtn).interactable = true;
+                    GetButton((int)Buttons.QuitBtn).interactable = true;
                 }
                 break;
             case enCONNECTION_REPLY_CODE.INVALID_MSG_FIELD_VALUE:
@@ -105,7 +131,7 @@ public class InitUI : UI_Base
             default:
                 {
                     Get<Text>((int)Texts.StatusText).text = "SERVER ERR: INVALID REPLY CODE!";
-                    GetButton((int)Buttons.SettingBtn).interactable = true;
+                    GetButton((int)Buttons.QuitBtn).interactable = true;
                 }
                 break;
         }

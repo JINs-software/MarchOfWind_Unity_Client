@@ -14,12 +14,11 @@ public class MOW_HUB : Stub_MOW_HUB
         base.Clear();  
     }
 
-
     protected override void CONNECTION_REPLY(byte REPLY_CODE, UInt16 PLAYER_ID) 
     {
         HubScene hubScene = gameObject.GetComponent<HubScene>();
         hubScene.PlayerID = PLAYER_ID;
-        hubScene.initUI.OnReceiveConnectReply(REPLY_CODE);
+        hubScene.OnRecv_ConnectReply(REPLY_CODE);
     }
 
     protected override void CREATE_MATCH_ROOM_REPLY(byte REPLY_CODE, UInt16 MATCH_ROOM_ID) 
@@ -31,7 +30,7 @@ public class MOW_HUB : Stub_MOW_HUB
         {
             case enCREATE_MATCH_ROOM_REPLY_CODE.SUCCESS:
                 {
-                    hubScene.OnReceiveCreateRoomSuccess();
+                    hubScene.OnRecv_CreateRoomSuccess(MATCH_ROOM_ID);
                 }
                 break;
             case enCREATE_MATCH_ROOM_REPLY_CODE.MATCH_ROOM_CAPACITY_EXCEEDED:
@@ -83,7 +82,7 @@ public class MOW_HUB : Stub_MOW_HUB
         {
             case enJOIN_TO_MATCH_ROOM_REPLY_CODE.SUCCESS:
                 {
-                    hubScene.OnReceiveJoinRoomSuccess();
+                    hubScene.OnRecv_JoinRoomSuccess();
                 }
                 break;
             case enJOIN_TO_MATCH_ROOM_REPLY_CODE.INVALID_MATCH_ROOM_ID:
@@ -178,7 +177,7 @@ public class MOW_HUB : Stub_MOW_HUB
         HubScene hubScene = gameObject.GetComponent<HubScene>();
         if (hubScene.matchRoomUI != null)
         {
-            hubScene.OnReceivePlayerReady(PLAYER_ID);   
+            hubScene.OnRecv_PlayerReady(PLAYER_ID);   
         }
     }
 
@@ -187,7 +186,7 @@ public class MOW_HUB : Stub_MOW_HUB
         HubScene hubScene = gameObject.GetComponent<HubScene>();
         if (hubScene.matchRoomUI != null)
         {
-            hubScene.OnReceiveLaunchMatch();
+            hubScene.OnRecv_LaunchMatch();
         }
     }
 

@@ -25,15 +25,15 @@ public class ChattingUI : UI_Base
 
         InputField chatInput = Get<InputField>((int)InputFields.ChattingInput);
         chatInput.onEndEdit.AddListener(OnEndEdit);
-        chatInput.interactable = false;
+        //chatInput.interactable = false;
 
         chatListContent = Util.FindChild(gameObject, "Content", true);
+
+        // 채팅 매니저에 등록
+        ChattingManager.RegistUI(this);
     }
 
-    public void BeInteractable()
-    {
-        Get<InputField>((int)InputFields.ChattingInput).interactable = true;    
-    }
+    
 
     public void DisplayChat(string name, string chat)
     {

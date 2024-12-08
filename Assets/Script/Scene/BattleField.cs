@@ -76,7 +76,7 @@ public class BattleField : BaseScene
         }
     }
 
-    public void S_PLAYER_ARC_INFO(byte TEAM, Int32 MAX_HP, Int32 HP)
+    public void OnRecv_ARC_INFO(byte TEAM, Int32 MAX_HP, Int32 HP)
     {
         Arcs[TEAM].Init(TEAM, MAX_HP, HP);
         if(TEAM == GamaManager.Instance.Team)
@@ -90,7 +90,7 @@ public class BattleField : BaseScene
         }
     }
 
-    public void S_PLAYER_CREATE(Int32 CRT_CODE, Int32 UNIT_ID, byte UNIT_TYPE, byte TEAM, float POS_X, float POS_Z, float NORM_X, float NORM_Z, float SPEED, Int32 MAX_HP, Int32 HP, float RADIUS, float ATTACK_DISTANCE, float ATTACK_RATE, float ATTACK_DELAY)
+    public void OnRecv_CREATE(Int32 CRT_CODE, Int32 UNIT_ID, byte UNIT_TYPE, byte TEAM, float POS_X, float POS_Z, float NORM_X, float NORM_Z, float SPEED, Int32 MAX_HP, Int32 HP, float RADIUS, float ATTACK_DISTANCE, float ATTACK_RATE, float ATTACK_DELAY)
     {
         GameObject newUnitObj = CreateUnitObjectInScene(UNIT_ID, UNIT_TYPE, TEAM, POS_X, POS_Z, NORM_X, NORM_Z, SPEED, MAX_HP, HP, RADIUS, ATTACK_DISTANCE, ATTACK_RATE);
         Unit newUnit = newUnitObj.GetComponent<Unit>();
@@ -176,37 +176,24 @@ public class BattleField : BaseScene
         newUnitObj.SetActive(true);
     }
 
-    public void S_PLAYER_MOVE(Int32 UNIT_ID, byte TEAM, byte MOVE_TYPE, float POS_X, float POS_Z, float NORM_X, float NORM_Z, float SPEED, float DEST_X, float DEST_Z)
+    public void OnRecv_MOVE(Int32 UNIT_ID, byte TEAM, byte MOVE_TYPE, float POS_X, float POS_Z, float NORM_X, float NORM_Z, float SPEED, float DEST_X, float DEST_Z)
     {
         if (!Units.ContainsKey(UNIT_ID)) return;
 
         Unit unit = Units[UNIT_ID];
         if (MOVE_TYPE == (byte)enMOVE_TYPE.MOVE_START)
         {
+            // enMOVE_TYPE.MOVE_START
             unit.Move_Start(new Vector3(POS_X, 0, POS_Z), new Vector3(DEST_X, 0, DEST_Z), new Vector3(NORM_X, 0 , NORM_Z) ,SPEED);
-            //if(TEAM == GamaManager.Instance.Team)
-            //{
-            //    UnitController unitController = UnitControllers[UNIT_ID];
-            //    unitController.OnMoving = true;
-            //    if(unitController.State == enUNIT_STATUS.IDLE || unitController.State == enUNIT_STATUS.ATTACK)
-            //    {
-            //        unitController.State = enUNIT_STATUS.MOVE;
-            //    }
-            //}
         }
-        else //if (MOVE_TYPE == (byte)enMOVE_TYPE.MOVE_STOP)
+        else 
         {
+            // enMOVE_TYPE.MOVE_STOP
             unit.Move_Stop(new Vector3(POS_X, 0, POS_Z), new Vector3(NORM_X, 0, NORM_Z));
-            //if (TEAM == GamaManager.Instance.Team) {
-            //    UnitController unitController = UnitControllers[UNIT_ID];
-            //    unitController.OnMoving = false;
-            //    unitController.State = enUNIT_STATUS.IDLE;
-            //    UnitControllers[UNIT_ID].ServerPathFinding = false; 
-            //}
         }
     }
 
-    public void S_PLAYER_TRACE_PATH_FINDING_REPLY(Int32 UNIT_ID, Int32 SPATH_ID)
+    public void OnRecv_TRACE_PATH_FINDING_REPLY(Int32 UNIT_ID, Int32 SPATH_ID)
     {
         if (!Units.ContainsKey(UNIT_ID)) return;
         Unit unit = Units[UNIT_ID];
@@ -218,7 +205,7 @@ public class BattleField : BaseScene
             unitController.SPATH_REPLY(SPATH_ID);
         }
     }
-    public void S_PLAYER_TRACE_PATH(Int32 UNIT_ID, Int32 SPATH_ID, float POS_X, float POS_Z, byte SPATH_OPT)
+    public void OnRecv_TRACE_PATH(Int32 UNIT_ID, Int32 SPATH_ID, float POS_X, float POS_Z, byte SPATH_OPT)
     {
         if (!Units.ContainsKey(UNIT_ID)) return;
         Unit unit = Units[UNIT_ID];
@@ -229,47 +216,47 @@ public class BattleField : BaseScene
         }
     }
 
-    public void S_PLAYER_LAUNCH_ATTACK(Int32 UNIT_ID, byte TEAM, float POS_X, float POS_Z, float NORM_X, float NORM_Z)
+    public void OnRecv_LAUNCH_ATTACK(Int32 UNIT_ID, byte TEAM, float POS_X, float POS_Z, float NORM_X, float NORM_Z)
     {
         if (!Units.ContainsKey(UNIT_ID)) return;
         Unit unit = Units[UNIT_ID];
         unit.LauchAttack(POS_X, POS_Z, NORM_X, NORM_Z);
     }
 
-    public void S_PLAYER_STOP_ATTACK(Int32 UNIT_ID, byte TEAM)
+    public void OnRecv_STOP_ATTACK(Int32 UNIT_ID, byte TEAM)
     {
         if (!Units.ContainsKey(UNIT_ID)) return;
         Unit unit = Units[UNIT_ID];
         unit.StopAttack();
     }
 
-    public void S_PLAYER_ATTACK(Int32 UNIT_ID, byte TEAM, float POS_X, float POS_Z, float NORM_X, float NORM_Z, Int32 TARGET_ID, byte ATTACK_TYPE)
+    public void OnRecv_ATTACK(Int32 UNIT_ID, byte TEAM, float POS_X, float POS_Z, float NORM_X, float NORM_Z, Int32 TARGET_ID, byte ATTACK_TYPE)
     {
         if (!Units.ContainsKey(UNIT_ID)) return;
         Unit unit = Units[UNIT_ID];
         unit.Attack(new Vector3(POS_X, 0, POS_Z), new Vector3(NORM_X, 0, NORM_Z), ATTACK_TYPE);
     }
 
-    public void S_PLAYER_ATTACK_ARC(Int32 UNIT_ID, byte TEAM, float POS_X, float POS_Z, float NORM_X, float NORM_Z, byte ARC_TEAM, byte ATTACK_TYPE)
+    public void OnRecv_ATTACK_ARC(Int32 UNIT_ID, byte TEAM, float POS_X, float POS_Z, float NORM_X, float NORM_Z, byte ARC_TEAM, byte ATTACK_TYPE)
     {
         if (!Units.ContainsKey(UNIT_ID)) return;
         Unit unit = Units[UNIT_ID];
         unit.Attack(new Vector3(POS_X, 0, POS_Z), new Vector3(NORM_X, 0, NORM_Z), ATTACK_TYPE);
     }
 
-    public void S_PLAYER_DAMAGE(Int32 UNIT_ID, Int32 HP)
+    public void OnRecv_DAMAGE(Int32 UNIT_ID, Int32 HP)
     {
         if (!Units.ContainsKey(UNIT_ID)) return;
         Unit unit = Units[UNIT_ID];
         unit.RenewHP(HP);
     }
 
-    public void S_PLAYER_DAMAGE_ARC(byte ARC_TEAM, int HP)
+    public void OnRecv_DAMAGE_ARC(byte ARC_TEAM, int HP)
     {
         Arcs[ARC_TEAM].UpdateHP(HP);
     }
 
-    public void S_PLAYER_DIE(Int32 UNIT_ID)
+    public void OnRecv_DIE(Int32 UNIT_ID)
     {
         if (!Units.ContainsKey(UNIT_ID)) return;
         Unit unit = Units[UNIT_ID];
@@ -294,7 +281,7 @@ public class BattleField : BaseScene
         }
     }
 
-    public void S_PLAYER_ARC_DESTROY(byte ARC_TEAM)
+    public void OnRecv_ARC_DESTROY(byte ARC_TEAM)
     {
         Arcs[ARC_TEAM].Destroy();   
     }

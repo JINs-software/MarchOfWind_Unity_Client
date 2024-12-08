@@ -14,7 +14,8 @@ public class LoginScene : BaseScene
 
         loginServConn = new SimpleConnection();
 
-        GamaManager.ChatServerConn.RegistPacketHandler((ushort)enPacketType_Chat.REPLY_CODE, OnChatServerLoginReply);
+        //GamaManager.ChatServerConn.RegistPacketHandler((ushort)enPacketType_Chat.REPLY_CODE, OnChatServerLoginReply);
+        //ChattingManager.ChatServerConn.RegistPacketHandler((ushort)enPacketType_Chat.REPLY_CODE, OnChatServerLoginReply);
         loginServConn.RegistPacketHandler((ushort)enPacketType_Login.REPLY_CREATE_ACCOUNT, OnCreateAccountReply);
         loginServConn.RegistPacketHandler((ushort)enPacketType_Login.REPLY_LOGIN, OnLoginReply);
 
@@ -83,6 +84,8 @@ public class LoginScene : BaseScene
         msg.accountPassword = Encoding.Unicode.GetBytes(password);
         msg.accountPasswordLen = msg.accountPassword.Length;
 
+        GamaManager.Instance.AccountID = accountID;
+
         loginServConn.Send<MSG_AUTH_REQUEST_LOGIN>(msg, true);
     }
 
@@ -114,19 +117,12 @@ public class LoginScene : BaseScene
             GamaManager.Instance.AccountNo = reply.accountNo;
 
             // 채팅 서버 연결
-            if(!GamaManager.ChatServerConn.Connect(PROTOCO_CHAT_CONSTANT.CHAT_SERVER_IP, PROTOCO_CHAT_CONSTANT.CHAT_SERVER_PORT))
+            if(!ChattingManager.Instance.Connect())
             {
-                Debug.Log("[FAIL] Failed to Connect Chatting Server");
+                Debug.Log("채팅 서버 접속 실패");
+                return;
             }
-
-            // 로그인 요청 메시지 전송
-            MSG_REQ_LOGIN_CHAT chatLogin = new MSG_REQ_LOGIN_CHAT();
-            chatLogin.type = (ushort)enPacketType_Chat.REQ_LOGIN;
-            chatLogin.accountNo = reply.accountNo;
-            chatLogin.token = reply.token;      
-            chatLogin.tokenLength = reply.tokenLength;
-
-            GamaManager.ChatServerConn.Send<MSG_REQ_LOGIN_CHAT>(chatLogin, true);
+            ChattingManager.Instance.Login(reply.accountNo, reply.token, reply.tokenLength, GamaManager.Instance.AccountID, OnChatServerLoginReply);
         }
         else if (reply.replyCode == (ushort)enReplyCode_Login.LOGIN_FAILURE)
         {
@@ -138,13 +134,9 @@ public class LoginScene : BaseScene
         }
     }
 
-    public void OnChatServerLoginReply(byte[] payload)
+    public void OnChatServerLoginReply()
     {
-        MSG_REPLY_CODE_CHAT reply = GamaManager.ChatServerConn.BytesToMessage<MSG_REPLY_CODE_CHAT>(payload);
-        if(reply.replyCode == (ushort)enReplyCode_Chat.LOGIN_SUCCESS)
-        {
-            Manager.Scene.Clear();
-            Manager.Scene.LoadScene(Define.Scene.HubScene);
-        }
+        Manager.Scene.Clear();
+        Manager.Scene.LoadScene(Define.Scene.HubScene);
     }
 }

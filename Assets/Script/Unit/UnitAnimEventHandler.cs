@@ -40,11 +40,11 @@ public class UnitAnimEventHandler : MonoBehaviour
         {
             if(attackController.HasTarget() && attackController.m_TargetObject.tag == GamaManager.ENEMY_TAG)
             {
-                unitController.ATTACK();
+                unitController.CMD_ATTACK();
             }
             else
             {
-                unitController.ATTACK_ARC();
+                unitController.CMD_ATTACK_ARC();
             }
         }
     }

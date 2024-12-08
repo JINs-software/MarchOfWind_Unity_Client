@@ -9,7 +9,6 @@ public class UnitMovement : MonoBehaviour
 {
     Camera m_Camera;
     NavMeshAgent m_NavMeshAgent;
-    //UnitController m_UnitController;   
     LayerMask m_LayerMask;
 
     public Action<Vector3, float> MoveCmdHandler;
